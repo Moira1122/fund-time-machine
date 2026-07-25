@@ -2,42 +2,49 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>基金时光机 V4.1</title>
+<title>基金时光机 V4.5</title>
 <style>
-body{font-family:"Microsoft YaHei",sans-serif;background:#f5f7fb;color:#172033;margin:0;padding:30px}
-.card{background:#fff;max-width:900px;margin:18px auto;padding:24px;border-radius:18px;box-shadow:0 8px 25px rgba(0,0,0,.08)}
-button{background:#5965e8;color:white;border:0;border-radius:12px;padding:12px 20px;margin:6px;cursor:pointer;font-size:15px}
+body{font-family:"Microsoft YaHei",sans-serif;background:#f5f7fb;color:#172033;margin:0;padding:20px}
+.container{max-width:1100px;margin:auto}
+.card{background:white;border-radius:18px;padding:20px;margin:15px 0;box-shadow:0 8px 25px rgba(0,0,0,.08)}
+button{padding:10px 16px;border:0;border-radius:10px;background:#5965e8;color:white;cursor:pointer;margin:5px}
 button:hover{opacity:.85}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.box{background:#f8fafc;padding:15px;border-radius:12px}
 .hide{display:none}
-.tip{background:#eef1ff;padding:15px;border-radius:12px;line-height:1.7}
-.chat{height:160px;overflow:auto;background:#fafafa;padding:12px;border-radius:12px}
-input,textarea{width:90%;padding:10px;border:1px solid #ddd;border-radius:10px;margin:6px}
+input,textarea,select{padding:10px;border:1px solid #ddd;border-radius:8px;width:90%;margin:5px}
+.chat{height:180px;overflow:auto;background:#fafafa;padding:10px;border-radius:10px}
+@media(max-width:800px){.grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
+<div class="container">
 
 <div class="card">
-<h1>基金时光机 V4.1</h1>
+<h1>基金时光机 V4.5</h1>
 <p>在不损失真钱的情况下，训练你的投资决策能力。</p>
-<button onclick="openMode('new')">基金新手</button>
-<button onclick="openMode('loss')">经常亏损</button>
-<button onclick="openMode('strategy')">测试策略</button>
+<button onclick="show('learn')">🌱 新手训练</button>
+<button onclick="show('loss')">📉 亏损复盘</button>
+<button onclick="show('trade')">📈 历史市场模拟</button>
+<button onclick="show('strategy')">📊 策略实验室</button>
+<button onclick="show('ai')">🤖 AI投资教练</button>
 </div>
 
-<div id="new" class="card hide">
-<h2>🌱 新手训练模式</h2>
-<div class="tip">
-<h3>什么是仓位？</h3>
-假设你有10000元，投入4000元买基金。<br>
-你的仓位就是40%。<br><br>
-<h3>什么是最大回撤？</h3>
-如果10000元涨到12000元，之后跌到9000元，最大回撤约25%。
+<div id="learn" class="card hide">
+<h2>新手训练</h2>
+<div class="box">
+<h3>仓位</h3>
+<p>仓位代表投资资金占总资金的比例。例如你有10000元，投入4000元买基金，仓位就是40%。</p>
 </div>
-<button onclick="finishLesson()">完成学习</button>
+<div class="box">
+<h3>最大回撤</h3>
+<p>最大回撤代表资产从最高点下降到最低点的最大跌幅。</p>
+</div>
+<button onclick="alert('基础课程完成')">完成学习</button>
 </div>
 
 <div id="loss" class="card hide">
-<h2>📉 亏损复盘模式</h2>
+<h2>亏损复盘</h2>
 <p>请选择你最常遇到的问题：</p>
 <button onclick="analysis('追涨')">看到上涨就买</button>
 <button onclick="analysis('恐慌')">下跌就卖</button>
@@ -45,46 +52,72 @@ input,textarea{width:90%;padding:10px;border:1px solid #ddd;border-radius:10px;m
 <div id="analysis"></div>
 </div>
 
+<div id="trade" class="card hide">
+<h2>历史市场模拟</h2>
+<p>当前日期：<span id="day">第1交易日</span></p>
+<p>账户资产：<span id="money">100000</span>元</p>
+<button onclick="nextDay()">下一交易日</button>
+<button onclick="buy()">买入基金</button>
+<button onclick="sell()">卖出基金</button>
+<div id="log"></div>
+</div>
+
 <div id="strategy" class="card hide">
-<h2>📊 策略实验室</h2>
-<p>选择策略：</p>
-<button onclick="strategy('定投')">长期定投</button>
-<button onclick="strategy('加仓')">下跌加仓</button>
-<button onclick="strategy('持有')">长期持有</button>
+<h2>策略实验室</h2>
+<div class="grid">
+<div class="box">定投策略<br><button onclick="test('定投')">测试</button></div>
+<div class="box">下跌加仓<br><button onclick="test('下跌加仓')">测试</button></div>
+<div class="box">长期持有<br><button onclick="test('长期持有')">测试</button></div>
+</div>
 <div id="result"></div>
 </div>
 
+<div id="ai" class="card hide">
+<h2>AI投资教练</h2>
+<div id="chat" class="chat">AI：你好，我可以帮助你分析投资行为。</div>
+<textarea id="q" placeholder="输入你的问题"></textarea>
+<button onclick="ask()">询问</button>
+</div>
+
 <div class="card">
-<h2>🤖 AI投资教练</h2>
-<div id="chat" class="chat">AI：你好，我可以帮助你理解基金知识和分析投资行为。</div>
-<textarea id="question" placeholder="输入你的问题，例如：为什么我总亏钱？"></textarea>
-<button onclick="askAI()">询问AI</button>
+<h2>投资规则</h2>
+<input placeholder="单只基金最大仓位，例如40%">
+<input placeholder="最大接受回撤，例如15%">
+<textarea placeholder="我的投资规则"></textarea>
+<button onclick="alert('规则已保存')">保存</button>
+</div>
+
 </div>
 
 <script>
-function openMode(id){
- document.querySelectorAll('.hide').forEach(x=>x.style.display='none');
- document.getElementById(id).style.display='block';
+let day=1,money=100000,logs=[];
+function show(id){
+document.querySelectorAll('.hide').forEach(e=>e.style.display='none');
+document.getElementById(id).style.display='block';
 }
-function finishLesson(){
- alert("完成新手课程！你已经理解了基础风险概念。");
+function nextDay(){
+day++;
+let change=(Math.random()-0.5)*0.02;
+money=Math.round(money*(1+change));
+document.getElementById('day').innerText='第'+day+'交易日';
+document.getElementById('money').innerText=money;
+logs.push('第'+day+'日资产:'+money);
+document.getElementById('log').innerHTML=logs.join('<br>');
 }
+function buy(){logs.push('买入操作：已记录');document.getElementById('log').innerHTML=logs.join('<br>')}
+function sell(){logs.push('卖出操作：已记录');document.getElementById('log').innerHTML=logs.join('<br>')}
 function analysis(x){
- let t={
- "追涨":"你的问题可能是买入时受到市场情绪影响，建议建立分批买入规则。",
- "恐慌":"短期波动不一定代表长期价值变化，先检查自己的风险承受能力。",
- "频繁交易":"频繁操作可能增加错误概率，尝试提前制定交易规则。"
- };
- document.getElementById("analysis").innerHTML="<div class='tip'>AI分析："+t[x]+"</div>";
+let tips={
+'追涨':'你的问题可能是买入时受到市场情绪影响，建议建立分批买入规则。',
+'恐慌':'短期波动不一定代表长期价值变化，先检查自己的风险承受能力。',
+'频繁交易':'频繁操作可能增加错误概率，尝试提前制定交易规则。'
+};
+document.getElementById('analysis').innerHTML="<div class='box'>AI分析："+tips[x]+"</div>";
 }
-function strategy(x){
- document.getElementById("result").innerHTML="<div class='tip'>模拟结果：你选择了"+x+"策略。下一步可以接入历史行情进行真实周期测试。</div>";
-}
-function askAI(){
- let q=document.getElementById("question").value;
- if(!q)return;
- document.getElementById("chat").innerHTML+="<p>你："+q+"</p><p>AI：投资问题通常需要结合目标、风险承受能力和执行纪律分析，而不是只看一次涨跌。</p>";
- document.getElementById("question").value="";
+function test(x){document.getElementById('result').innerHTML='正在测试'+x+'策略（后续接入历史数据）'}
+function ask(){
+let q=document.getElementById('q').value;
+document.getElementById('chat').innerHTML+=' <p>你：'+q+'</p><p>AI：建议先分析目标、风险和交易纪律，而不是只关注短期涨跌。</p>';
 }
 </script>
 </body>
