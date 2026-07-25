@@ -2,56 +2,90 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>基金时光机 V4</title>
+<title>基金时光机 V4.1</title>
 <style>
-body{font-family:Microsoft YaHei;background:#f5f7fb;padding:30px;color:#172033}
-.card{background:white;border-radius:18px;padding:24px;margin:16px auto;max-width:900px;box-shadow:0 8px 25px #ddd}
-button{padding:10px 16px;border:0;border-radius:10px;background:#5965e8;color:white;cursor:pointer}
-input,textarea{width:90%;padding:10px;margin:8px;border:1px solid #ddd;border-radius:8px}
-.tip{background:#eef1ff;padding:15px;border-radius:12px}
+body{font-family:"Microsoft YaHei",sans-serif;background:#f5f7fb;color:#172033;margin:0;padding:30px}
+.card{background:#fff;max-width:900px;margin:18px auto;padding:24px;border-radius:18px;box-shadow:0 8px 25px rgba(0,0,0,.08)}
+button{background:#5965e8;color:white;border:0;border-radius:12px;padding:12px 20px;margin:6px;cursor:pointer;font-size:15px}
+button:hover{opacity:.85}
+.hide{display:none}
+.tip{background:#eef1ff;padding:15px;border-radius:12px;line-height:1.7}
+.chat{height:160px;overflow:auto;background:#fafafa;padding:12px;border-radius:12px}
+input,textarea{width:90%;padding:10px;border:1px solid #ddd;border-radius:10px;margin:6px}
 </style>
 </head>
 <body>
+
 <div class="card">
-<h1>基金时光机 V4</h1>
+<h1>基金时光机 V4.1</h1>
 <p>在不损失真钱的情况下，训练你的投资决策能力。</p>
-<button onclick="alert('进入新手模式')">基金新手</button>
-<button onclick="alert('进入亏损复盘模式')">经常亏损</button>
-<button onclick="alert('进入策略测试')">测试策略</button>
+<button onclick="openMode('new')">基金新手</button>
+<button onclick="openMode('loss')">经常亏损</button>
+<button onclick="openMode('strategy')">测试策略</button>
 </div>
 
-<div class="card">
-<h2>投资学院</h2>
+<div id="new" class="card hide">
+<h2>🌱 新手训练模式</h2>
+<div class="tip">
 <h3>什么是仓位？</h3>
-<div class="tip">假设你有10000元，投入4000元买基金。仓位就是40%。</div>
+假设你有10000元，投入4000元买基金。<br>
+你的仓位就是40%。<br><br>
 <h3>什么是最大回撤？</h3>
-<div class="tip">资产从最高点下降到最低点的最大跌幅。</div>
+如果10000元涨到12000元，之后跌到9000元，最大回撤约25%。
+</div>
+<button onclick="finishLesson()">完成学习</button>
+</div>
+
+<div id="loss" class="card hide">
+<h2>📉 亏损复盘模式</h2>
+<p>请选择你最常遇到的问题：</p>
+<button onclick="analysis('追涨')">看到上涨就买</button>
+<button onclick="analysis('恐慌')">下跌就卖</button>
+<button onclick="analysis('频繁交易')">经常换基金</button>
+<div id="analysis"></div>
+</div>
+
+<div id="strategy" class="card hide">
+<h2>📊 策略实验室</h2>
+<p>选择策略：</p>
+<button onclick="strategy('定投')">长期定投</button>
+<button onclick="strategy('加仓')">下跌加仓</button>
+<button onclick="strategy('持有')">长期持有</button>
+<div id="result"></div>
 </div>
 
 <div class="card">
-<h2>自定义投资规则</h2>
-<input placeholder="初始资金：100000元">
-<input placeholder="单只基金最大仓位：40%">
-<input placeholder="最大接受回撤：15%">
-<textarea placeholder="我的投资规则"></textarea>
-<button onclick="alert('规则保存成功')">保存规则</button>
+<h2>🤖 AI投资教练</h2>
+<div id="chat" class="chat">AI：你好，我可以帮助你理解基金知识和分析投资行为。</div>
+<textarea id="question" placeholder="输入你的问题，例如：为什么我总亏钱？"></textarea>
+<button onclick="askAI()">询问AI</button>
 </div>
 
-<div class="card">
-<h2>AI投资教练</h2>
-<textarea placeholder="请输入你的问题"></textarea>
-<button onclick="alert('AI分析：先检查交易纪律和情绪影响')">询问AI</button>
-</div>
-
-<div class="card">
-<h2>投资人格报告</h2>
-<p>分析交易习惯、情绪化交易比例、风险偏好和改进建议。</p>
-</div>
-
-<div class="card">
-<h2>策略实验室</h2>
-<p>比较定投、下跌加仓、长期持有等策略。</p>
-<button onclick="alert('开始策略模拟')">开始测试</button>
-</div>
+<script>
+function openMode(id){
+ document.querySelectorAll('.hide').forEach(x=>x.style.display='none');
+ document.getElementById(id).style.display='block';
+}
+function finishLesson(){
+ alert("完成新手课程！你已经理解了基础风险概念。");
+}
+function analysis(x){
+ let t={
+ "追涨":"你的问题可能是买入时受到市场情绪影响，建议建立分批买入规则。",
+ "恐慌":"短期波动不一定代表长期价值变化，先检查自己的风险承受能力。",
+ "频繁交易":"频繁操作可能增加错误概率，尝试提前制定交易规则。"
+ };
+ document.getElementById("analysis").innerHTML="<div class='tip'>AI分析："+t[x]+"</div>";
+}
+function strategy(x){
+ document.getElementById("result").innerHTML="<div class='tip'>模拟结果：你选择了"+x+"策略。下一步可以接入历史行情进行真实周期测试。</div>";
+}
+function askAI(){
+ let q=document.getElementById("question").value;
+ if(!q)return;
+ document.getElementById("chat").innerHTML+="<p>你："+q+"</p><p>AI：投资问题通常需要结合目标、风险承受能力和执行纪律分析，而不是只看一次涨跌。</p>";
+ document.getElementById("question").value="";
+}
+</script>
 </body>
 </html>
