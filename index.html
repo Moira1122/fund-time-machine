@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>基金时光机 V5</title>
+<title>基金时光机 V6 投资训练版</title>
 <style>
 body{font-family:"Microsoft YaHei";background:#f5f7fb;color:#172033;margin:0;padding:20px}
 .wrap{max-width:1100px;margin:auto}
@@ -10,35 +10,59 @@ body{font-family:"Microsoft YaHei";background:#f5f7fb;color:#172033;margin:0;pad
 button{background:#5965e8;color:white;border:0;border-radius:10px;padding:10px 16px;margin:5px;cursor:pointer}
 .box{background:#f8fafc;padding:14px;border-radius:12px;margin:10px 0}
 .hide{display:none}
-textarea,input{width:90%;padding:10px;margin:6px;border-radius:8px;border:1px solid #ddd}
+textarea,input,select{width:90%;padding:10px;margin:6px;border-radius:8px;border:1px solid #ddd;box-sizing:border-box}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.muted{color:#667085;font-size:14px}
+.stat{border-left:4px solid #5965e8}
+table{width:100%;border-collapse:collapse;margin-top:12px}
+th,td{text-align:left;padding:9px;border-bottom:1px solid #e5e7eb;font-size:14px}
+th{background:#eef2ff}
+.table-wrap{overflow-x:auto}
 @media(max-width:800px){.grid{grid-template-columns:1fr}}
+@media(max-width:800px){.form-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="wrap">
 
 <div class="card">
-<h1>基金时光机 V5</h1>
+<h1>基金时光机 V6 投资训练版</h1>
 <p>投资行为训练平台：不预测市场，训练你的决策能力。</p>
-<button onclick="show('learn')">新手训练</button>
+<button onclick="show('learn')">新手学院</button>
 <button onclick="show('loss')">亏损复盘</button>
 <button onclick="show('sim')">开始市场训练</button>
 <button onclick="show('strategy')">策略实验室</button>
 <button onclick="show('coach')">AI投资教练</button>
 <button onclick="show('challenge')">训练挑战</button>
-<button onclick="show('report')">成长报告</button>
+<button onclick="show('journal')">投资日志</button>
+<button onclick="show('report')">复盘中心</button>
 </div>
 
 <div id="learn" class="card hide">
-<h2>新手训练</h2>
-<div class="box">
-<h3>仓位</h3>
-<p>仓位代表投资资金占总资金的比例。例如你有10000元，投入4000元买基金，仓位就是40%。</p>
+<h2>新手学院</h2>
+<div class="grid">
+<div class="box"><h3>基金是什么</h3><p>基金把许多投资者的资金集中起来，由专业机构按约定范围进行投资。</p></div>
+<div class="box"><h3>基金分类</h3><p>常见类型包括货币基金、债券基金、混合基金和股票基金，风险通常依次提高。</p></div>
+<div class="box"><h3>风险收益关系</h3><p>潜在收益越高，通常需要承受越大的波动，没有只涨不跌的投资。</p></div>
+<div class="box"><h3>定投是什么</h3><p>定投是在固定时间投入固定金额，用分批买入降低择时压力。</p></div>
+<div class="box"><h3>投资前准备</h3><p>先准备应急资金、明确投资期限和可承受亏损，再设定仓位与退出规则。</p></div>
+<div class="box"><h3>仓位</h3><p>仓位代表投入资金占总资金的比例。例如有10000元，投入4000元，仓位就是40%。</p></div>
+<div class="box"><h3>最大回撤</h3><p>最大回撤代表资产从最高点下降到最低点的最大跌幅。</p></div>
 </div>
 <div class="box">
-<h3>最大回撤</h3>
-<p>最大回撤代表资产从最高点下降到最低点的最大跌幅。</p>
+<h3>第一次模拟投资练习</h3>
+<div class="form-grid">
+<input id="practice-capital" type="number" min="100" value="10000" placeholder="可用资金">
+<input id="practice-amount" type="number" min="1" value="3000" placeholder="计划投入金额">
+<select id="practice-risk">
+<option value="低">低风险承受能力</option>
+<option value="中" selected>中等风险承受能力</option>
+<option value="高">高风险承受能力</option>
+</select>
+</div>
+<button onclick="startFirstPractice()">生成练习建议</button>
+<div id="practice-result" class="muted">输入你的计划，先练习判断仓位是否合适。</div>
 </div>
 <button onclick="alert('基础课程完成')">完成学习</button>
 </div>
@@ -56,15 +80,37 @@ textarea,input{width:90%;padding:10px;margin:6px;border-radius:8px;border:1px so
 <h2>历史市场剧本训练</h2>
 <div class="box" id="event">第1天：市场上涨，投资者情绪逐渐升温。</div>
 <p>资产：<span id="money">100000</span> 元</p>
+<div class="box" id="result-feedback">第二日结果反馈将在你做出决策后显示。</div>
+<div class="form-grid">
+<input id="trade-amount" type="number" min="0" value="1000" placeholder="操作金额">
+<select id="trade-emotion">
+<option value="平静">平静</option>
+<option value="乐观">乐观</option>
+<option value="兴奋">兴奋</option>
+<option value="犹豫">犹豫</option>
+<option value="焦虑">焦虑</option>
+<option value="恐慌">恐慌</option>
+</select>
+</div>
+<textarea id="trade-reason" placeholder="写下本次投资理由"></textarea>
 <button onclick="nextDay()">下一交易日</button>
 <button onclick="decision('buy')">买入</button>
 <button onclick="decision('hold')">继续观察</button>
 <button onclick="decision('sell')">卖出</button>
 <p id="log"></p>
+<div class="grid">
+<div class="box"><h3>每日事件记录</h3><div id="daily-events" class="muted"></div></div>
+<div class="box"><h3>用户决策记录</h3><div id="decision-records" class="muted"></div></div>
+</div>
 </div>
 
 <div id="strategy" class="card hide">
 <h2>策略实验室</h2>
+<div class="form-grid">
+<input id="strategy-capital" type="number" min="1000" value="12000" placeholder="模拟总资金">
+<input id="strategy-periods" type="number" min="3" max="24" value="12" placeholder="模拟期数">
+</div>
+<p class="muted">使用同一组模拟涨跌比较三种基础策略，不代表真实收益。</p>
 <div class="grid">
 <div class="box">定投策略<br><button onclick="test('定投')">测试</button></div>
 <div class="box">下跌加仓<br><button onclick="test('下跌加仓')">测试</button></div>
@@ -92,15 +138,18 @@ textarea,input{width:90%;padding:10px;margin:6px;border-radius:8px;border:1px so
 </div>
 </div>
 
-<div id="report" class="card hide">
-<h2>投资成长报告</h2>
-<div class="box">
-投资人格：正在分析<br>
-优势：愿意学习和复盘<br>
-风险：需要减少情绪化操作
+<div id="journal" class="card hide">
+<h2>投资日志</h2>
+<p class="muted">买入、卖出和持有操作会自动保存在当前浏览器，刷新页面后仍可查看。</p>
+<div id="journal-list"></div>
 </div>
-<div class="box" id="personality">
-完成训练后生成详细报告。
+
+<div id="report" class="card hide">
+<h2>复盘中心</h2>
+<p class="muted">根据你的投资日志自动分析交易行为。日志越完整，结论越有参考价值。</p>
+<button onclick="renderReview()">重新生成复盘</button>
+<div id="review-summary">
+<div class="box">完成至少一次市场决策后，这里会生成复盘结果。</div>
 </div>
 </div>
 
@@ -115,7 +164,25 @@ textarea,input{width:90%;padding:10px;margin:6px;border-radius:8px;border:1px so
 </div>
 
 <script>
-let day=1,money=100000,logs=[];
+const JOURNAL_KEY="fundTimeMachineV6Journal";
+const EVENTS_KEY="fundTimeMachineV6Events";
+const STATE_KEY="fundTimeMachineV6State";
+
+function readStorage(key,fallback){
+try{
+const value=JSON.parse(localStorage.getItem(key));
+return value??fallback;
+}catch(e){
+return fallback;
+}
+}
+
+const savedState=readStorage(STATE_KEY,{day:1,money:100000,logs:[]});
+let day=savedState.day||1;
+let money=savedState.money||100000;
+let logs=Array.isArray(savedState.logs)?savedState.logs:[];
+let journal=readStorage(JOURNAL_KEY,[]);
+let eventHistory=readStorage(EVENTS_KEY,[]);
 let events=[
 "市场上涨，投资者情绪逐渐升温。",
 "热门板块快速上涨，市场开始狂热。",
@@ -126,27 +193,73 @@ let events=[
 function show(id){
 document.querySelectorAll('.hide').forEach(x=>x.style.display='none');
 document.getElementById(id).style.display='block';
+if(id==="journal")renderJournal();
+if(id==="report")renderReview();
+if(id==="sim")renderSimulationRecords();
 }
 
 function decision(type){
-let msg="";
-if(type==="buy"){money+=Math.round((Math.random()-.5)*3000);msg="买入操作记录";}
-if(type==="sell"){money+=Math.round((Math.random()-.5)*2000);msg="卖出操作记录";}
-if(type==="hold"){money+=Math.round((Math.random()-.5)*1000);msg="保持观察";}
+const actionNames={buy:"买入",sell:"卖出",hold:"持有"};
+const reason=document.getElementById("trade-reason").value.trim();
+const emotion=document.getElementById("trade-emotion").value;
+let amount=Number(document.getElementById("trade-amount").value);
+if(!reason){
+alert("请先写下本次投资理由。");
+return;
+}
+if(type!=="hold"&&(!amount||amount<=0)){
+alert("买入或卖出时请输入大于0的金额。");
+return;
+}
+if(type==="hold")amount=0;
+
+const previousMoney=money;
+const eventText=currentEvent();
+let change=0;
+if(type==="buy")change=Math.round((Math.random()-.5)*3000);
+if(type==="sell")change=Math.round((Math.random()-.5)*2000);
+if(type==="hold")change=Math.round((Math.random()-.5)*1000);
+money+=change;
+const msg=actionNames[type]+"操作记录";
+
+journal.push({
+date:new Date().toLocaleString("zh-CN",{hour12:false}),
+day:day,
+type:actionNames[type],
+amount:amount,
+reason:reason,
+emotion:emotion,
+event:eventText
+});
+localStorage.setItem(JOURNAL_KEY,JSON.stringify(journal));
+
 day++;
 document.getElementById("money").innerText=money;
-document.getElementById("event").innerText="第"+day+"天："+events[day%events.length];
+document.getElementById("event").innerText="第"+day+"天："+currentEvent();
 logs.push(msg);
 document.getElementById("log").innerText=logs.join("；");
+document.getElementById("result-feedback").innerText=
+"第"+day+"日结果反馈：上一日选择“"+actionNames[type]+"”，模拟资产变化"
++(change>=0?"+":"")+change+"元，当前资产"+money+"元。";
+recordCurrentEvent();
+saveTrainingState();
+renderSimulationRecords();
 }
 
 function nextDay(){
 day++;
-money+=Math.round((Math.random()-.5)*1000);
+const change=Math.round((Math.random()-.5)*1000);
+money+=change;
 document.getElementById("money").innerText=money;
-document.getElementById("event").innerText="第"+day+"天："+events[day%events.length];
+document.getElementById("event").innerText="第"+day+"天："+currentEvent();
 logs.push("推进至第"+day+"天");
 document.getElementById("log").innerText=logs.join("；");
+document.getElementById("result-feedback").innerText=
+"第"+day+"日结果反馈：上一日未进行买卖，模拟资产变化"
++(change>=0?"+":"")+change+"元。";
+recordCurrentEvent();
+saveTrainingState();
+renderSimulationRecords();
 }
 
 function analysis(x){
@@ -159,7 +272,143 @@ document.getElementById("analysis").innerHTML="<div class='box'>AI分析："+tip
 }
 
 function test(x){
-document.getElementById("result").innerHTML="<div class='box'>正在测试"+x+"策略（后续接入历史数据）</div>";
+const capital=Math.max(1000,Number(document.getElementById("strategy-capital").value)||12000);
+const periods=Math.min(24,Math.max(3,Number(document.getElementById("strategy-periods").value)||12));
+const comparison=simulateStrategies(capital,periods);
+const rows=comparison.map(item=>
+"<tr><td>"+(item.name===x?"<strong>"+item.name+"</strong>":item.name)+"</td>"
++"<td>"+formatMoney(item.final)+"</td><td>"+formatMoney(item.final-capital)+"</td>"
++"<td>"+((item.final/capital-1)*100).toFixed(2)+"%</td></tr>"
+).join("");
+document.getElementById("result").innerHTML=
+"<div class='box'><strong>已运行："+escapeHtml(x)+"策略</strong>"
++"<div class='table-wrap'><table><thead><tr><th>策略</th><th>期末资产</th><th>模拟收益</th><th>收益率</th></tr></thead>"
++"<tbody>"+rows+"</tbody></table></div>"
++"<p class='muted'>结果来自内置模拟涨跌序列，仅用于理解策略差异。</p></div>";
+}
+
+function currentEvent(){
+return events[(day-1)%events.length];
+}
+
+function saveTrainingState(){
+localStorage.setItem(STATE_KEY,JSON.stringify({day:day,money:money,logs:logs}));
+}
+
+function recordCurrentEvent(){
+if(!eventHistory.some(item=>item.day===day)){
+eventHistory.push({day:day,event:currentEvent()});
+localStorage.setItem(EVENTS_KEY,JSON.stringify(eventHistory));
+}
+}
+
+function renderSimulationRecords(){
+const daily=document.getElementById("daily-events");
+const decisions=document.getElementById("decision-records");
+if(daily){
+daily.innerHTML=eventHistory.slice(-6).reverse().map(item=>
+"第"+item.day+"天："+escapeHtml(item.event)
+).join("<br>")||"暂无事件记录";
+}
+if(decisions){
+decisions.innerHTML=journal.slice(-6).reverse().map(item=>
+escapeHtml(item.date)+"｜"+escapeHtml(item.type)+"｜"+formatMoney(item.amount)+"｜"+escapeHtml(item.emotion)
+).join("<br>")||"暂无决策记录";
+}
+}
+
+function renderJournal(){
+const target=document.getElementById("journal-list");
+if(!journal.length){
+target.innerHTML="<div class='box'>暂无日志。请先在市场训练中完成一次买入、卖出或持有。</div>";
+return;
+}
+const rows=journal.slice().reverse().map(item=>
+"<tr><td>"+escapeHtml(item.date)+"</td><td>第"+item.day+"天</td><td>"+escapeHtml(item.type)+"</td>"
++"<td>"+formatMoney(item.amount)+"</td><td>"+escapeHtml(item.reason)+"</td><td>"+escapeHtml(item.emotion)+"</td></tr>"
+).join("");
+target.innerHTML="<div class='table-wrap'><table><thead><tr><th>日期</th><th>训练日</th><th>操作</th><th>金额</th><th>投资理由</th><th>情绪</th></tr></thead>"
++"<tbody>"+rows+"</tbody></table></div>";
+}
+
+function renderReview(){
+const target=document.getElementById("review-summary");
+if(!journal.length){
+target.innerHTML="<div class='box'>暂无可复盘日志。请先在市场训练中完成一次决策。</div>";
+return;
+}
+const buys=journal.filter(item=>item.type==="买入");
+const sells=journal.filter(item=>item.type==="卖出");
+const holds=journal.filter(item=>item.type==="持有");
+const average=list=>list.length?Math.round(list.reduce((sum,item)=>sum+Number(item.amount||0),0)/list.length):0;
+const emotions={};
+journal.forEach(item=>emotions[item.emotion]=(emotions[item.emotion]||0)+1);
+const mainEmotion=Object.keys(emotions).sort((a,b)=>emotions[b]-emotions[a])[0]||"暂无";
+const chaseCount=buys.filter(item=>
+/上涨|热门|追涨|怕错过/.test(item.reason)&&!/按计划|分批|规则|估值/.test(item.reason)
+).length;
+const panicSellCount=sells.filter(item=>
+/恐慌|焦虑/.test(item.emotion)||(/下跌|害怕|亏损/.test(item.reason)&&!/按计划|止损|规则/.test(item.reason))
+).length;
+const errors=[];
+if(chaseCount)errors.push("疑似追涨买入 "+chaseCount+" 次");
+if(panicSellCount)errors.push("疑似情绪化卖出 "+panicSellCount+" 次");
+if(journal.length>=8)errors.push("操作较频繁，建议检查是否遵守既定规则");
+if(!errors.length)errors.push("暂未发现明显重复错误，继续完整记录投资理由");
+
+target.innerHTML=
+"<div class='grid'>"
++"<div class='box stat'><strong>交易次数</strong><p>"+journal.length+" 次（买入 "+buys.length+"、卖出 "+sells.length+"、持有 "+holds.length+"）</p></div>"
++"<div class='box stat'><strong>买入习惯</strong><p>"+(buys.length?"平均买入金额 "+formatMoney(average(buys))+"，其中疑似追涨 "+chaseCount+" 次。":"暂无买入记录。")+"</p></div>"
++"<div class='box stat'><strong>卖出习惯</strong><p>"+(sells.length?"平均卖出金额 "+formatMoney(average(sells))+"，情绪化卖出线索 "+panicSellCount+" 次。":"暂无卖出记录。")+"</p></div>"
++"<div class='box stat'><strong>情绪倾向</strong><p>最常记录的情绪是“"+escapeHtml(mainEmotion)+"”（"+emotions[mainEmotion]+" 次）。</p></div>"
++"<div class='box stat'><strong>常见错误模式</strong><p>"+errors.map(escapeHtml).join("；")+"</p></div>"
++"</div>";
+}
+
+function startFirstPractice(){
+const capital=Math.max(0,Number(document.getElementById("practice-capital").value));
+const amount=Math.max(0,Number(document.getElementById("practice-amount").value));
+const risk=document.getElementById("practice-risk").value;
+const ratio=capital?amount/capital*100:0;
+let advice="仓位处于练习范围，可以继续写下买入理由和退出条件。";
+if(!capital||!amount)advice="请填写有效的可用资金和计划投入金额。";
+else if(amount>capital)advice="计划投入超过可用资金，请先降低投入金额。";
+else if((risk==="低"&&ratio>30)||(risk==="中"&&ratio>60))advice="这个仓位可能高于当前风险承受能力，建议分批投入。";
+document.getElementById("practice-result").innerText="计划仓位："+ratio.toFixed(1)+"%。"+advice;
+}
+
+function simulateStrategies(capital,periods){
+const baseReturns=[0.025,-0.04,0.018,-0.025,0.035,0.012,-0.03,0.022,0.016,-0.018,0.028,0.01];
+const returns=Array.from({length:periods},(_,i)=>baseReturns[i%baseReturns.length]);
+let dca=0;
+const perPeriod=capital/periods;
+returns.forEach(rate=>dca=(dca+perPeriod)*(1+rate));
+
+let hold=capital;
+returns.forEach(rate=>hold*=1+rate);
+
+const weights=returns.map(rate=>rate<0?1.6:0.7);
+const weightTotal=weights.reduce((sum,value)=>sum+value,0);
+let dip=0;
+returns.forEach((rate,index)=>{
+dip=(dip+capital*weights[index]/weightTotal)*(1+rate);
+});
+return[
+{name:"定投",final:dca},
+{name:"下跌加仓",final:dip},
+{name:"长期持有",final:hold}
+];
+}
+
+function formatMoney(value){
+return "¥"+Number(value||0).toLocaleString("zh-CN",{maximumFractionDigits:0});
+}
+
+function escapeHtml(value){
+return String(value??"").replace(/[&<>"']/g,char=>({
+"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+})[char]);
 }
 
 function ask(){
@@ -169,6 +418,13 @@ if(q.includes("亏"))result="你的亏损可能来自追涨、恐慌卖出或缺
 if(q.includes("仓位"))result="仓位越高，收益和波动都会被放大，需要匹配自己的风险承受能力。";
 document.getElementById("answer").innerText=result;
 }
+
+recordCurrentEvent();
+document.getElementById("money").innerText=money;
+document.getElementById("event").innerText="第"+day+"天："+currentEvent();
+document.getElementById("log").innerText=logs.join("；");
+renderSimulationRecords();
 </script>
 </body>
 </html>
+
