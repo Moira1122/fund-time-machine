@@ -2,367 +2,56 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>基金时光机 V3</title>
+<title>基金时光机 V4</title>
 <style>
-:root{
-  --bg:#f4f7fb;--panel:#fff;--text:#172033;--muted:#6b7280;--line:#e5e7eb;
-  --accent:#5965e8;--accent2:#8b5cf6;--up:#d94343;--down:#14866d;--warn:#c77800;
-  --shadow:0 12px 34px rgba(22,32,60,.08)
-}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
-button,input,select,textarea{font:inherit}
-button{cursor:pointer}
-.app{max-width:1480px;margin:auto;padding:18px}
-.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
-.brand{display:flex;align-items:center;gap:12px}
-.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;color:#fff;font-weight:800}
-h1{font-size:20px;margin:0}.subtitle{font-size:12px;color:var(--muted);margin-top:3px}
-.chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-.chip{font-size:12px;padding:7px 10px;border-radius:999px;background:#eceeff;color:#4a55ce}
-.layout{display:grid;grid-template-columns:255px minmax(0,1fr) 350px;gap:14px}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
-.left,.right{padding:16px;height:fit-content}.right{position:sticky;top:14px}
-.main{display:flex;flex-direction:column;gap:14px}
-.title{font-size:14px;font-weight:700;margin:0 0 11px}
-.scene{padding:11px;border:1px solid var(--line);border-radius:13px;margin-bottom:8px;cursor:pointer}
-.scene:hover,.scene.active{border-color:var(--accent);background:#f7f7ff}
-.scene strong{display:block;font-size:13px}.scene span{font-size:12px;color:var(--muted)}
-.note{font-size:12px;line-height:1.65;color:var(--muted);background:#f8fafc;padding:11px;border-radius:12px;margin-top:12px}
-.summary{padding:18px}
-.summary-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
-.date strong{display:block;font-size:24px}.date span{font-size:12px;color:var(--muted)}
-.actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-.btn{border:0;border-radius:10px;padding:9px 12px}
-.btn.primary{background:var(--accent);color:white}.btn.ghost{background:#f1f3f7}.btn.warn{background:#fff1f2;color:#c2353d}.btn.secondary{background:#f3efff;color:#6848c4}
-.metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:15px}
-.metric{border:1px solid var(--line);border-radius:13px;padding:11px}
-.metric label{font-size:12px;color:var(--muted);display:block}.metric strong{font-size:18px;display:block;margin-top:4px}
-.tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
-.tab{border:0;background:#f1f3f7;padding:8px 11px;border-radius:9px;color:#5d6472}
-.tab.active{background:#eceeff;color:#4d57d3}
-.section{padding:16px}
-canvas{width:100%;height:250px;background:linear-gradient(#fff,#fafbff);border-radius:12px}
-.market-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.market-head span{font-size:12px;color:var(--muted)}
-table{width:100%;border-collapse:collapse}th,td{font-size:12px;text-align:left;padding:9px 7px;border-bottom:1px solid var(--line)}th{color:var(--muted)}
-.up{color:var(--up)}.down{color:var(--down)}.trade{border:0;background:#edf0ff;color:#4a55ce;border-radius:9px;padding:6px 9px}
-.news{border-left:3px solid var(--accent);background:#fafaff;padding:8px 10px;border-radius:0 10px 10px 0;margin-bottom:8px}.news strong{font-size:13px;display:block}.news span{font-size:12px;color:var(--muted)}
-select,input,textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px}textarea{min-height:82px;resize:vertical}
-.ai{padding:13px;background:linear-gradient(135deg,#f1efff,#f8fbff);border-radius:13px;margin-top:13px}.ai p{font-size:12px;line-height:1.65;color:#50566b;margin:7px 0 0}
-.holding,.logitem{display:flex;justify-content:space-between;gap:10px;font-size:12px;padding:8px 0;border-bottom:1px dashed var(--line)}
-.empty{font-size:12px;color:var(--muted)}
-.rule-card{font-size:12px;line-height:1.6;background:#fbfbfd;border:1px solid var(--line);padding:10px;border-radius:12px}
-.progress{height:8px;background:#eceff4;border-radius:999px;overflow:hidden;margin-top:8px}.progress>div{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2))}
-.hidden{display:none!important}
-.modal{position:fixed;inset:0;background:rgba(20,28,42,.45);display:none;align-items:center;justify-content:center;padding:20px;z-index:30}.modal.show{display:flex}
-.dialog{background:white;border-radius:18px;padding:20px;width:min(560px,100%);box-shadow:0 30px 85px rgba(0,0,0,.22);max-height:90vh;overflow:auto}
-.dialog h2{font-size:18px;margin:0 0 13px}.dialog label{display:block;font-size:12px;color:var(--muted);margin-top:10px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.dialog-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
-.report-card{padding:12px;border:1px solid var(--line);border-radius:12px;margin-bottom:10px}
-.report-card strong{display:block;font-size:13px}.report-card span{font-size:12px;color:var(--muted)}
-.kpirow{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:10px 0}.kpi{background:#f8fafc;border-radius:11px;padding:10px}.kpi small{color:var(--muted)}.kpi b{display:block;margin-top:4px}
-.footer{text-align:center;color:var(--muted);font-size:11px;padding:16px}
-@media(max-width:1100px){.layout{grid-template-columns:220px 1fr}.right{grid-column:1/-1;position:static}.metrics{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:720px){.layout{grid-template-columns:1fr}.summary-head{flex-direction:column}.actions{justify-content:flex-start}.metrics{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}th:nth-child(3),td:nth-child(3){display:none}}
+body{font-family:Microsoft YaHei;background:#f5f7fb;padding:30px;color:#172033}
+.card{background:white;border-radius:18px;padding:24px;margin:16px auto;max-width:900px;box-shadow:0 8px 25px #ddd}
+button{padding:10px 16px;border:0;border-radius:10px;background:#5965e8;color:white;cursor:pointer}
+input,textarea{width:90%;padding:10px;margin:8px;border:1px solid #ddd;border-radius:8px}
+.tip{background:#eef1ff;padding:15px;border-radius:12px}
 </style>
 </head>
 <body>
-<div class="app">
-  <div class="topbar">
-    <div class="brand"><div class="logo">基</div><div><h1>基金时光机</h1><div class="subtitle">跨周期训练投资纪律，而不是拿真钱重复交学费</div></div></div>
-    <div class="chips"><div class="chip">日级模拟</div><div class="chip">双盲训练</div><div class="chip">AI复盘</div></div>
-  </div>
-
-  <div class="layout">
-    <aside class="panel left">
-      <div class="title">训练场景</div>
-      <div class="scene active" data-scene="0"><strong>未知周期 A</strong><span>180交易日 · 高波动</span></div>
-      <div class="scene" data-scene="1"><strong>未知周期 B</strong><span>150交易日 · 震荡轮动</span></div>
-      <div class="scene" data-scene="2"><strong>未知周期 C</strong><span>160交易日 · 缓慢修复</span></div>
-      <div class="note">双盲模式下，训练结束前不显示真实年份。你只能依赖当时已经发生的信息。</div>
-
-      <div class="title" style="margin-top:17px">训练进度</div>
-      <div id="progressText" class="empty">第 1 / 180 个交易日</div>
-      <div class="progress"><div id="progressBar" style="width:0%"></div></div>
-
-      <div class="title" style="margin-top:17px">你的规则</div>
-      <div class="rule-card" id="ruleSummary">尚未设定规则</div>
-      <button class="btn secondary" id="editRulesBtn" style="width:100%;margin-top:8px">编辑训练规则</button>
-
-      <div class="title" style="margin-top:17px">当前持仓</div>
-      <div id="holdingList" class="empty">暂无持仓</div>
-      <div id="dcaStatus" class="empty" style="margin-top:8px">尚未设置定投</div>
-    </aside>
-
-    <main class="main">
-      <section class="panel summary">
-        <div class="summary-head">
-          <div class="date"><span>模拟日期</span><strong id="dateText">2014年1月2日</strong><span id="moodText">市场情绪：观望</span></div>
-          <div class="actions">
-            <button class="btn ghost" id="dcaBtn">执行今日定投</button>
-            <button class="btn primary" id="nextBtn">下一交易日</button>
-            <button class="btn ghost" id="next5Btn">推进5日</button>
-            <button class="btn secondary" id="stageBtn">阶段复盘</button>
-            <button class="btn warn" id="finishBtn">结束训练</button>
-          </div>
-        </div>
-        <div class="metrics">
-          <div class="metric"><label>总资产</label><strong id="assetText">¥100,000</strong></div>
-          <div class="metric"><label>现金</label><strong id="cashText">¥100,000</strong></div>
-          <div class="metric"><label>累计收益</label><strong id="returnText">0.00%</strong></div>
-          <div class="metric"><label>最大回撤</label><strong id="ddText">0.00%</strong></div>
-          <div class="metric"><label>仓位</label><strong id="positionText">0%</strong></div>
-        </div>
-      </section>
-
-      <section class="panel section">
-        <div class="tabs">
-          <button class="tab active" data-tab="chartTab">资产曲线</button>
-          <button class="tab" data-tab="tradeTab">交易记录</button>
-          <button class="tab" data-tab="journalTab">决策记录</button>
-        </div>
-        <div id="chartTab"><canvas id="chart" width="900" height="250"></canvas></div>
-        <div id="tradeTab" class="hidden"><div id="tradeLog"></div></div>
-        <div id="journalTab" class="hidden"><div id="journalLog"></div></div>
-      </section>
-
-      <section class="panel section">
-        <div class="market-head"><div class="title" style="margin:0">今日基金池</div><span>仅展示当时已存在的模拟标的</span></div>
-        <table><thead><tr><th>基金</th><th>类型</th><th>净值</th><th>今日涨跌</th><th>风险</th><th>操作</th></tr></thead><tbody id="fundRows"></tbody></table>
-      </section>
-    </main>
-
-    <aside class="panel right">
-      <div class="title">今日市场资讯</div>
-      <div id="newsList"></div>
-
-      <div class="title" style="margin-top:16px">今日决策</div>
-      <select id="emotion"><option>冷静</option><option>贪婪</option><option>恐慌</option><option>犹豫</option><option>想回本</option></select>
-      <textarea id="journal" style="margin-top:8px" placeholder="今天为什么买、卖或不操作？"></textarea>
-      <button class="btn primary" id="saveJournalBtn" style="width:100%;margin-top:8px">保存今日判断</button>
-
-      <div class="ai"><strong style="font-size:13px">AI行为教练</strong><p id="aiText">你还没有交易。先把最大可承受回撤写清楚，收益稍后再幻想。</p></div>
-    </aside>
-  </div>
-  <div class="footer">当前版本使用合成日级数据，仅用于产品原型验证，不构成投资建议。</div>
+<div class="card">
+<h1>基金时光机 V4</h1>
+<p>在不损失真钱的情况下，训练你的投资决策能力。</p>
+<button onclick="alert('进入新手模式')">基金新手</button>
+<button onclick="alert('进入亏损复盘模式')">经常亏损</button>
+<button onclick="alert('进入策略测试')">测试策略</button>
 </div>
 
-<div class="modal show" id="onboardModal">
-  <div class="dialog">
-    <h2>开始前，先写下你的规则</h2>
-    <div class="grid2">
-      <div><label>初始资金</label><input id="initialInput" type="number" value="100000" min="10000" step="1000"></div>
-      <div><label>最大可承受回撤</label><select id="riskLimit"><option value="0.1">10%</option><option value="0.15" selected>15%</option><option value="0.2">20%</option><option value="0.3">30%</option></select></div>
-      <div><label>单只基金最大仓位</label><select id="singleLimit"><option value="0.25">25%</option><option value="0.4" selected>40%</option><option value="0.6">60%</option></select></div>
-      <div><label>目标持有周期</label><select id="holdGoal"><option>20个交易日</option><option selected>60个交易日</option><option>120个交易日</option></select></div>
-    </div>
-    <label>你准备遵守的规则</label>
-    <textarea id="ruleInput">不追涨；不因单日下跌恐慌卖出；单只基金不超过40%；每次交易必须写理由。</textarea>
-    <div class="dialog-actions"><button class="btn primary" id="startBtn">开始训练</button></div>
-  </div>
+<div class="card">
+<h2>投资学院</h2>
+<h3>什么是仓位？</h3>
+<div class="tip">假设你有10000元，投入4000元买基金。仓位就是40%。</div>
+<h3>什么是最大回撤？</h3>
+<div class="tip">资产从最高点下降到最低点的最大跌幅。</div>
 </div>
 
-<div class="modal" id="tradeModal">
-  <div class="dialog">
-    <h2 id="tradeTitle">交易</h2>
-    <label>操作</label><select id="tradeType"><option value="buy">买入</option><option value="sell">卖出</option><option value="dca">设置每日定投</option></select>
-    <label>金额</label><input id="tradeAmount" type="number" value="1000" min="100" step="100">
-    <label>交易理由</label>
-    <select id="tradeReason"><option>长期配置</option><option>估值较低</option><option>市场大跌加仓</option><option>看好行业</option><option>止盈</option><option>控制风险</option><option>害怕继续亏损</option><option>看到上涨后追入</option><option>没有明确理由</option></select>
-    <label>补充说明</label><textarea id="tradeNote" placeholder="例如：计划持有60个交易日，最大可承受15%回撤"></textarea>
-    <div class="dialog-actions"><button class="btn ghost" id="cancelTradeBtn">取消</button><button class="btn primary" id="confirmTradeBtn">确认</button></div>
-  </div>
+<div class="card">
+<h2>自定义投资规则</h2>
+<input placeholder="初始资金：100000元">
+<input placeholder="单只基金最大仓位：40%">
+<input placeholder="最大接受回撤：15%">
+<textarea placeholder="我的投资规则"></textarea>
+<button onclick="alert('规则保存成功')">保存规则</button>
 </div>
 
-<div class="modal" id="reportModal">
-  <div class="dialog">
-    <h2 id="reportTitle">阶段复盘</h2>
-    <div id="reportBody"></div>
-    <div class="dialog-actions"><button class="btn ghost" id="closeReportBtn">继续训练</button><button class="btn primary" id="restartBtn">重新开始</button></div>
-  </div>
+<div class="card">
+<h2>AI投资教练</h2>
+<textarea placeholder="请输入你的问题"></textarea>
+<button onclick="alert('AI分析：先检查交易纪律和情绪影响')">询问AI</button>
 </div>
 
-<script>
-(function(){
-const FUNDS=[
-{id:"broad",name:"宽基成长指数",type:"股票指数",risk:"中高风险"},
-{id:"sector",name:"新兴产业主题",type:"行业主题",risk:"高波动"},
-{id:"bond",name:"稳健债券组合",type:"债券基金",risk:"中低风险"},
-{id:"cash",name:"现金管理基金",type:"货币基金",risk:"低风险"}
-];
-const SCENE_INFO=[
-{start:"2014-01-02",label:"2014—2015 高波动周期"},
-{start:"2018-01-02",label:"2018—2019 震荡轮动周期"},
-{start:"2022-01-04",label:"2022—2023 缓慢修复周期"}
-];
-function seeded(seed){let s=seed>>>0;return function(){s=(s*1664525+1013904223)>>>0;return s/4294967296}}
-function makeScene(seed,days,mode){
-  const rand=seeded(seed), data=[];
-  for(let d=0;d<days;d++){
-    let trend=mode==="volatile"?.0005:mode==="sideways"?.00008:.00035;
-    let shock=0;
-    if(mode==="volatile"&&(d===42||d===43||d===44))shock=-.05;
-    if(mode==="volatile"&&(d===90||d===91))shock=.04;
-    if(mode==="sideways")trend=d%35<17?.0005:-.00035;
-    if(mode==="recovery"&&d<35)trend=-.0004;
-    if(mode==="recovery"&&d>=35)trend=.00075;
-    data.push([
-      trend+(rand()-.5)*.026+shock,
-      trend*1.25+(rand()-.5)*.045+shock*1.35,
-      .00012+(rand()-.5)*.0035-shock*.08,
-      .000055+(rand()-.5)*.00003
-    ]);
-  }
-  return data;
-}
-const SCENES=[
-{days:180,returns:makeScene(11,180,"volatile")},
-{days:150,returns:makeScene(29,150,"sideways")},
-{days:160,returns:makeScene(47,160,"recovery")}
-];
+<div class="card">
+<h2>投资人格报告</h2>
+<p>分析交易习惯、情绪化交易比例、风险偏好和改进建议。</p>
+</div>
 
-let state,selectedId=null;
-function businessDate(start,index){
-  let d=new Date(start+"T00:00:00"),count=0;
-  while(count<index){d.setDate(d.getDate()+1);if(d.getDay()!==0&&d.getDay()!==6)count++}
-  return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
-}
-function reset(sceneIndex=0,initial=100000){
-  state={sceneIndex,day:0,initial,cash:initial,prices:{broad:1,sector:1,bond:1,cash:1},holdings:{},dca:{},logs:[],journals:[],assets:[initial],benchmark:[initial],peak:initial,maxDD:0,trades:0,emotional:0,lastReturns:[0,0,0,0],rules:{riskLimit:.15,singleLimit:.4,holdGoal:"60个交易日",text:""}};
-  render();
-}
-function money(n){return"¥"+Math.round(n).toLocaleString("zh-CN")}
-function total(){return FUNDS.reduce((s,f)=>s+(state.holdings[f.id]?.units||0)*state.prices[f.id],state.cash)}
-function invested(){return total()-state.cash}
-function mood(){const r=state.lastReturns[0];if(r<=-.03)return"极度恐慌";if(r<=-.012)return"谨慎";if(r>=.03)return"亢奋";if(r>=.012)return"乐观";return"观望"}
-function render(){
-  const scene=SCENES[state.sceneIndex],asset=total();
-  state.peak=Math.max(state.peak,asset);state.maxDD=Math.max(state.maxDD,(state.peak-asset)/state.peak);
-  document.getElementById("dateText").textContent=businessDate(SCENE_INFO[state.sceneIndex].start,state.day);
-  document.getElementById("moodText").textContent="市场情绪："+mood();
-  document.getElementById("assetText").textContent=money(asset);document.getElementById("cashText").textContent=money(state.cash);
-  const ret=(asset/state.initial-1)*100,r=document.getElementById("returnText");r.textContent=ret.toFixed(2)+"%";r.className=ret>=0?"up":"down";
-  document.getElementById("ddText").textContent=(state.maxDD*100).toFixed(2)+"%";
-  document.getElementById("positionText").textContent=((invested()/asset)*100||0).toFixed(0)+"%";
-  document.getElementById("progressText").textContent=`第 ${state.day+1} / ${scene.days} 个交易日`;
-  document.getElementById("progressBar").style.width=((state.day+1)/scene.days*100)+"%";
-  document.getElementById("ruleSummary").innerHTML=`最大回撤：${state.rules.riskLimit*100}%<br>单只上限：${state.rules.singleLimit*100}%<br>目标持有：${state.rules.holdGoal}<br>${state.rules.text||"未填写补充规则"}`;
-
-  document.getElementById("fundRows").innerHTML=FUNDS.map((f,i)=>{
-    const x=state.lastReturns[i]*100;
-    return `<tr><td><strong>${f.name}</strong></td><td>${f.type}</td><td>${state.prices[f.id].toFixed(4)}</td><td class="${x>=0?'up':'down'}">${x>=0?'+':''}${x.toFixed(2)}%</td><td>${f.risk}</td><td><button class="trade" data-fund="${f.id}">交易</button></td></tr>`;
-  }).join("");
-  document.querySelectorAll("[data-fund]").forEach(b=>b.onclick=()=>openTrade(b.dataset.fund));
-
-  const held=FUNDS.filter(f=>(state.holdings[f.id]?.units||0)>0);
-  document.getElementById("holdingList").innerHTML=held.length?held.map(f=>`<div class="holding"><span>${f.name}<br><small>${state.holdings[f.id].units.toFixed(2)}份</small></span><strong>${money(state.holdings[f.id].units*state.prices[f.id])}</strong></div>`).join(""):"暂无持仓";
-  const ds=Object.entries(state.dca);document.getElementById("dcaStatus").textContent=ds.length?"每日定投："+ds.map(([id,a])=>`${FUNDS.find(f=>f.id===id).name} ${money(a)}`).join("；"):"尚未设置定投";
-
-  document.getElementById("newsList").innerHTML=buildNews().map(n=>`<div class="news"><strong>${n[0]}</strong><span>${n[1]}</span></div>`).join("");
-  renderLogs();updateAI();drawChart();
-}
-function buildNews(){
-  const d=state.day,r=state.lastReturns[0],arr=[];
-  if(r<=-.03)arr.push(["市场异动","主要权益指数明显下跌，避险情绪快速升温。"]);
-  else if(r>=.03)arr.push(["市场异动","权益市场显著上涨，成交活跃度提升。"]);
-  else arr.push(["市场概览","主要指数窄幅波动，资金继续在不同板块之间轮动。"]);
-  arr.push(["宏观观察",d%9===0?"公开经济数据引发市场对增长预期的重新讨论。":"市场等待更多公开数据，短期方向仍不明确。"]);
-  arr.push(["基金公告",d%13===0?"部分产品调整申购安排，需注意流动性。":"暂无重大产品规则变化。"]);
-  return arr;
-}
-function renderLogs(){
-  const t=document.getElementById("tradeLog"),j=document.getElementById("journalLog");
-  t.innerHTML=state.logs.length?state.logs.slice().reverse().map(x=>`<div class="logitem"><span>第${x.day+1}日 · ${x.type}<br><small>${x.fund} · ${x.reason}</small></span><strong>${money(x.amount||0)}</strong></div>`).join(""):`<div class="empty">还没有交易记录</div>`;
-  j.innerHTML=state.journals.length?state.journals.slice().reverse().map(x=>`<div class="logitem"><span>第${x.day+1}日 · ${x.emotion}<br><small>${x.text}</small></span></div>`).join(""):`<div class="empty">还没有决策记录</div>`;
-}
-function openTrade(id){selectedId=id;document.getElementById("tradeTitle").textContent="交易 · "+FUNDS.find(f=>f.id===id).name;document.getElementById("tradeModal").classList.add("show")}
-function closeTrade(){document.getElementById("tradeModal").classList.remove("show")}
-function confirmTrade(){
-  const type=document.getElementById("tradeType").value,amount=Number(document.getElementById("tradeAmount").value),reason=document.getElementById("tradeReason").value,note=document.getElementById("tradeNote").value;
-  if(!selectedId||!amount||amount<=0)return alert("请输入有效金额");
-  const f=FUNDS.find(x=>x.id===selectedId),price=state.prices[selectedId];
-  if(type==="dca"){state.dca[selectedId]=amount;state.logs.push({day:state.day,type:"设置定投",fund:f.name,amount,reason,note});}
-  else if(type==="buy"){
-    if(amount>state.cash)return alert("现金不足");
-    const projected=((state.holdings[selectedId]?.units||0)*price+amount)/total();
-    if(projected>state.rules.singleLimit&&!confirm(`这会使单只基金仓位超过你设定的 ${state.rules.singleLimit*100}%。仍要继续吗？`))return;
-    state.holdings[selectedId]=state.holdings[selectedId]||{units:0,cost:0};
-    state.holdings[selectedId].units+=amount/price;state.holdings[selectedId].cost+=amount;state.cash-=amount;state.trades++;
-    if(["害怕继续亏损","看到上涨后追入","没有明确理由"].includes(reason))state.emotional++;
-    state.logs.push({day:state.day,type:"买入",fund:f.name,amount,reason,note});
-  }else{
-    const h=state.holdings[selectedId];if(!h||h.units<=0)return alert("暂无可卖持仓");
-    const max=h.units*price,sell=Math.min(amount,max);h.units-=sell/price;state.cash+=sell;state.trades++;
-    if(["害怕继续亏损","看到上涨后追入","没有明确理由"].includes(reason))state.emotional++;
-    state.logs.push({day:state.day,type:"卖出",fund:f.name,amount:sell,reason,note});
-  }
-  closeTrade();render();
-}
-function executeDca(){
-  const items=Object.entries(state.dca);if(!items.length)return alert("请先设置每日定投");
-  for(const[id,amt]of items){if(state.cash<amt)continue;state.holdings[id]=state.holdings[id]||{units:0,cost:0};state.holdings[id].units+=amt/state.prices[id];state.holdings[id].cost+=amt;state.cash-=amt;state.logs.push({day:state.day,type:"执行定投",fund:FUNDS.find(f=>f.id===id).name,amount:amt,reason:"预设纪律"})}
-  render();
-}
-function nextDay(){
-  const s=SCENES[state.sceneIndex];if(state.day>=s.days-1)return finish(true);
-  const rs=s.returns[state.day];FUNDS.forEach((f,i)=>state.prices[f.id]*=1+rs[i]);state.lastReturns=rs;state.day++;
-  const a=total();state.assets.push(a);state.benchmark.push(state.benchmark.at(-1)*(1+rs[0]));render();
-  if(state.maxDD>state.rules.riskLimit)alert(`提醒：账户最大回撤已超过你设定的 ${state.rules.riskLimit*100}% 风险线。`);
-}
-function next5(){for(let i=0;i<5;i++){if(state.day>=SCENES[state.sceneIndex].days-1)break;nextDay()}}
-function saveJournal(){const t=document.getElementById("journal").value.trim();if(!t)return alert("请先写下今天的判断");state.journals.push({day:state.day,emotion:document.getElementById("emotion").value,text:t});document.getElementById("journal").value="";render()}
-function updateAI(){
-  const el=document.getElementById("aiText");
-  if(!state.trades){el.textContent="你还没有交易。先把最大可承受回撤写清楚，收益稍后再幻想。";return}
-  const p=state.emotional/state.trades;
-  if(state.maxDD>state.rules.riskLimit)el.textContent="你已经突破自己设定的风险线。此时最重要的不是回本，而是检查仓位和规则是否失效。";
-  else if(p>=.5)el.textContent=`你有 ${Math.round(p*100)}% 的交易来自追涨、恐慌或没有明确理由。建议暂停操作一天。`;
-  else el.textContent="目前交易理由相对清楚。继续检查自己是在执行规则，还是给临时冲动补一段体面的解释。";
-}
-function buildReport(finalMode){
-  const a=total(),ret=(a/state.initial-1)*100,bench=(state.benchmark.at(-1)/state.benchmark[0]-1)*100,diff=ret-bench,emo=state.trades?state.emotional/state.trades*100:0;
-  const brokeRisk=state.maxDD>state.rules.riskLimit;
-  const title=finalMode?"最终训练复盘":"阶段训练复盘";
-  document.getElementById("reportTitle").textContent=title;
-  document.getElementById("reportBody").innerHTML=`
-    <div class="kpirow"><div class="kpi"><small>累计收益</small><b>${ret.toFixed(2)}%</b></div><div class="kpi"><small>最大回撤</small><b>${(state.maxDD*100).toFixed(2)}%</b></div><div class="kpi"><small>相对基准</small><b>${diff>=0?"+":""}${diff.toFixed(2)}%</b></div></div>
-    <div class="report-card"><strong>纪律执行</strong><span>${brokeRisk?"你突破了自己设定的风险线，需要复查仓位控制。":"目前尚未突破预设风险线。"} 情绪化交易占比为 ${emo.toFixed(0)}%。</span></div>
-    <div class="report-card"><strong>行为观察</strong><span>${diff>=0?"主动操作暂时跑赢基准，但单次结果不能证明策略稳定。":"主动操作暂时未跑赢简单持有，部分交易可能只增加了忙碌。"} 你共记录了 ${state.journals.length} 条决策日记。</span></div>
-    <div class="report-card"><strong>下一轮建议</strong><span>把规则减少到3条，并在下一轮训练中完全不修改。比较“有纪律执行”和“临场判断”的差异。</span></div>
-    ${finalMode?`<div class="report-card"><strong>场景揭晓</strong><span>你经历的是：${SCENE_INFO[state.sceneIndex].label}。</span></div>`:""}`;
-  document.getElementById("reportModal").classList.add("show");
-}
-function finish(finalMode=true){buildReport(finalMode)}
-function drawChart(){
-  const c=document.getElementById("chart"),ctx=c.getContext("2d"),w=c.width,h=c.height,p=28;ctx.clearRect(0,0,w,h);
-  ctx.strokeStyle="#e5e7eb";for(let i=0;i<5;i++){const y=p+(h-2*p)*i/4;ctx.beginPath();ctx.moveTo(p,y);ctx.lineTo(w-p,y);ctx.stroke()}
-  const all=[...state.assets,...state.benchmark],min=Math.min(...all)*.98,max=Math.max(...all)*1.02;
-  function line(arr,color){ctx.strokeStyle=color;ctx.lineWidth=3;ctx.beginPath();arr.forEach((v,i)=>{const x=p+(w-2*p)*(arr.length===1?0:i/(arr.length-1)),y=h-p-(v-min)/(max-min||1)*(h-2*p);i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke()}
-  line(state.benchmark,"#b8becb");line(state.assets,"#5965e8");ctx.font="12px sans-serif";ctx.fillStyle="#5965e8";ctx.fillText("你的账户",p,16);ctx.fillStyle="#7b8292";ctx.fillText("宽基基准",p+78,16)
-}
-
-document.getElementById("startBtn").onclick=()=>{
-  const initial=Number(document.getElementById("initialInput").value)||100000;
-  reset(state?.sceneIndex||0,initial);
-  state.rules.riskLimit=Number(document.getElementById("riskLimit").value);
-  state.rules.singleLimit=Number(document.getElementById("singleLimit").value);
-  state.rules.holdGoal=document.getElementById("holdGoal").value;
-  state.rules.text=document.getElementById("ruleInput").value.trim();
-  document.getElementById("onboardModal").classList.remove("show");render();
-};
-document.getElementById("editRulesBtn").onclick=()=>document.getElementById("onboardModal").classList.add("show");
-document.getElementById("confirmTradeBtn").onclick=confirmTrade;document.getElementById("cancelTradeBtn").onclick=closeTrade;
-document.getElementById("dcaBtn").onclick=executeDca;document.getElementById("nextBtn").onclick=nextDay;document.getElementById("next5Btn").onclick=next5;
-document.getElementById("stageBtn").onclick=()=>buildReport(false);document.getElementById("finishBtn").onclick=()=>finish(true);
-document.getElementById("saveJournalBtn").onclick=saveJournal;
-document.getElementById("closeReportBtn").onclick=()=>document.getElementById("reportModal").classList.remove("show");
-document.getElementById("restartBtn").onclick=()=>{document.getElementById("reportModal").classList.remove("show");document.getElementById("onboardModal").classList.add("show")};
-document.querySelectorAll(".scene").forEach((el,i)=>el.onclick=()=>{document.querySelectorAll(".scene").forEach(x=>x.classList.remove("active"));el.classList.add("active");reset(i,state?.initial||100000);document.getElementById("onboardModal").classList.add("show")});
-document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");["chartTab","tradeTab","journalTab"].forEach(id=>document.getElementById(id).classList.toggle("hidden",id!==b.dataset.tab))});
-reset();
-})();
-</script>
+<div class="card">
+<h2>策略实验室</h2>
+<p>比较定投、下跌加仓、长期持有等策略。</p>
+<button onclick="alert('开始策略模拟')">开始测试</button>
+</div>
 </body>
 </html>
