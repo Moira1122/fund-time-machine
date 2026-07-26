@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "1.1",
-  "datasetVersion": "6.2.1",
+  "schemaVersion": "1.2",
+  "datasetVersion": "6.3",
   "updatedAt": "2026-07-26",
   "source": "基金管理人官网、基金产品资料概要及公开定期报告",
   "riskNotice": "风险等级用于投资训练分类，不同销售机构的实时评级可能不同。",
@@ -10,6 +10,19 @@
     "historySource": null,
     "historyEndpoint": null,
     "lastSyncedAt": null
+  },
+  "fundDetailSchema": {
+    "investmentDirection": "投资方向，可直接提供或由分类标签自动生成",
+    "investmentCharacteristics": "投资特点，可直接提供或按基金分类自动生成",
+    "suitableFor": "适合人群，可直接提供或按风险等级自动生成"
+  },
+  "decisionReviewSchema": {
+    "buyReason": "买入理由",
+    "expectedHoldingPeriod": "预计持有时间",
+    "decline20Response": "下跌20%的处理方式",
+    "holdingHorizon": "未来复盘：投资期限倾向",
+    "lossToleranceResponse": "未来复盘：亏损应对倾向",
+    "decisionConsistency": "未来复盘：计划与实际行为一致性"
   },
   "funds": [
     {
