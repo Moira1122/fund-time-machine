@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>基金时光机 V6 投资训练版</title>
+<title>基金时光机 V6.1 投资训练版</title>
 <style>
 body{font-family:"Microsoft YaHei";background:#f5f7fb;color:#172033;margin:0;padding:20px}
 .wrap{max-width:1100px;margin:auto}
@@ -15,6 +15,9 @@ textarea,input,select{width:90%;padding:10px;margin:6px;border-radius:8px;border
 .form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 .muted{color:#667085;font-size:14px}
 .stat{border-left:4px solid #5965e8}
+.fund-card{border:2px solid transparent}
+.fund-card.selected{border-color:#5965e8;background:#f0f2ff}
+.risk-badge{display:inline-block;padding:3px 9px;border-radius:999px;background:#eef2ff;color:#4652c7;font-size:13px}
 table{width:100%;border-collapse:collapse;margin-top:12px}
 th,td{text-align:left;padding:9px;border-bottom:1px solid #e5e7eb;font-size:14px}
 th{background:#eef2ff}
@@ -27,9 +30,10 @@ th{background:#eef2ff}
 <div class="wrap">
 
 <div class="card">
-<h1>基金时光机 V6 投资训练版</h1>
+<h1>基金时光机 V6.1 投资训练版</h1>
 <p>投资行为训练平台：不预测市场，训练你的决策能力。</p>
 <button onclick="show('learn')">新手学院</button>
+<button onclick="show('fundPool')">基金池</button>
 <button onclick="show('loss')">亏损复盘</button>
 <button onclick="show('sim')">开始市场训练</button>
 <button onclick="show('strategy')">策略实验室</button>
@@ -67,6 +71,13 @@ th{background:#eef2ff}
 <button onclick="alert('基础课程完成')">完成学习</button>
 </div>
 
+<div id="fundPool" class="card hide">
+<h2>基金池</h2>
+<p class="muted">先查看基金详情，再选择一只基金进入模拟交易。</p>
+<div id="fund-list" class="grid"></div>
+<div id="fund-detail" class="box">请选择一只基金查看详情。</div>
+</div>
+
 <div id="loss" class="card hide">
 <h2>亏损复盘</h2>
 <p>请选择你最常遇到的问题：</p>
@@ -78,6 +89,7 @@ th{background:#eef2ff}
 
 <div id="sim" class="card hide">
 <h2>历史市场剧本训练</h2>
+<div class="box" id="selected-fund">尚未选择基金，请先进入基金池。</div>
 <div class="box" id="event">第1天：市场上涨，投资者情绪逐渐升温。</div>
 <p>资产：<span id="money">100000</span> 元</p>
 <div class="box" id="result-feedback">第二日结果反馈将在你做出决策后显示。</div>
@@ -183,16 +195,23 @@ let money=savedState.money||100000;
 let logs=Array.isArray(savedState.logs)?savedState.logs:[];
 let journal=readStorage(JOURNAL_KEY,[]);
 let eventHistory=readStorage(EVENTS_KEY,[]);
+let selectedFundId=savedState.selectedFundId||"";
 let events=[
 "市场上涨，投资者情绪逐渐升温。",
 "热门板块快速上涨，市场开始狂热。",
 "市场突然调整，恐慌情绪增加。",
 "政策刺激出现，市场逐渐恢复。"
 ];
+const funds=[
+{id:"hs300",name:"沪深300指数基金",type:"宽基指数",risk:"中",description:"跟踪沪深300指数，覆盖沪深市场中规模大、流动性较好的代表性公司。"},
+{id:"new-energy",name:"新能源主题基金",type:"行业基金",risk:"高",description:"集中投资新能源相关行业，行业波动通常高于宽基指数。"},
+{id:"bond",name:"债券基金",type:"债券基金",risk:"低",description:"主要投资债券类资产，波动通常较低，但仍可能发生净值回撤。"}
+];
 
 function show(id){
 document.querySelectorAll('.hide').forEach(x=>x.style.display='none');
 document.getElementById(id).style.display='block';
+if(id==="fundPool")renderFundPool();
 if(id==="journal")renderJournal();
 if(id==="report")renderReview();
 if(id==="sim")renderSimulationRecords();
@@ -200,6 +219,12 @@ if(id==="sim")renderSimulationRecords();
 
 function decision(type){
 const actionNames={buy:"买入",sell:"卖出",hold:"持有"};
+const selectedFund=funds.find(item=>item.id===selectedFundId);
+if(!selectedFund){
+alert("请先在基金池选择一只基金。");
+show("fundPool");
+return;
+}
 const reason=document.getElementById("trade-reason").value.trim();
 const emotion=document.getElementById("trade-emotion").value;
 let amount=Number(document.getElementById("trade-amount").value);
@@ -229,7 +254,13 @@ type:actionNames[type],
 amount:amount,
 reason:reason,
 emotion:emotion,
-event:eventText
+event:eventText,
+fundId:selectedFund.id,
+fundName:selectedFund.name,
+fundType:selectedFund.type,
+fundRisk:selectedFund.risk,
+returnChange:change,
+returnRate:amount?change/amount*100:null
 });
 localStorage.setItem(JOURNAL_KEY,JSON.stringify(journal));
 
@@ -292,7 +323,49 @@ return events[(day-1)%events.length];
 }
 
 function saveTrainingState(){
-localStorage.setItem(STATE_KEY,JSON.stringify({day:day,money:money,logs:logs}));
+localStorage.setItem(STATE_KEY,JSON.stringify({
+day:day,money:money,logs:logs,selectedFundId:selectedFundId
+}));
+}
+
+function renderFundPool(){
+const list=document.getElementById("fund-list");
+list.innerHTML=funds.map(fund=>
+"<div class='box fund-card "+(fund.id===selectedFundId?"selected":"")+"'>"
++"<h3>"+escapeHtml(fund.name)+"</h3>"
++"<p>"+escapeHtml(fund.type)+"　<span class='risk-badge'>风险："+escapeHtml(fund.risk)+"</span></p>"
++"<button onclick=\"showFundDetail('"+fund.id+"')\">查看详情</button></div>"
+).join("");
+updateSelectedFund();
+}
+
+function showFundDetail(id){
+const fund=funds.find(item=>item.id===id);
+if(!fund)return;
+document.getElementById("fund-detail").innerHTML=
+"<h3>"+escapeHtml(fund.name)+"</h3>"
++"<p><strong>类型：</strong>"+escapeHtml(fund.type)+"</p>"
++"<p><strong>风险：</strong>"+escapeHtml(fund.risk)+"</p>"
++"<p>"+escapeHtml(fund.description)+"</p>"
++"<button onclick=\"chooseFund('"+fund.id+"')\">选择此基金并去买入</button>";
+}
+
+function chooseFund(id){
+if(!funds.some(item=>item.id===id))return;
+selectedFundId=id;
+saveTrainingState();
+renderFundPool();
+show("sim");
+updateSelectedFund();
+}
+
+function updateSelectedFund(){
+const target=document.getElementById("selected-fund");
+if(!target)return;
+const fund=funds.find(item=>item.id===selectedFundId);
+target.innerHTML=fund
+?"当前基金：<strong>"+escapeHtml(fund.name)+"</strong>｜"+escapeHtml(fund.type)+"｜风险："+escapeHtml(fund.risk)
+:"尚未选择基金，请先进入基金池。";
 }
 
 function recordCurrentEvent(){
@@ -312,9 +385,11 @@ daily.innerHTML=eventHistory.slice(-6).reverse().map(item=>
 }
 if(decisions){
 decisions.innerHTML=journal.slice(-6).reverse().map(item=>
-escapeHtml(item.date)+"｜"+escapeHtml(item.type)+"｜"+formatMoney(item.amount)+"｜"+escapeHtml(item.emotion)
+escapeHtml(item.date)+"｜"+escapeHtml(item.fundName||"历史记录（未绑定基金）")
++"｜"+escapeHtml(item.type)+"｜"+formatMoney(item.amount)+"｜"+escapeHtml(item.emotion)
 ).join("<br>")||"暂无决策记录";
 }
+updateSelectedFund();
 }
 
 function renderJournal(){
@@ -324,10 +399,12 @@ target.innerHTML="<div class='box'>暂无日志。请先在市场训练中完成
 return;
 }
 const rows=journal.slice().reverse().map(item=>
-"<tr><td>"+escapeHtml(item.date)+"</td><td>第"+item.day+"天</td><td>"+escapeHtml(item.type)+"</td>"
-+"<td>"+formatMoney(item.amount)+"</td><td>"+escapeHtml(item.reason)+"</td><td>"+escapeHtml(item.emotion)+"</td></tr>"
+"<tr><td>"+escapeHtml(item.date)+"</td><td>"+escapeHtml(item.fundName||"历史记录（未绑定基金）")+"</td>"
++"<td>"+escapeHtml(item.type)+"</td><td>"+formatMoney(item.amount)+"</td>"
++"<td>"+escapeHtml(item.reason)+"</td><td>"+escapeHtml(item.emotion)+"</td>"
++"<td>"+formatReturn(item.returnChange,item.returnRate)+"</td></tr>"
 ).join("");
-target.innerHTML="<div class='table-wrap'><table><thead><tr><th>日期</th><th>训练日</th><th>操作</th><th>金额</th><th>投资理由</th><th>情绪</th></tr></thead>"
+target.innerHTML="<div class='table-wrap'><table><thead><tr><th>日期</th><th>基金</th><th>操作</th><th>金额</th><th>投资理由</th><th>心理状态</th><th>后续收益变化</th></tr></thead>"
 +"<tbody>"+rows+"</tbody></table></div>";
 }
 
@@ -340,6 +417,7 @@ return;
 const buys=journal.filter(item=>item.type==="买入");
 const sells=journal.filter(item=>item.type==="卖出");
 const holds=journal.filter(item=>item.type==="持有");
+const reviewDataset=buildReviewDataset();
 const average=list=>list.length?Math.round(list.reduce((sum,item)=>sum+Number(item.amount||0),0)/list.length):0;
 const emotions={};
 journal.forEach(item=>emotions[item.emotion]=(emotions[item.emotion]||0)+1);
@@ -355,6 +433,13 @@ if(chaseCount)errors.push("疑似追涨买入 "+chaseCount+" 次");
 if(panicSellCount)errors.push("疑似情绪化卖出 "+panicSellCount+" 次");
 if(journal.length>=8)errors.push("操作较频繁，建议检查是否遵守既定规则");
 if(!errors.length)errors.push("暂未发现明显重复错误，继续完整记录投资理由");
+const losingByType={};
+reviewDataset.filter(item=>item.returnChange<0&&item.fundType).forEach(item=>{
+losingByType[item.fundType]=(losingByType[item.fundType]||0)+1;
+});
+const losingTypeText=Object.keys(losingByType).length
+?Object.entries(losingByType).map(([type,count])=>type+" "+count+" 次").join("；")
+:"当前没有可识别的基金类型亏损记录。";
 
 target.innerHTML=
 "<div class='grid'>"
@@ -363,7 +448,24 @@ target.innerHTML=
 +"<div class='box stat'><strong>卖出习惯</strong><p>"+(sells.length?"平均卖出金额 "+formatMoney(average(sells))+"，情绪化卖出线索 "+panicSellCount+" 次。":"暂无卖出记录。")+"</p></div>"
 +"<div class='box stat'><strong>情绪倾向</strong><p>最常记录的情绪是“"+escapeHtml(mainEmotion)+"”（"+emotions[mainEmotion]+" 次）。</p></div>"
 +"<div class='box stat'><strong>常见错误模式</strong><p>"+errors.map(escapeHtml).join("；")+"</p></div>"
++"<div class='box stat'><strong>基金类型亏损</strong><p>"+escapeHtml(losingTypeText)+"</p></div>"
++"<div class='box stat'><strong>复盘接口</strong><p>已预留基金类型、追涨和恐慌卖出三个结构化分析维度。</p></div>"
 +"</div>";
+}
+
+function buildReviewDataset(){
+return journal.map(item=>({
+fundId:item.fundId||null,
+fundName:item.fundName||"历史记录（未绑定基金）",
+fundType:item.fundType||null,
+action:item.type,
+amount:Number(item.amount||0),
+reason:item.reason||"",
+emotion:item.emotion||"",
+returnChange:item.returnChange==null?null:Number(item.returnChange),
+returnRate:item.returnRate==null?null:Number(item.returnRate),
+date:item.date
+}));
 }
 
 function startFirstPractice(){
@@ -405,6 +507,13 @@ function formatMoney(value){
 return "¥"+Number(value||0).toLocaleString("zh-CN",{maximumFractionDigits:0});
 }
 
+function formatReturn(change,rate){
+if(change==null||change===""||!Number.isFinite(Number(change)))return "历史记录暂无数据";
+const amount=Number(change);
+const rateText=Number.isFinite(Number(rate))?"（"+Number(rate).toFixed(2)+"%）":"";
+return (amount>=0?"+":"")+formatMoney(amount)+rateText;
+}
+
 function escapeHtml(value){
 return String(value??"").replace(/[&<>"']/g,char=>({
 "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
@@ -424,6 +533,8 @@ document.getElementById("money").innerText=money;
 document.getElementById("event").innerText="第"+day+"天："+currentEvent();
 document.getElementById("log").innerText=logs.join("；");
 renderSimulationRecords();
+renderFundPool();
+window.FundTimeMachineReview={version:"6.1",getDataset:buildReviewDataset};
 </script>
 </body>
 </html>
