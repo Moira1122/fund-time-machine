@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>基金时光机 V7.5 投资成长训练平台</title>
+<title>基金时光机 V8 用户成长系统</title>
 <style media="not all">
 :root{
 --ink:#17211b;--muted:#68756e;--line:#e4e9e6;--soft:#f5f7f5;--paper:#fff;
@@ -116,12 +116,61 @@ body{padding-bottom:74px}.wrap{padding:0 14px 34px}
 <link rel="stylesheet" href="v75.css">
 </head>
 <body>
+<div class="onboarding-overlay" id="onboarding-overlay" role="dialog" aria-modal="true" aria-labelledby="onboarding-title">
+<div class="onboarding-shell">
+<div class="onboarding-progress"><span class="active"></span><span class="active"></span><span class="active"></span></div>
+<div class="eyebrow">V8 Growth profile</div>
+<h2 id="onboarding-title">先认识你，再开始训练。</h2>
+<p>用一分钟完成初始画像。答案只保存在当前浏览器，用于调整成长任务和复盘反馈。</p>
+<div class="onboarding-grid">
+<label class="onboarding-question"><span>01 · 投资经验</span>
+<select id="profile-experience">
+<option value="">请选择</option>
+<option value="刚开始了解">刚开始了解</option>
+<option value="有过少量投资">有过少量投资</option>
+<option value="持续投资1年以上">持续投资1年以上</option>
+</select>
+</label>
+<label class="onboarding-question"><span>02 · 投资目标</span>
+<select id="profile-goal">
+<option value="">请选择</option>
+<option value="建立投资基础">建立投资基础</option>
+<option value="养成长期投资习惯">养成长期投资习惯</option>
+<option value="改善决策与纪律">改善决策与纪律</option>
+</select>
+</label>
+<div class="onboarding-question risk-test">
+<span>03 · 风险测试</span>
+<label>面对 10% 的短期下跌
+<select id="risk-loss">
+<option value="">请选择</option>
+<option value="1">会明显不安并考虑退出</option>
+<option value="2">会复核计划后再决定</option>
+<option value="3">能接受并按长期计划观察</option>
+</select>
+</label>
+<label>这笔资金预计多久不用
+<select id="risk-horizon">
+<option value="">请选择</option>
+<option value="1">1 年以内</option>
+<option value="2">1—3 年</option>
+<option value="3">3 年以上</option>
+</select>
+</label>
+</div>
+</div>
+<div class="onboarding-action">
+<span id="profile-form-status">完成三部分后生成你的初始投资画像。</span>
+<button onclick="saveInitialProfile()">生成我的画像</button>
+</div>
+</div>
+</div>
 <div class="wrap">
 
 <header class="app-header">
 <div class="brand">
 <div class="brand-mark">FT</div>
-<div class="brand-copy"><strong>基金时光机</strong><span>V7.5 投资成长训练</span></div>
+<div class="brand-copy"><strong>基金时光机</strong><span>V8 用户成长系统</span></div>
 </div>
 <nav class="main-nav" aria-label="主要导航">
 <button class="nav-item" data-page="home" onclick="show('home')">首页</button>
@@ -171,14 +220,27 @@ body{padding-bottom:74px}.wrap{padding:0 14px 34px}
 </aside>
 </div>
 
-<div class="growth-strip">
-<section class="level-card">
-<div class="level-top">
-<div><div class="eyebrow">Your level</div><div class="level-name" id="home-level-name">新手观察员</div></div>
-<div class="level-number" id="home-level-number">1</div>
+<div class="v8-home-metrics">
+<section class="v8-metric level-metric">
+<span>当前等级</span><strong id="home-level-number">Lv1</strong><p id="home-level-name">投资启程者</p>
+</section>
+<section class="v8-metric">
+<span>连续训练</span><strong><b id="home-streak">0</b> 天</strong><p>每一次记录都算成长</p>
+</section>
+<section class="v8-metric task-metric">
+<span>今日任务</span><strong id="home-today-task">完成初始画像</strong><button class="text-button" id="home-task-action" onclick="runTodayTask()">去完成 →</button>
+</section>
+<section class="v8-metric score-metric">
+<span>投资能力评分</span><strong><b id="home-ability-score">0</b><small>/100</small></strong><p id="home-score-copy">从学习和训练中积累</p>
+</section>
 </div>
-<div class="xp-track"><div class="xp-fill" id="home-xp-fill"></div></div>
-<p id="home-xp-copy">0 / 100 XP · 再完成一次决策就会成长</p>
+
+<div class="growth-strip">
+<section class="profile-snapshot">
+<div class="eyebrow">Your profile</div>
+<h3 id="home-profile-name">等待生成投资画像</h3>
+<p id="home-profile-copy">完成新用户引导后，这里会显示你的目标与风险偏好。</p>
+<button class="btn-secondary" onclick="openProfileEditor()">更新画像</button>
 </section>
 <section class="feedback-card">
 <div class="eyebrow">Growth feedback</div>
@@ -212,11 +274,19 @@ body{padding-bottom:74px}.wrap{padding:0 14px 34px}
 </section>
 <div class="growth-detail">
 <div class="growth-message"><strong id="growth-feedback-title">先完成第一次有理由的决策。</strong><p id="growth-feedback-copy">记录越完整，成长反馈越有意义。</p></div>
+<div class="level-roadmap">
+<div class="level-node" id="level-node-1"><strong>Lv1</strong><span>投资启程者</span></div>
+<div class="level-node" id="level-node-2"><strong>Lv2</strong><span>学习训练者</span></div>
+<div class="level-node" id="level-node-3"><strong>Lv3</strong><span>纪律实践者</span></div>
+<div class="level-node" id="level-node-4"><strong>Lv4</strong><span>成长投资者</span></div>
+</div>
 <div class="achievement-grid">
-<div class="achievement" id="achievement-fund"><div class="achievement-mark">01</div><h3>基金探索者</h3><p class="muted">选择第一只基金。</p></div>
-<div class="achievement" id="achievement-plan"><div class="achievement-mark">02</div><h3>计划先行者</h3><p class="muted">完成买入前问答。</p></div>
-<div class="achievement" id="achievement-journal"><div class="achievement-mark">03</div><h3>日志记录者</h3><p class="muted">累计完成 3 次决策。</p></div>
-<div class="achievement" id="achievement-discipline"><div class="achievement-mark">04</div><h3>纪律练习者</h3><p class="muted">累计完成 8 次决策。</p></div>
+<div class="achievement" id="achievement-first-buy"><div class="achievement-mark">01</div><h3>第一次出发</h3><p class="muted">完成首次模拟买入。</p></div>
+<div class="achievement" id="achievement-drawdown"><div class="achievement-mark">02</div><h3>见过波动</h3><p class="muted">经历一次模拟回撤。</p></div>
+<div class="achievement" id="achievement-training"><div class="achievement-mark">03</div><h3>训练完成</h3><p class="muted">完成一次完整决策。</p></div>
+<div class="achievement" id="achievement-strategy"><div class="achievement-mark">04</div><h3>策略建立者</h3><p class="muted">在实验室完成策略比较。</p></div>
+<div class="achievement" id="achievement-review"><div class="achievement-mark">05</div><h3>复盘行动派</h3><p class="muted">完成第一次正式复盘。</p></div>
+<div class="achievement" id="achievement-rule"><div class="achievement-mark">06</div><h3>规则制定者</h3><p class="muted">写下自己的投资规则。</p></div>
 </div>
 </div>
 </div>
@@ -247,7 +317,7 @@ body{padding-bottom:74px}.wrap{padding:0 14px 34px}
 <button onclick="startFirstPractice()">生成练习建议</button>
 <div id="practice-result" class="muted">输入你的计划，先练习判断仓位是否合适。</div>
 </div>
-<button onclick="alert('基础课程完成')">完成学习</button>
+<button id="complete-learning-button" onclick="completeLearning()">完成学习</button>
 </div>
 
 <div id="fundPool" class="card hide">
@@ -406,20 +476,25 @@ body{padding-bottom:74px}.wrap{padding:0 14px 34px}
 
 <div id="report" class="card hide">
 <div class="page-heading">
-<div><div class="eyebrow">Behavior review</div><h2>复盘中心</h2><p>根据投资日志分析交易习惯、情绪倾向和常见错误。</p></div>
+<div><div class="eyebrow">Behavior review</div><h2>复盘中心</h2><p>把买卖行为、情绪和计划放在一起，生成动态投资人格与下一步建议。</p></div>
 <button onclick="renderReview()">重新生成复盘</button>
 </div>
+<div id="review-personality" class="personality-panel"></div>
 <div id="review-summary">
 <div class="box">完成至少一次市场决策后，这里会生成复盘结果。</div>
+</div>
+<div class="review-complete">
+<span>阅读结果并写下一条准备改变的行为，就算完成一次复盘。</span>
+<button onclick="finishReview()">完成本次复盘</button>
 </div>
 </div>
 
 <div id="rules" class="card hide">
 <div class="page-heading"><div><div class="eyebrow">My discipline</div><h2>我的投资规则</h2><p>在市场波动之前，先把仓位、回撤和行动边界写清楚。</p></div></div>
-<input placeholder="单只基金最大仓位，例如40%">
-<input placeholder="最大接受回撤，例如15%">
-<textarea placeholder="我的投资规则"></textarea>
-<button onclick="alert('规则已保存')">保存规则</button>
+<input id="rule-position" placeholder="单只基金最大仓位，例如40%">
+<input id="rule-drawdown" placeholder="最大接受回撤，例如15%">
+<textarea id="rule-content" placeholder="我的投资规则"></textarea>
+<button onclick="saveInvestmentRules()">保存规则</button>
 </div>
 
 </div>
@@ -433,6 +508,8 @@ const FUND_STORE_NAME="funds";
 const FUND_DB_VERSION=1;
 const FUND_SEED_VERSION="6.3";
 const FUND_SEED_KEY="fundTimeMachineFundSeedVersion";
+const PROFILE_KEY="fundTimeMachineV8Profile";
+const GROWTH_ACTIVITY_KEY="fundTimeMachineV8GrowthActivity";
 
 function readStorage(key,fallback){
 try{
@@ -450,6 +527,15 @@ let logs=Array.isArray(savedState.logs)?savedState.logs:[];
 let journal=readStorage(JOURNAL_KEY,[]);
 let eventHistory=readStorage(EVENTS_KEY,[]);
 let selectedFundCode=savedState.selectedFundCode||savedState.selectedFundId||"";
+let investmentProfile=readStorage(PROFILE_KEY,null);
+let growthActivity=readStorage(GROWTH_ACTIVITY_KEY,{
+learningCompleted:false,
+trainingDates:[],
+reviewDates:[],
+strategyBuilt:false,
+rulesEstablished:false,
+rules:null
+});
 let fundRecords=[];
 let fundDatabase=null;
 let events=[
@@ -696,26 +782,241 @@ status.textContent="基金数据库初始化失败："+error.message;
 }
 }
 
-function getGrowthState(){
+function localDateKey(){
+return new Date().toLocaleDateString("sv-SE");
+}
+
+function saveGrowthActivity(){
+localStorage.setItem(GROWTH_ACTIVITY_KEY,JSON.stringify(growthActivity));
+}
+
+function initializeV8(){
+growthActivity={
+learningCompleted:Boolean(growthActivity.learningCompleted),
+trainingDates:Array.isArray(growthActivity.trainingDates)?growthActivity.trainingDates:[],
+reviewDates:Array.isArray(growthActivity.reviewDates)?growthActivity.reviewDates:[],
+strategyBuilt:Boolean(growthActivity.strategyBuilt),
+rulesEstablished:Boolean(growthActivity.rulesEstablished),
+rules:growthActivity.rules||null
+};
+if(!investmentProfile)openProfileEditor();
+renderHomeStats();
+}
+
+function openProfileEditor(){
+const overlay=document.getElementById("onboarding-overlay");
+if(investmentProfile){
+document.getElementById("profile-experience").value=investmentProfile.experience||"";
+document.getElementById("profile-goal").value=investmentProfile.goal||"";
+document.getElementById("risk-loss").value=String(investmentProfile.riskAnswers?.loss||"");
+document.getElementById("risk-horizon").value=String(investmentProfile.riskAnswers?.horizon||"");
+}
+overlay.classList.add("open");
+document.body.style.overflow="hidden";
+}
+
+function saveInitialProfile(){
+const experience=document.getElementById("profile-experience").value;
+const goal=document.getElementById("profile-goal").value;
+const loss=Number(document.getElementById("risk-loss").value);
+const horizon=Number(document.getElementById("risk-horizon").value);
+const status=document.getElementById("profile-form-status");
+if(!experience||!goal||!loss||!horizon){
+status.textContent="请完成投资经验、目标和两道风险测试。";
+status.className="status-error";
+return;
+}
+const riskScore=loss+horizon;
+const riskLevel=riskScore<=3?"稳健型":riskScore<=5?"平衡型":"进取型";
+const goalProfile={
+"建立投资基础":"基础建设者",
+"养成长期投资习惯":"长期规划者",
+"改善决策与纪律":"纪律练习者"
+}[goal];
+investmentProfile={
+version:"8.0",
+experience:experience,
+goal:goal,
+riskScore:riskScore,
+riskLevel:riskLevel,
+profileName:riskLevel+" · "+goalProfile,
+riskAnswers:{loss:loss,horizon:horizon},
+updatedAt:new Date().toISOString(),
+createdAt:investmentProfile?.createdAt||new Date().toISOString()
+};
+localStorage.setItem(PROFILE_KEY,JSON.stringify(investmentProfile));
+document.getElementById("onboarding-overlay").classList.remove("open");
+document.body.style.overflow="";
+status.textContent="画像已生成";
+status.className="status-ok";
+renderHomeStats();
+}
+
+function trackTrainingDay(){
+const today=localDateKey();
+if(!growthActivity.trainingDates.includes(today)){
+growthActivity.trainingDates.push(today);
+growthActivity.trainingDates=growthActivity.trainingDates.slice(-120);
+saveGrowthActivity();
+}
+}
+
+function getTrainingStreak(){
+const dates=new Set(growthActivity.trainingDates);
+if(!dates.size)return 0;
+let cursor=new Date();
+const today=localDateKey();
+if(!dates.has(today)){
+cursor.setDate(cursor.getDate()-1);
+}
+let streak=0;
+while(streak<365){
+const key=cursor.toLocaleDateString("sv-SE");
+if(!dates.has(key))break;
+streak++;
+cursor.setDate(cursor.getDate()-1);
+}
+return streak;
+}
+
+function completeLearning(){
+growthActivity.learningCompleted=true;
+saveGrowthActivity();
+document.getElementById("complete-learning-button").textContent="已完成基础学习 ✓";
+renderHomeStats();
+alert("学习完成度已更新，成长等级会自动重新计算。");
+}
+
+function saveInvestmentRules(){
+const position=document.getElementById("rule-position").value.trim();
+const drawdown=document.getElementById("rule-drawdown").value.trim();
+const content=document.getElementById("rule-content").value.trim();
+if(!position||!drawdown||!content){
+alert("请把仓位、回撤和投资规则填写完整。");
+return;
+}
+growthActivity.rulesEstablished=true;
+growthActivity.rules={position:position,drawdown:drawdown,content:content,updatedAt:new Date().toISOString()};
+saveGrowthActivity();
+renderHomeStats();
+alert("投资规则已保存，并解锁“规则制定者”成就。");
+}
+
+function finishReview(){
+if(!journal.length){
+alert("先完成一次市场训练，才有可以复盘的决策。");
+return;
+}
+const today=localDateKey();
+if(growthActivity.reviewDates.includes(today)){
+alert("今天的复盘已经记录。明天再回来看看新的行为变化。");
+return;
+}
+growthActivity.reviewDates.push(today);
+saveGrowthActivity();
+renderReview();
+renderHomeStats();
+alert("本次复盘已完成，成长进度已经更新。");
+}
+
+function getAbilityScores(){
 const completedPlans=journal.filter(item=>
 item.preBuyAnswers||(item.expectedHoldingPeriod&&item.decline20Response)
 ).length;
-const xp=journal.length*20
-+Math.min(eventHistory.length,10)*5
-+(selectedFundCode?15:0)
-+Math.min(completedPlans,5)*10;
+const planRate=journal.length?completedPlans/journal.length:0;
+const scores={
+learning:growthActivity.learningCompleted?100:investmentProfile?35:0,
+training:Math.min(100,Math.round(journal.length/8*100)),
+review:Math.min(100,Math.round(growthActivity.reviewDates.length/3*100)),
+discipline:Math.min(100,Math.round(planRate*100))
+};
+const total=Math.round(
+scores.learning*.25+scores.training*.35+scores.review*.25+scores.discipline*.15
+);
+return {...scores,total,completedPlans};
+}
+
+function getGrowthState(){
+const ability=getAbilityScores();
+const progressPoints=Math.round(
+(growthActivity.learningCompleted?25:0)
++Math.min(journal.length,8)/8*45
++Math.min(growthActivity.reviewDates.length,3)/3*30
+);
 const levels=[
-{level:1,name:"新手观察员",min:0,max:100,description:"先看懂市场，再做第一个有理由的决定。"},
-{level:2,name:"决策练习生",min:100,max:240,description:"开始用计划代替冲动，用记录留下证据。"},
-{level:3,name:"计划执行者",min:240,max:440,description:"能在波动发生前写下自己的应对方式。"},
-{level:4,name:"纪律投资者",min:440,max:700,description:"持续记录、执行和复盘，逐步形成个人纪律。"},
-{level:5,name:"复盘进阶者",min:700,max:1000,description:"能够从长期行为中识别模式并修正策略。"}
+{level:1,name:"投资启程者",min:0,max:25,description:"完成画像，开始认识风险与基金。"},
+{level:2,name:"学习训练者",min:25,max:55,description:"通过学习和市场训练建立基础判断。"},
+{level:3,name:"纪律实践者",min:55,max:85,description:"持续写计划、做决定并完成复盘。"},
+{level:4,name:"成长投资者",min:85,max:100,description:"能稳定地从训练、复盘和规则中成长。"}
 ];
-const current=[...levels].reverse().find(item=>xp>=item.min)||levels[0];
-const progress=current.level===5
+const current=[...levels].reverse().find(item=>progressPoints>=item.min)||levels[0];
+const progress=current.level===4
 ?100
-:Math.min(100,Math.max(0,(xp-current.min)/(current.max-current.min)*100));
-return {xp,current,progress,completedPlans};
+:Math.min(100,Math.max(0,(progressPoints-current.min)/(current.max-current.min)*100));
+return {
+xp:progressPoints,
+current:current,
+progress:progress,
+completedPlans:ability.completedPlans,
+ability:ability
+};
+}
+
+function getPersonalityProfile(){
+if(!journal.length){
+return {
+name:"待发现的观察者",
+summary:"完成几次真实的模拟决策后，系统会根据买卖、计划和情绪生成动态人格。",
+evidence:["暂无买入行为","暂无卖出行为","等待情绪记录"]
+};
+}
+const buys=journal.filter(item=>item.type==="买入");
+const sells=journal.filter(item=>item.type==="卖出");
+const holds=journal.filter(item=>item.type==="持有");
+const planned=journal.filter(item=>item.expectedHoldingPeriod&&item.decline20Response).length;
+const anxious=journal.filter(item=>/焦虑|恐慌|兴奋/.test(item.emotion||"")).length;
+const chase=buys.filter(item=>/上涨|热门|追涨|怕错过/.test(item.reason||"")).length;
+const panic=sells.filter(item=>/焦虑|恐慌/.test(item.emotion||"")).length;
+let name="平衡决策型";
+let summary="你的买卖行为相对均衡。继续积累记录，观察不同市场情境下是否保持一致。";
+if(planned/journal.length>=.7){
+name="计划执行型";
+summary="你多数时候会先写计划再行动，优势是可复盘，下一步要检查是否真正按计划执行。";
+}else if(anxious/journal.length>=.45||panic>0){
+name="情绪敏感型";
+summary="你的决定较容易受到焦虑、恐慌或兴奋影响，适合在操作前增加冷静等待规则。";
+}else if(holds.length/journal.length>=.4){
+name="耐心观察型";
+summary="你愿意在不确定时继续观察，优势是减少冲动，下一步要明确观察的结束条件。";
+}else if(buys.length>sells.length*2){
+name="主动探索型";
+summary="你更倾向主动寻找机会，下一步要特别检查买入频率、仓位和退出计划。";
+}
+return {
+name:name,
+summary:summary,
+evidence:[
+"买入 "+buys.length+" 次，卖出 "+sells.length+" 次，持有 "+holds.length+" 次",
+"完整计划率 "+Math.round(planned/journal.length*100)+"%",
+"情绪波动线索 "+anxious+" 次，追涨线索 "+chase+" 次"
+]
+};
+}
+
+function getTodayTask(){
+if(!investmentProfile)return {text:"完成初始投资画像",target:"profile"};
+if(!growthActivity.learningCompleted)return {text:"完成一节投资基础学习",target:"learn"};
+if(!selectedFundCode)return {text:"认识并选择一只基金",target:"fundPool"};
+if(!journal.length)return {text:"完成第一次市场决策",target:"sim"};
+if(!growthActivity.reviewDates.length)return {text:"完成第一次行为复盘",target:"report"};
+if(!growthActivity.strategyBuilt)return {text:"建立一个基础策略",target:"strategy"};
+return {text:"完成今天的市场训练",target:"sim"};
+}
+
+function runTodayTask(){
+const task=getTodayTask();
+if(task.target==="profile")openProfileEditor();
+else show(task.target);
 }
 
 function getGrowthFeedback(){
@@ -758,35 +1059,48 @@ node.classList.toggle("current",current);
 
 function updateAchievement(id,unlocked){
 const node=document.getElementById(id);
-if(node)node.classList.toggle("locked",!unlocked);
+if(!node)return;
+node.classList.toggle("locked",!unlocked);
+node.classList.toggle("unlocked",unlocked);
 }
 
 function renderHomeStats(){
 const growth=getGrowthState();
 const feedback=getGrowthFeedback();
+const personality=getPersonalityProfile();
+const task=getTodayTask();
 const hasFund=Boolean(selectedFundCode);
 const hasPlan=growth.completedPlans>0;
 const hasDecision=journal.length>0;
-const hasReview=journal.length>=3;
+const hasReview=growthActivity.reviewDates.length>0;
 const steps=[hasFund,hasPlan,hasDecision,hasReview];
 const nextStep=steps.findIndex(item=>!item);
 const challengeIndex=Math.max(0,(day-1)%events.length);
 const challengeTitle=["市场突然上涨，你会追进去吗？","持有的基金下跌，你会怎么处理？","市场没有方向，你还会频繁操作吗？"][challengeIndex%3];
 const challengeCopy=["先观察事件，再写下买入理由和能承受的波动。","先回看自己的计划，再决定买入、卖出或持有。","没有动作也是一种决定，关键是说清楚理由。"][challengeIndex%3];
+const profileName=investmentProfile?.profileName||"等待生成投资画像";
+const profileCopy=investmentProfile
+?"目标："+investmentProfile.goal+" · 经验："+investmentProfile.experience+" · 风险偏好："+investmentProfile.riskLevel
+:"完成新用户引导后，这里会显示你的目标与风险偏好。";
 
 const textValues={
 "nav-level-name":growth.current.name,
 "home-level-name":growth.current.name,
 "home-level-number":"Lv."+growth.current.level,
-"home-xp-copy":growth.xp+" XP · 距离下一等级还需 "+Math.max(0,growth.current.max-growth.xp)+" XP",
+"home-streak":getTrainingStreak(),
+"home-today-task":task.text,
+"home-ability-score":growth.ability.total,
+"home-score-copy":"学习 "+growth.ability.learning+" · 训练 "+growth.ability.training+" · 复盘 "+growth.ability.review,
+"home-profile-name":profileName,
+"home-profile-copy":profileCopy,
 "growth-level-number":"Lv."+growth.current.level,
 "growth-level-name":growth.current.name,
 "growth-level-description":growth.current.description,
-"growth-xp-copy":growth.xp+" XP · 当前等级进度 "+Math.round(growth.progress)+"%",
+"growth-xp-copy":"成长完成度 "+growth.xp+"% · 学习、训练和复盘共同决定等级",
 "home-growth-title":feedback.title,
 "home-growth-copy":feedback.copy,
 "growth-feedback-title":feedback.title,
-"growth-feedback-copy":feedback.copy,
+"growth-feedback-copy":feedback.copy+" 当前动态人格："+personality.name+"。",
 "home-challenge-title":challengeTitle,
 "home-challenge-copy":challengeCopy,
 "home-progress-copy":steps.filter(Boolean).length+" / 4 个成长节点已完成",
@@ -796,7 +1110,7 @@ Object.keys(textValues).forEach(id=>{
 const node=document.getElementById(id);
 if(node)node.textContent=textValues[id];
 });
-["home-xp-fill","growth-xp-fill"].forEach(id=>{
+["growth-xp-fill"].forEach(id=>{
 const node=document.getElementById(id);
 if(node)node.style.width=growth.progress+"%";
 });
@@ -805,10 +1119,32 @@ updatePathStep("path-fund",hasFund,nextStep===0);
 updatePathStep("path-plan",hasPlan,nextStep===1);
 updatePathStep("path-decision",hasDecision,nextStep===2);
 updatePathStep("path-review",hasReview,nextStep===3);
-updateAchievement("achievement-fund",hasFund);
-updateAchievement("achievement-plan",hasPlan);
-updateAchievement("achievement-journal",journal.length>=3);
-updateAchievement("achievement-discipline",journal.length>=8);
+for(let level=1;level<=4;level++){
+const node=document.getElementById("level-node-"+level);
+if(node){
+node.classList.toggle("complete",level<growth.current.level);
+node.classList.toggle("current",level===growth.current.level);
+}
+}
+updateAchievement("achievement-first-buy",journal.some(item=>item.type==="买入"));
+updateAchievement("achievement-drawdown",journal.some(item=>Number(item.returnChange)<0)||money<100000);
+updateAchievement("achievement-training",journal.length>0);
+updateAchievement("achievement-strategy",growthActivity.strategyBuilt);
+updateAchievement("achievement-review",growthActivity.reviewDates.length>0);
+updateAchievement("achievement-rule",growthActivity.rulesEstablished);
+const learningButton=document.getElementById("complete-learning-button");
+if(learningButton&&growthActivity.learningCompleted)learningButton.textContent="已完成基础学习 ✓";
+if(growthActivity.rules){
+const ruleValues={
+"rule-position":growthActivity.rules.position,
+"rule-drawdown":growthActivity.rules.drawdown,
+"rule-content":growthActivity.rules.content
+};
+Object.entries(ruleValues).forEach(([id,value])=>{
+const field=document.getElementById(id);
+if(field&&!field.value)field.value=value||"";
+});
+}
 }
 
 function show(id){
@@ -906,6 +1242,7 @@ returnChange:change,
 returnRate:amount?change/amount*100:null
 });
 localStorage.setItem(JOURNAL_KEY,JSON.stringify(journal));
+trackTrainingDay();
 
 day++;
 document.getElementById("money").innerText=money;
@@ -924,6 +1261,7 @@ function nextDay(){
 day++;
 const change=Math.round((Math.random()-.5)*1000);
 money+=change;
+trackTrainingDay();
 document.getElementById("money").innerText=money;
 document.getElementById("event").innerText="第"+day+"天："+currentEvent();
 logs.push("推进至第"+day+"天");
@@ -959,6 +1297,9 @@ document.getElementById("result").innerHTML=
 +"<div class='table-wrap'><table><thead><tr><th>策略</th><th>期末资产</th><th>模拟收益</th><th>收益率</th></tr></thead>"
 +"<tbody>"+rows+"</tbody></table></div>"
 +"<p class='muted'>结果来自内置模拟涨跌序列，仅用于理解策略差异。</p></div>";
+growthActivity.strategyBuilt=true;
+saveGrowthActivity();
+renderHomeStats();
 }
 
 function currentEvent(){
@@ -1147,10 +1488,43 @@ return "<article class='journal-entry'>"
 target.innerHTML="<div class='journal-timeline'>"+entries+"</div>";
 }
 
+function renderPersonalityPanel(){
+const target=document.getElementById("review-personality");
+if(!target)return;
+const personality=getPersonalityProfile();
+const ability=getAbilityScores();
+const dimensions=[
+["学习完成度",ability.learning],
+["训练积累",ability.training],
+["复盘习惯",ability.review],
+["计划纪律",ability.discipline]
+];
+const abilityHtml=dimensions.map(([label,value])=>
+"<div class='ability-item'><strong><span>"+label+"</span><span>"+value+"</span></strong>"
++"<div class='progress-track'><div class='progress-fill' style='width:"+value+"%'></div></div></div>"
+).join("");
+const advice=!journal.length
+?"先完成一次市场训练，动态人格会根据真实行为生成。"
+:ability.discipline<50
+?"下一步建议：买入前完整写下持有时间和下跌应对，提高计划纪律。"
+:ability.review<50
+?"下一步建议：完成一次正式复盘，把结果转化为下一次行动规则。"
+:"下一步建议：继续观察人格是否在上涨、下跌和震荡情境中保持一致。";
+target.innerHTML=
+"<div class='personality-hero'>"
++"<section class='personality-identity'><div class='eyebrow'>Dynamic personality</div>"
++"<h3>"+escapeHtml(personality.name)+"</h3><p>"+escapeHtml(personality.summary)+"</p>"
++"<div class='personality-tags'>"+personality.evidence.map(item=>"<span>"+escapeHtml(item)+"</span>").join("")+"</div></section>"
++"<section class='personality-evidence'><div class='eyebrow'>Investment ability</div>"
++"<h3>投资能力评分 "+ability.total+" / 100</h3><div class='ability-grid'>"+abilityHtml+"</div></section>"
++"</div><div class='review-advice'><strong>"+escapeHtml(advice)+"</strong></div>";
+}
+
 function renderReview(){
 const target=document.getElementById("review-summary");
+renderPersonalityPanel();
 if(!journal.length){
-target.innerHTML="<div class='box'>暂无可复盘日志。请先在市场训练中完成一次决策。</div>";
+target.innerHTML="<div class='box'>暂无可复盘日志。请先在市场训练中完成一次决策，系统会再分析买卖行为、情绪和计划。</div>";
 return;
 }
 const buys=journal.filter(item=>item.type==="买入");
@@ -1188,7 +1562,8 @@ target.innerHTML=
 +"<div class='box stat'><strong>情绪倾向</strong><p>最常记录的情绪是“"+escapeHtml(mainEmotion)+"”（"+emotions[mainEmotion]+" 次）。</p></div>"
 +"<div class='box stat'><strong>常见错误模式</strong><p>"+errors.map(escapeHtml).join("；")+"</p></div>"
 +"<div class='box stat'><strong>基金类型亏损</strong><p>"+escapeHtml(losingTypeText)+"</p></div>"
-+"<div class='box stat'><strong>复盘接口</strong><p>已预留基金类型、追涨和恐慌卖出三个结构化分析维度。</p></div>"
++"<div class='box stat'><strong>已完成复盘</strong><p>"+growthActivity.reviewDates.length+" 次。等级由学习完成度、训练次数和复盘次数共同生成。</p></div>"
++"<div class='box stat'><strong>当前投资画像</strong><p>"+escapeHtml(investmentProfile?.profileName||"尚未生成")+"。动态人格会随新的买卖与情绪记录继续变化。</p></div>"
 +"</div>";
 }
 
@@ -1293,8 +1668,15 @@ document.getElementById("log").innerText=logs.join("；");
 renderSimulationRecords();
 renderFundPool();
 initializeFundDatabase();
+initializeV8();
 show("home");
-window.FundTimeMachineReview={version:"6.3",getDataset:buildReviewDataset};
+window.FundTimeMachineReview={
+version:"8.0",
+getDataset:buildReviewDataset,
+getProfile:()=>investmentProfile,
+getPersonality:getPersonalityProfile,
+getAbilityScores:getAbilityScores
+};
 </script>
 </body>
 </html>
