@@ -113,7 +113,7 @@ body{padding-bottom:74px}.wrap{padding:0 14px 34px}
 .decision-actions{display:grid;grid-template-columns:1fr 1fr}.decision-actions button{width:100%}
 }
 </style>
-<link rel="stylesheet" href="v75.css">
+<link rel="stylesheet" href="design-system.css">
 </head>
 <body>
 <div class="onboarding-overlay" id="onboarding-overlay" role="dialog" aria-modal="true" aria-label="生成初始投资画像">
@@ -186,8 +186,8 @@ body{padding-bottom:74px}.wrap{padding:0 14px 34px}
 
 <header class="app-header">
 <div class="brand">
-<div class="brand-mark">FT</div>
-<div class="brand-copy"><strong>基金时光机</strong><span>V8 用户成长系统</span></div>
+<div class="brand-mark" aria-hidden="true">◷</div>
+<div class="brand-copy"><strong>基金时光机</strong><span>投资成长训练平台</span></div>
 </div>
 <nav class="main-nav" aria-label="主要导航">
 <button class="nav-item" data-page="home" onclick="show('home')">首页</button>
@@ -235,12 +235,20 @@ body{padding-bottom:74px}.wrap{padding:0 14px 34px}
 <div class="home-stage">
 <section class="home-hero">
 <div class="home-hero-content">
-<div class="eyebrow">Investment growth journey</div>
+<div class="eyebrow">Your investment journey</div>
 <h1>今天，练一个<span>好决定</span>。</h1>
-<p>这里不预测涨跌。你会在真实的选择流程里，练习认识基金、写下计划、面对波动，再从自己的行为中成长。</p>
+<p>这里不预测涨跌，而是在真实市场环境中训练你的投资能力。</p>
 <div class="hero-actions">
 <button onclick="show('growth')">查看我的成长档案</button>
 </div>
+</div>
+<div class="hero-visual" aria-hidden="true">
+<div class="visual-orbit orbit-one"></div>
+<div class="visual-orbit orbit-two"></div>
+<div class="visual-core">成长</div>
+<span class="visual-note note-one">记录</span>
+<span class="visual-note note-two">训练</span>
+<span class="visual-note note-three">复盘</span>
 </div>
 </section>
 <aside class="daily-card">
@@ -257,38 +265,38 @@ body{padding-bottom:74px}.wrap{padding:0 14px 34px}
 </div>
 
 <div class="v8-home-metrics">
-<section class="v8-metric level-metric">
-<span>当前等级</span><strong id="home-level-number">Lv1</strong><p id="home-level-name">投资启程者</p>
-</section>
 <section class="v8-metric">
 <span>连续训练</span><strong><b id="home-streak">0</b> 天</strong><p>每一次记录都算成长</p>
+</section>
+<section class="v8-metric">
+<span>模拟收益</span><strong><b id="home-sim-return">¥0</b></strong><p>只用于训练，不代表真实收益</p>
 </section>
 <section class="v8-metric score-metric">
 <span>投资能力评分</span><strong><b id="home-ability-score">0</b><small>/100</small></strong><p id="home-score-copy">从学习和训练中积累</p>
 </section>
 </div>
 
-<section class="home-insight">
-<div class="insight-profile">
-<div class="eyebrow">Your profile</div>
-<h3 id="home-profile-name">等待生成投资画像</h3>
-<p id="home-profile-copy">完成新用户引导后，这里会显示你的目标与风险偏好。</p>
+<section class="home-growth-panel">
+<div class="growth-emblem" aria-hidden="true">✦</div>
+<div class="growth-level-copy">
+<div class="eyebrow">Growth progress</div>
+<h3><span id="home-level-name">投资启程者</span> <small id="home-level-number">Lv1</small></h3>
+<p id="home-level-progress-copy">完成今天的任务，向下一等级前进。</p>
 </div>
-<div class="insight-copy">
-<div class="eyebrow">Growth feedback</div>
-<h3 id="home-growth-title">你的第一步，是先留下理由。</h3>
-<p id="home-growth-copy">选择一只基金并完成第一次市场决策，成长反馈会根据你的真实日志更新。</p>
-<div class="insight-actions"><button class="btn-secondary" onclick="openProfileEditor()">更新画像</button><button class="btn-secondary" onclick="show('report')">查看复盘</button></div>
+<div class="growth-progress-wrap">
+<div class="progress-meta"><span id="home-growth-title">成长进度</span><strong id="home-growth-percent">0%</strong></div>
+<div class="progress-track"><div class="progress-fill" id="home-level-progress"></div></div>
 </div>
+<button class="btn-soft" onclick="show('growth')">查看成长体系</button>
 </section>
 
-<section class="path-section">
-<div class="section-heading"><h3>你的投资成长路径</h3><span class="muted" id="home-progress-copy">已完成 0 / 4</span></div>
-<div class="learning-path">
-<div class="path-step" id="path-fund"><div class="path-number">1</div><h3>认识基金</h3><p>看懂类型、风险与投资方向。</p></div>
-<div class="path-step" id="path-plan"><div class="path-number">2</div><h3>写下计划</h3><p>明确理由、持有时间和亏损应对。</p></div>
-<div class="path-step" id="path-decision"><div class="path-number">3</div><h3>完成决策</h3><p>在模拟市场中执行买入、持有或卖出。</p></div>
-<div class="path-step" id="path-review"><div class="path-number">4</div><h3>复盘行为</h3><p>从日志中发现重复习惯和情绪模式。</p></div>
+<section class="quick-access-section">
+<div class="section-heading"><div><div class="eyebrow">Explore</div><h3>继续你的成长旅程</h3></div><span class="muted">四个入口，一套成长路径</span></div>
+<div class="quick-access-grid">
+<button class="feature-card" onclick="show('sim')"><span class="feature-icon icon-blue">↗</span><span><strong>市场训练</strong><small>在市场变化中练习做决定</small></span><i>进入</i></button>
+<button class="feature-card" onclick="show('fundPool')"><span class="feature-icon icon-mint">◌</span><span><strong>基金超市</strong><small>认识不同类型与风险的基金</small></span><i>浏览</i></button>
+<button class="feature-card" onclick="show('journal')"><span class="feature-icon icon-pink">✎</span><span><strong>投资日志</strong><small>记录每一次选择和当时情绪</small></span><i>查看</i></button>
+<button class="feature-card" onclick="show('report')"><span class="feature-icon icon-lilac">◎</span><span><strong>复盘中心</strong><small>发现习惯，形成自己的投资纪律</small></span><i>复盘</i></button>
 </div>
 </section>
 </div>
@@ -1160,14 +1168,21 @@ const profileName=investmentProfile?.profileName||"等待生成投资画像";
 const profileCopy=investmentProfile
 ?"目标："+investmentProfile.goal+" · 经验："+investmentProfile.experience+" · 风险偏好："+investmentProfile.riskLevel
 :"完成新用户引导后，这里会显示你的目标与风险偏好。";
+const simulatedReturn=money-100000;
+const nextLevelCopy=growth.current.level===4
+?"你已经达到当前成长体系的最高等级。"
+:"距离 Lv"+(growth.current.level+1)+" 还需要 "+Math.max(0,growth.current.max-growth.xp)+" 点成长经验。";
 
 const textValues={
 "nav-level-name":growth.current.name,
 "home-level-name":growth.current.name,
 "home-level-number":"Lv."+growth.current.level,
 "home-streak":getTrainingStreak(),
+"home-sim-return":(simulatedReturn>=0?"+":"")+formatMoney(simulatedReturn),
 "home-ability-score":growth.ability.total,
 "home-score-copy":"学习 "+growth.ability.learning+" · 训练 "+growth.ability.training+" · 复盘 "+growth.ability.review,
+"home-level-progress-copy":nextLevelCopy,
+"home-growth-percent":Math.round(growth.progress)+"%",
 "home-profile-name":profileName,
 "home-profile-copy":profileCopy,
 "growth-level-number":"Lv."+growth.current.level,
@@ -1191,6 +1206,13 @@ if(node)node.textContent=textValues[id];
 const node=document.getElementById(id);
 if(node)node.style.width=growth.progress+"%";
 });
+const homeLevelProgress=document.getElementById("home-level-progress");
+if(homeLevelProgress)homeLevelProgress.style.width=growth.progress+"%";
+const simulatedReturnNode=document.getElementById("home-sim-return");
+if(simulatedReturnNode){
+simulatedReturnNode.classList.toggle("positive",simulatedReturn>=0);
+simulatedReturnNode.classList.toggle("negative",simulatedReturn<0);
+}
 
 updatePathStep("path-fund",hasFund,nextStep===0);
 updatePathStep("path-plan",hasPlan,nextStep===1);
@@ -1396,12 +1418,12 @@ day:day,money:money,logs:logs,selectedFundCode:selectedFundCode
 
 function fundCategoryColor(category){
 return {
-"宽基指数":"#6857d9",
-"行业主题":"#ef745f",
-"海外基金":"#3979d5",
-"债券基金":"#2f9d68",
-"货币基金":"#f2b94b"
-}[category]||"#6857d9";
+"宽基指数":"#9f9ad2",
+"行业主题":"#d7a1a9",
+"海外基金":"#94aec9",
+"债券基金":"#93b9aa",
+"货币基金":"#cfbf98"
+}[category]||"#9f9ad2";
 }
 
 function fundRiskScore(riskLevel){
