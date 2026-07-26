@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>基金时光机 V6.2 基金数据库版</title>
+<title>基金时光机 V6.2.1 基金数据库版</title>
 <style>
 body{font-family:"Microsoft YaHei";background:#f5f7fb;color:#172033;margin:0;padding:20px}
 .wrap{max-width:1100px;margin:auto}
@@ -18,7 +18,7 @@ textarea,input,select{width:90%;padding:10px;margin:6px;border-radius:8px;border
 .fund-card{border:2px solid transparent}
 .fund-card.selected{border-color:#5965e8;background:#f0f2ff}
 .risk-badge{display:inline-block;padding:3px 9px;border-radius:999px;background:#eef2ff;color:#4652c7;font-size:13px}
-.fund-toolbar{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;margin:12px 0}
+.fund-toolbar{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:10px;margin:12px 0}
 .fund-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .fund-meta span{background:#eef2ff;color:#4652c7;border-radius:999px;padding:3px 9px;font-size:13px}
 .import-panel{border:1px dashed #aeb6ef;background:#fafbff}
@@ -36,7 +36,7 @@ th{background:#eef2ff}
 <div class="wrap">
 
 <div class="card">
-<h1>基金时光机 V6.2 基金数据库版</h1>
+<h1>基金时光机 V6.2.1 基金数据库版</h1>
 <p>投资行为训练平台：不预测市场，训练你的决策能力。</p>
 <button onclick="show('learn')">新手学院</button>
 <button onclick="show('fundPool')">基金池</button>
@@ -90,6 +90,7 @@ th{background:#eef2ff}
 </div>
 <div class="fund-toolbar">
 <input id="fund-search" type="search" placeholder="搜索基金代码、名称或公司" oninput="applyFundFilters()">
+<select id="fund-category-filter" onchange="applyFundFilters()"><option value="">全部分类标签</option></select>
 <select id="fund-type-filter" onchange="applyFundFilters()"><option value="">全部基金类型</option></select>
 <select id="fund-risk-filter" onchange="applyFundFilters()"><option value="">全部风险等级</option></select>
 </div>
@@ -202,6 +203,8 @@ const STATE_KEY="fundTimeMachineV6State";
 const FUND_DB_NAME="FundTimeMachineDB";
 const FUND_STORE_NAME="funds";
 const FUND_DB_VERSION=1;
+const FUND_SEED_VERSION="6.2.1";
+const FUND_SEED_KEY="fundTimeMachineFundSeedVersion";
 
 function readStorage(key,fallback){
 try{
@@ -288,7 +291,12 @@ code:code,
 name:name,
 company:pick("company","fundCompany","fund_company","基金公司")||"待补充",
 type:pick("type","fundType","fund_type","基金类型")||"未分类",
+category:pick("category","fundCategory","fund_category","分类")||"其他",
+classificationTags:Array.isArray(raw.classificationTags)
+?raw.classificationTags.map(value=>String(value).trim()).filter(Boolean)
+:pick("classificationTags","classification_tags","分类标签").split(/[|、;]/).map(value=>value.trim()).filter(Boolean),
 riskLevel:pick("riskLevel","risk","risk_level","风险等级")||"待评估",
+riskSource:pick("riskSource","risk_source","风险来源")||"训练分级",
 inceptionDate:inceptionDate||null,
 currency:pick("currency","币种")||"CNY",
 nav:{
@@ -365,13 +373,16 @@ status.textContent="导入失败："+error.message;
 
 async function seedFundDatabase(){
 const existing=await getAllFunds();
-if(existing.length)return;
+if(localStorage.getItem(FUND_SEED_KEY)===FUND_SEED_VERSION)return;
 const response=await fetch("data/funds.json",{cache:"no-store"});
 if(!response.ok)throw new Error("无法读取初始基金数据库");
 const payload=await response.json();
 if(Array.isArray(payload.funds)&&payload.funds.length){
-await putFunds(payload.funds.map(normalizeFund));
+const existingCodes=new Set(existing.map(item=>item.code));
+const missing=payload.funds.map(normalizeFund).filter(item=>!existingCodes.has(item.code));
+if(missing.length)await putFunds(missing);
 }
+localStorage.setItem(FUND_SEED_KEY,FUND_SEED_VERSION);
 }
 
 async function refreshFundRecords(){
@@ -530,11 +541,12 @@ day:day,money:money,logs:logs,selectedFundCode:selectedFundCode
 function renderFundPool(){
 const list=document.getElementById("fund-list");
 const query=(document.getElementById("fund-search")?.value||"").trim().toLowerCase();
+const category=document.getElementById("fund-category-filter")?.value||"";
 const type=document.getElementById("fund-type-filter")?.value||"";
 const risk=document.getElementById("fund-risk-filter")?.value||"";
 const filtered=fundRecords.filter(fund=>{
-const searchable=[fund.code,fund.name,fund.company].join(" ").toLowerCase();
-return (!query||searchable.includes(query))&&(!type||fund.type===type)&&(!risk||fund.riskLevel===risk);
+const searchable=[fund.code,fund.name,fund.company,fund.category,...(fund.classificationTags||[])].join(" ").toLowerCase();
+return (!query||searchable.includes(query))&&(!category||fund.category===category)&&(!type||fund.type===type)&&(!risk||fund.riskLevel===risk);
 });
 const visible=filtered.slice(0,120);
 document.getElementById("fund-count").textContent=fundRecords.length
@@ -544,7 +556,7 @@ list.innerHTML=visible.map(fund=>
 "<div class='box fund-card "+(fund.code===selectedFundCode?"selected":"")+"'>"
 +"<h3>"+escapeHtml(fund.name)+"</h3>"
 +"<p class='muted'>"+escapeHtml(fund.code)+" · "+escapeHtml(fund.company)+"</p>"
-+"<div class='fund-meta'><span>"+escapeHtml(fund.type)+"</span><span>风险："+escapeHtml(fund.riskLevel)+"</span></div>"
++"<div class='fund-meta'><span>"+escapeHtml(fund.category)+"</span><span>"+escapeHtml(fund.type)+"</span><span>风险："+escapeHtml(fund.riskLevel)+"</span></div>"
 +"<button type='button' data-fund-detail='"+escapeHtml(fund.code)+"'>查看详情</button></div>"
 ).join("")||"<div class='box'>没有符合条件的基金。</div>";
 list.querySelectorAll("[data-fund-detail]").forEach(button=>{
@@ -571,6 +583,7 @@ select.innerHTML="<option value=''>"+label+"</option>"
 select.value=selected;
 };
 update("fund-type-filter",fundRecords.map(item=>item.type),"全部基金类型");
+update("fund-category-filter",fundRecords.map(item=>item.category),"全部分类标签");
 update("fund-risk-filter",fundRecords.map(item=>item.riskLevel),"全部风险等级");
 }
 
@@ -585,7 +598,10 @@ document.getElementById("fund-detail").innerHTML=
 +"<p><strong>基金代码：</strong>"+escapeHtml(fund.code)+"</p>"
 +"<p><strong>基金公司：</strong>"+escapeHtml(fund.company)+"</p>"
 +"<p><strong>类型：</strong>"+escapeHtml(fund.type)+"</p>"
++"<p><strong>分类：</strong>"+escapeHtml(fund.category)+"</p>"
++"<p><strong>分类标签：</strong>"+escapeHtml((fund.classificationTags||[]).join("、")||"待补充")+"</p>"
 +"<p><strong>风险等级：</strong>"+escapeHtml(fund.riskLevel)+"</p>"
++"<p class='muted'>风险来源："+escapeHtml(fund.riskSource||"训练分级")+"；不同销售机构评级可能不同。</p>"
 +"<p><strong>成立日期：</strong>"+escapeHtml(fund.inceptionDate||"待补充")+"</p>"
 +"<p><strong>净值数据：</strong>"+navStatus+"</p>"
 +"<button type='button' id='choose-current-fund'>选择此基金并去买入</button>";
