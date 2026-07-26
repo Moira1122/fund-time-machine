@@ -2,55 +2,169 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>基金时光机 V6.3 投资决策版</title>
+<title>基金时光机 V7 投资训练工作台</title>
 <style>
-body{font-family:"Microsoft YaHei";background:#f5f7fb;color:#172033;margin:0;padding:20px}
-.wrap{max-width:1100px;margin:auto}
-.card{background:#fff;border-radius:18px;padding:22px;margin:15px 0;box-shadow:0 8px 25px rgba(0,0,0,.08)}
-button{background:#5965e8;color:white;border:0;border-radius:10px;padding:10px 16px;margin:5px;cursor:pointer}
-.box{background:#f8fafc;padding:14px;border-radius:12px;margin:10px 0}
+:root{
+--ink:#17211b;--muted:#68756e;--line:#e4e9e6;--soft:#f5f7f5;--paper:#fff;
+--brand:#176b4d;--brand-dark:#0d4f38;--brand-soft:#e8f4ee;--accent:#d9a441;
+--danger:#b5473c;--shadow:0 12px 32px rgba(26,55,43,.07)
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:Inter,"Microsoft YaHei","PingFang SC",system-ui,sans-serif;background:#f3f5f3;color:var(--ink);margin:0;line-height:1.6}
+button,input,select,textarea{font:inherit}
+button{background:var(--brand);color:#fff;border:1px solid var(--brand);border-radius:10px;padding:10px 16px;cursor:pointer;font-weight:650;transition:.2s ease}
+button:hover{background:var(--brand-dark);border-color:var(--brand-dark);transform:translateY(-1px)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid rgba(23,107,77,.18);outline-offset:2px}
+a{color:var(--brand);font-weight:650;text-decoration:none}
+a:hover{text-decoration:underline}
+h1,h2,h3,p{margin-top:0}
+h1{font-size:clamp(30px,5vw,54px);line-height:1.08;letter-spacing:-.035em}
+h2{font-size:clamp(24px,3vw,34px);line-height:1.2;letter-spacing:-.025em;margin-bottom:8px}
+h3{font-size:17px;margin-bottom:8px}
+.wrap{max-width:1240px;margin:auto;padding:0 24px 64px}
+.app-header{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:28px;margin:0 -24px 28px;padding:14px 24px;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:12px;min-width:max-content}
+.brand-mark{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:var(--brand);color:#fff;font-weight:800;letter-spacing:-.04em}
+.brand-copy{line-height:1.2}.brand-copy strong{display:block;font-size:15px}.brand-copy span{color:var(--muted);font-size:12px}
+.main-nav{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.main-nav::-webkit-scrollbar{display:none}
+.nav-item{background:transparent;color:#526058;border-color:transparent;padding:8px 12px;white-space:nowrap;font-size:14px}
+.nav-item:hover{background:var(--soft);color:var(--ink);border-color:transparent;transform:none}
+.nav-item.active{background:var(--brand-soft);color:var(--brand-dark)}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,4vw,42px);margin:18px 0;box-shadow:var(--shadow)}
+.box{background:var(--soft);border:1px solid #e8ece9;padding:18px;border-radius:14px;margin:12px 0}
 .hide{display:none}
-textarea,input,select{width:90%;padding:10px;margin:6px;border-radius:8px;border:1px solid #ddd;box-sizing:border-box}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.muted{color:#667085;font-size:14px}
-.stat{border-left:4px solid #5965e8}
-.fund-card{border:2px solid transparent}
-.fund-card.selected{border-color:#5965e8;background:#f0f2ff}
-.risk-badge{display:inline-block;padding:3px 9px;border-radius:999px;background:#eef2ff;color:#4652c7;font-size:13px}
-.fund-toolbar{display:grid;grid-template-columns:2fr repeat(4,1fr);gap:10px;margin:12px 0}
-.fund-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.fund-meta span{background:#eef2ff;color:#4652c7;border-radius:999px;padding:3px 9px;font-size:13px}
-.import-panel{border:1px dashed #aeb6ef;background:#fafbff}
+.page-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:28px}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;color:var(--brand);font-size:13px;font-weight:750;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+.eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--brand)}
+.page-heading p{max-width:680px;margin:0;color:var(--muted)}
+.hero{position:relative;overflow:hidden;padding:clamp(30px,6vw,68px);border-radius:18px;background:linear-gradient(135deg,#edf7f1 0%,#f9f5e9 100%);border:1px solid #dde8e1}
+.hero::after{content:"";position:absolute;width:300px;height:300px;border-radius:50%;right:-100px;top:-130px;background:rgba(23,107,77,.08)}
+.hero-content{position:relative;z-index:1;max-width:760px}
+.hero p{font-size:17px;color:#526058;max-width:650px}
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
+.btn-secondary{background:#fff;color:var(--ink);border-color:var(--line)}
+.btn-secondary:hover{background:var(--soft);color:var(--ink);border-color:#ccd5cf}
+.btn-danger{background:#fff;color:var(--danger);border-color:#e9c7c3}
+.btn-danger:hover{background:#fff5f4;color:#98382f;border-color:#dca9a3}
+.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:22px 0}
+.metric{padding:20px;border:1px solid var(--line);border-radius:15px;background:#fff}
+.metric-label{color:var(--muted);font-size:13px;margin-bottom:7px}
+.metric-value{font-size:26px;line-height:1.1;font-weight:780;letter-spacing:-.03em}
+.metric-note{color:var(--muted);font-size:12px;margin-top:6px}
+.section-heading{display:flex;justify-content:space-between;align-items:center;margin:32px 0 14px}
+.section-heading h3{font-size:20px;margin:0}
+.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.quick-card{min-height:180px;display:flex;flex-direction:column;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;text-align:left;color:var(--ink)}
+.quick-card:hover{background:#fbfcfb;border-color:#cbd8d0;color:var(--ink)}
+.quick-card .quick-index{display:grid;place-items:center;width:32px;height:32px;border-radius:10px;background:var(--brand-soft);color:var(--brand);font-size:13px;margin-bottom:24px}
+.quick-card strong{font-size:18px}.quick-card span{color:var(--muted);font-weight:400;margin-top:6px}
+textarea,input,select{width:100%;padding:11px 12px;margin:5px 0;border-radius:10px;border:1px solid #d8dfda;background:#fff;color:var(--ink)}
+textarea{min-height:92px;resize:vertical}
+label{display:block;color:#455149;font-size:14px;font-weight:650}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.muted{color:var(--muted);font-size:14px}
+.stat{border-left:3px solid var(--brand);background:#fff}
+.fund-toolbar{display:grid;grid-template-columns:2fr repeat(4,minmax(120px,1fr));gap:10px;padding:14px;background:var(--soft);border:1px solid var(--line);border-radius:14px;margin:16px 0}
+.fund-workspace{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(280px,.75fr);gap:18px;align-items:start}
+#fund-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+#fund-detail{position:sticky;top:92px;margin:0;background:#fbfcfb}
+.fund-card{background:#fff;border:1px solid var(--line);min-height:210px;padding:20px;display:flex;flex-direction:column}
+.fund-card:hover{border-color:#b9c9c0;box-shadow:0 10px 24px rgba(26,55,43,.07)}
+.fund-card.selected{border-color:var(--brand);background:#f3faf6;box-shadow:0 0 0 2px rgba(23,107,77,.08)}
+.fund-card button{margin-top:auto;align-self:flex-start}
+.fund-meta{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.fund-meta span,.risk-badge{display:inline-block;background:var(--brand-soft);color:var(--brand-dark);border-radius:999px;padding:3px 9px;font-size:12px}
+.import-panel{border:1px dashed #a9bdb1;background:#fbfdfb}
+.import-panel summary{cursor:pointer;font-weight:750;color:var(--brand-dark)}
+.import-content{padding-top:14px}
 .status-ok{color:#18794e}.status-error{color:#b42318}
-table{width:100%;border-collapse:collapse;margin-top:12px}
-th,td{text-align:left;padding:9px;border-bottom:1px solid #e5e7eb;font-size:14px}
-th{background:#eef2ff}
-.table-wrap{overflow-x:auto}
-@media(max-width:800px){.grid{grid-template-columns:1fr}}
-@media(max-width:800px){.form-grid{grid-template-columns:1fr}}
-@media(max-width:800px){.fund-toolbar{grid-template-columns:1fr}}
+.simulation-overview{display:grid;grid-template-columns:1.2fr 1fr .7fr;gap:14px;margin-bottom:18px}
+.simulation-overview .box{margin:0}
+.asset-panel{background:var(--brand-dark);color:#fff;border-color:var(--brand-dark)}
+.asset-panel .metric-label{color:#cfe2d8}.asset-panel .metric-value{font-size:32px}
+.feedback-panel{grid-column:1/-1;background:#fffaf0;border-color:#eee0bd}
+.decision-panel{padding:24px;border:1px solid var(--line);border-radius:16px;background:#fbfcfb}
+.decision-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.decision-actions button{margin:0}
+#pre-buy-questionnaire{background:#fff;border-color:var(--line)}
+table{width:100%;border-collapse:separate;border-spacing:0;margin-top:12px;min-width:860px}
+th,td{text-align:left;padding:13px 12px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:top}
+th{position:sticky;top:0;background:#f3f7f4;color:#47534c;font-weight:750}
+tbody tr:hover td{background:#fafcfb}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}
+.log-summary{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 18px;border-radius:14px;background:var(--soft);margin-bottom:18px}
+@media(max-width:980px){
+.app-header{align-items:flex-start;flex-direction:column;gap:10px}
+.main-nav{width:100%}.fund-toolbar{grid-template-columns:repeat(2,1fr)}
+.fund-toolbar input{grid-column:1/-1}.fund-workspace{grid-template-columns:1fr}
+#fund-detail{position:static}.simulation-overview{grid-template-columns:1fr 1fr}.feedback-panel{grid-column:1/-1}
+}
+@media(max-width:720px){
+body{padding-bottom:74px}.wrap{padding:0 14px 34px}
+.app-header{position:fixed;top:auto;bottom:0;left:0;right:0;margin:0;padding:8px 10px;border-top:1px solid var(--line);border-bottom:0;box-shadow:0 -8px 24px rgba(23,33,27,.08)}
+.brand{display:none}.main-nav{gap:2px}.nav-item{padding:9px 12px;font-size:13px}
+.card{padding:20px 16px;border-radius:16px;margin:12px 0}.page-heading{display:block;margin-bottom:20px}
+.metric-grid{grid-template-columns:repeat(2,1fr)}.quick-grid{grid-template-columns:1fr}
+.form-grid,.fund-toolbar,.simulation-overview{grid-template-columns:1fr}.fund-toolbar input{grid-column:auto}
+#fund-list{grid-template-columns:1fr}.hero{padding:30px 22px}.hero-actions button{width:100%}
+.decision-actions{display:grid;grid-template-columns:1fr 1fr}.decision-actions button{width:100%}
+}
 </style>
 </head>
 <body>
 <div class="wrap">
 
-<div class="card">
-<h1>基金时光机 V6.3 投资决策版</h1>
-<p>投资行为训练平台：不预测市场，训练你的决策能力。</p>
-<button onclick="show('learn')">新手学院</button>
-<button onclick="show('fundPool')">基金池</button>
-<button onclick="show('loss')">亏损复盘</button>
-<button onclick="show('sim')">开始市场训练</button>
-<button onclick="show('strategy')">策略实验室</button>
-<button onclick="show('coach')">AI投资教练</button>
-<button onclick="show('challenge')">训练挑战</button>
-<button onclick="show('journal')">投资日志</button>
-<button onclick="show('report')">复盘中心</button>
+<header class="app-header">
+<div class="brand">
+<div class="brand-mark">FT</div>
+<div class="brand-copy"><strong>基金时光机</strong><span>V7 投资训练工作台</span></div>
+</div>
+<nav class="main-nav" aria-label="主要导航">
+<button class="nav-item" data-page="home" onclick="show('home')">首页</button>
+<button class="nav-item" data-page="fundPool" onclick="show('fundPool')">基金</button>
+<button class="nav-item" data-page="sim" onclick="show('sim')">市场训练</button>
+<button class="nav-item" data-page="journal" onclick="show('journal')">投资日志</button>
+<button class="nav-item" data-page="report" onclick="show('report')">复盘中心</button>
+<button class="nav-item" data-page="learn" onclick="show('learn')">新手学院</button>
+<button class="nav-item" data-page="strategy" onclick="show('strategy')">策略实验室</button>
+<button class="nav-item" data-page="loss" onclick="show('loss')">亏损复盘</button>
+<button class="nav-item" data-page="coach" onclick="show('coach')">AI 教练</button>
+<button class="nav-item" data-page="challenge" onclick="show('challenge')">训练挑战</button>
+<button class="nav-item" data-page="rules" onclick="show('rules')">我的规则</button>
+</nav>
+</header>
+
+<div id="home" class="card hide">
+<div class="hero">
+<div class="hero-content">
+<div class="eyebrow">V7 投资训练工作台</div>
+<h1>把每一次投资，变成一次有记录的决定。</h1>
+<p>从认识基金、制定计划到模拟交易和行为复盘，在一个简洁的工作台里训练长期投资能力。</p>
+<div class="hero-actions">
+<button onclick="show('fundPool')">浏览基金池</button>
+<button class="btn-secondary" onclick="show('sim')">继续市场训练</button>
+</div>
+</div>
+</div>
+<div class="metric-grid">
+<div class="metric"><div class="metric-label">基金数据库</div><div class="metric-value" id="home-fund-count">30</div><div class="metric-note">只代表性基金</div></div>
+<div class="metric"><div class="metric-label">训练进度</div><div class="metric-value" id="home-day">1</div><div class="metric-note">当前模拟日</div></div>
+<div class="metric"><div class="metric-label">模拟资产</div><div class="metric-value" id="home-money">¥100,000</div><div class="metric-note">仅用于训练</div></div>
+<div class="metric"><div class="metric-label">决策记录</div><div class="metric-value" id="home-journal-count">0</div><div class="metric-note">条本地日志</div></div>
+</div>
+<div class="section-heading"><h3>开始一段训练</h3><span class="muted">按自己的节奏推进</span></div>
+<div class="quick-grid">
+<button class="quick-card" onclick="show('fundPool')"><span class="quick-index">01</span><strong>选择一只基金</strong><span>搜索、筛选并理解基金的风险和投资方向。</span></button>
+<button class="quick-card" onclick="show('sim')"><span class="quick-index">02</span><strong>完成一次决策</strong><span>写下理由和应对计划，再进行模拟买入。</span></button>
+<button class="quick-card" onclick="show('report')"><span class="quick-index">03</span><strong>回看行为模式</strong><span>从日志中识别情绪、习惯和重复错误。</span></button>
+</div>
 </div>
 
 <div id="learn" class="card hide">
-<h2>新手学院</h2>
+<div class="page-heading"><div><div class="eyebrow">Learning center</div><h2>新手学院</h2><p>用清晰的基础知识建立投资判断框架。</p></div></div>
 <div class="grid">
 <div class="box"><h3>基金是什么</h3><p>基金把许多投资者的资金集中起来，由专业机构按约定范围进行投资。</p></div>
 <div class="box"><h3>基金分类</h3><p>常见类型包括货币基金、债券基金、混合基金和股票基金，风险通常依次提高。</p></div>
@@ -78,16 +192,19 @@ th{background:#eef2ff}
 </div>
 
 <div id="fundPool" class="card hide">
-<h2>基金池</h2>
-<p class="muted">基金资料保存在本机浏览器数据库中。先导入基金数据，再搜索、筛选、查看详情并选择买入。</p>
-<div class="box import-panel">
-<h3>批量导入基金数据</h3>
+<div class="page-heading">
+<div><div class="eyebrow">Fund explorer</div><h2>基金池</h2><p>从 30 只代表性基金中搜索、筛选并理解每只基金，再进入模拟决策。</p></div>
+</div>
+<details class="box import-panel">
+<summary>批量导入基金数据</summary>
+<div class="import-content">
 <p class="muted">支持 JSON 或 CSV。相同基金代码会自动更新，适合导入大量基金资料。</p>
 <input id="fund-import-file" type="file" accept=".json,.csv,application/json,text/csv">
 <button onclick="importFundFile()">导入基金数据</button>
 <a href="data/fund-import-template.csv" download>下载 CSV 模板</a>
 <div id="fund-import-status" class="muted">尚未导入数据。</div>
 </div>
+</details>
 <div class="fund-toolbar">
 <input id="fund-search" type="search" placeholder="搜索基金代码、名称或公司" oninput="applyFundFilters()">
 <select id="fund-category-filter" onchange="applyFundFilters()"><option value="">全部分类标签</option></select>
@@ -95,13 +212,17 @@ th{background:#eef2ff}
 <select id="fund-direction-filter" onchange="applyFundFilters()"><option value="">全部投资方向</option></select>
 <select id="fund-risk-filter" onchange="applyFundFilters()"><option value="">全部风险等级</option></select>
 </div>
+<div class="fund-workspace">
+<div>
 <p id="fund-count" class="muted"></p>
 <div id="fund-list" class="grid"></div>
+</div>
 <div id="fund-detail" class="box">请选择一只基金查看完整资料。</div>
+</div>
 </div>
 
 <div id="loss" class="card hide">
-<h2>亏损复盘</h2>
+<div class="page-heading"><div><div class="eyebrow">Loss review</div><h2>亏损复盘</h2><p>识别亏损背后的决策习惯，而不是只盯着一次结果。</p></div></div>
 <p>请选择你最常遇到的问题：</p>
 <button onclick="analysis('追涨')">看到上涨就买</button>
 <button onclick="analysis('恐慌')">下跌就卖</button>
@@ -110,11 +231,16 @@ th{background:#eef2ff}
 </div>
 
 <div id="sim" class="card hide">
-<h2>历史市场剧本训练</h2>
+<div class="page-heading"><div><div class="eyebrow">Market simulator</div><h2>市场训练</h2><p>面对市场事件，先写下计划，再做出买入、持有或卖出决定。</p></div></div>
+<div class="simulation-overview">
 <div class="box" id="selected-fund">尚未选择基金，请先进入基金池。</div>
 <div class="box" id="event">第1天：市场上涨，投资者情绪逐渐升温。</div>
-<p>资产：<span id="money">100000</span> 元</p>
-<div class="box" id="result-feedback">第二日结果反馈将在你做出决策后显示。</div>
+<div class="box asset-panel"><div class="metric-label">当前模拟资产</div><div class="metric-value">¥<span id="money">100000</span></div></div>
+<div class="box feedback-panel" id="result-feedback">第二日结果反馈将在你做出决策后显示。</div>
+</div>
+<div class="decision-panel">
+<h3>本次决策</h3>
+<p class="muted">金额与情绪会和投资问答一起写入你的本地日志。</p>
 <div class="form-grid">
 <input id="trade-amount" type="number" min="0" value="1000" placeholder="操作金额">
 <select id="trade-emotion">
@@ -153,11 +279,14 @@ th{background:#eef2ff}
 </div>
 <p class="muted">买入时三项必须填写；回答会随交易一起写入投资日志，供未来复盘使用。</p>
 </div>
-<button onclick="nextDay()">下一交易日</button>
+<div class="decision-actions">
+<button class="btn-secondary" onclick="nextDay()">下一交易日</button>
 <button onclick="decision('buy')">买入</button>
-<button onclick="decision('hold')">继续观察</button>
-<button onclick="decision('sell')">卖出</button>
+<button class="btn-secondary" onclick="decision('hold')">继续观察</button>
+<button class="btn-danger" onclick="decision('sell')">卖出</button>
+</div>
 <p id="log"></p>
+</div>
 <div class="grid">
 <div class="box"><h3>每日事件记录</h3><div id="daily-events" class="muted"></div></div>
 <div class="box"><h3>用户决策记录</h3><div id="decision-records" class="muted"></div></div>
@@ -165,7 +294,7 @@ th{background:#eef2ff}
 </div>
 
 <div id="strategy" class="card hide">
-<h2>策略实验室</h2>
+<div class="page-heading"><div><div class="eyebrow">Strategy lab</div><h2>策略实验室</h2><p>用同一组模拟行情比较不同执行方法。</p></div></div>
 <div class="form-grid">
 <input id="strategy-capital" type="number" min="1000" value="12000" placeholder="模拟总资金">
 <input id="strategy-periods" type="number" min="3" max="24" value="12" placeholder="模拟期数">
@@ -180,14 +309,14 @@ th{background:#eef2ff}
 </div>
 
 <div id="coach" class="card hide">
-<h2>AI投资教练（本地分析版）</h2>
+<div class="page-heading"><div><div class="eyebrow">Decision coach</div><h2>AI 投资教练</h2><p>基于本地规则，帮助你重新审视投资问题。</p></div></div>
 <textarea id="question" placeholder="输入你的问题"></textarea>
 <button onclick="ask()">分析</button>
 <div class="box" id="answer"></div>
 </div>
 
 <div id="challenge" class="card hide">
-<h2>训练挑战</h2>
+<div class="page-heading"><div><div class="eyebrow">Practice challenge</div><h2>训练挑战</h2><p>用可执行的小目标建立稳定的投资纪律。</p></div></div>
 <div class="box">
 挑战：不要追涨<br>
 目标：连续执行自己的规则30天。
@@ -199,22 +328,23 @@ th{background:#eef2ff}
 </div>
 
 <div id="journal" class="card hide">
-<h2>投资日志</h2>
-<p class="muted">买入、卖出和持有操作会自动保存在当前浏览器，刷新页面后仍可查看。</p>
+<div class="page-heading"><div><div class="eyebrow">Investment journal</div><h2>投资日志</h2><p>每一次操作、理由和心理状态都保存在当前浏览器中。</p></div></div>
+<div class="log-summary"><span>日志会在完成市场决策后自动更新</span><button class="btn-secondary" onclick="show('sim')">去做一次决策</button></div>
 <div id="journal-list"></div>
 </div>
 
 <div id="report" class="card hide">
-<h2>复盘中心</h2>
-<p class="muted">根据你的投资日志自动分析交易行为。日志越完整，结论越有参考价值。</p>
+<div class="page-heading">
+<div><div class="eyebrow">Behavior review</div><h2>复盘中心</h2><p>根据投资日志分析交易习惯、情绪倾向和常见错误。</p></div>
 <button onclick="renderReview()">重新生成复盘</button>
+</div>
 <div id="review-summary">
 <div class="box">完成至少一次市场决策后，这里会生成复盘结果。</div>
 </div>
 </div>
 
-<div class="card">
-<h2>投资规则</h2>
+<div id="rules" class="card hide">
+<div class="page-heading"><div><div class="eyebrow">My discipline</div><h2>我的投资规则</h2><p>在市场波动之前，先把仓位、回撤和行动边界写清楚。</p></div></div>
 <input placeholder="单只基金最大仓位，例如40%">
 <input placeholder="最大接受回撤，例如15%">
 <textarea placeholder="我的投资规则"></textarea>
@@ -477,6 +607,7 @@ saveTrainingState();
 refreshFundFilterOptions();
 renderFundPool();
 updateSelectedFund();
+renderHomeStats();
 }
 
 async function initializeFundDatabase(){
@@ -494,13 +625,31 @@ status.textContent="基金数据库初始化失败："+error.message;
 }
 }
 
+function renderHomeStats(){
+const fundCount=document.getElementById("home-fund-count");
+const dayCount=document.getElementById("home-day");
+const moneyValue=document.getElementById("home-money");
+const journalCount=document.getElementById("home-journal-count");
+if(fundCount)fundCount.textContent=fundRecords.length||30;
+if(dayCount)dayCount.textContent=day;
+if(moneyValue)moneyValue.textContent=formatMoney(money);
+if(journalCount)journalCount.textContent=journal.length;
+}
+
 function show(id){
 document.querySelectorAll('.hide').forEach(x=>x.style.display='none');
-document.getElementById(id).style.display='block';
+const target=document.getElementById(id);
+if(!target)return;
+target.style.display='block';
+document.querySelectorAll("[data-page]").forEach(button=>{
+button.classList.toggle("active",button.dataset.page===id);
+});
+if(id==="home")renderHomeStats();
 if(id==="fundPool")renderFundPool();
 if(id==="journal")renderJournal();
 if(id==="report")renderReview();
 if(id==="sim")renderSimulationRecords();
+window.scrollTo({top:0,behavior:"smooth"});
 }
 
 function decision(type){
@@ -769,6 +918,7 @@ escapeHtml(item.date)+"｜"+escapeHtml(item.fundName||"历史记录（未绑定�
 ).join("<br>")||"暂无决策记录";
 }
 updateSelectedFund();
+renderHomeStats();
 }
 
 function formatInvestmentPlan(item){
@@ -942,6 +1092,7 @@ document.getElementById("log").innerText=logs.join("；");
 renderSimulationRecords();
 renderFundPool();
 initializeFundDatabase();
+show("home");
 window.FundTimeMachineReview={version:"6.3",getDataset:buildReviewDataset};
 </script>
 </body>
