@@ -360,6 +360,106 @@ table{width:100%;border-collapse:collapse;min-width:820px}
 th,td{padding:12px;border-bottom:1px solid var(--line);text-align:left;font-size:13px}
 th{background:#f2f0e9}
 
+/* V8 user growth system */
+.onboarding-overlay{
+  position:fixed;
+  inset:0;
+  z-index:100;
+  display:none;
+  place-items:center;
+  padding:22px;
+  background:rgba(29,30,27,.72);
+  backdrop-filter:blur(14px);
+}
+.onboarding-overlay.open{display:grid}
+.onboarding-shell{
+  width:min(960px,100%);
+  max-height:92vh;
+  overflow:auto;
+  padding:clamp(28px,5vw,54px);
+  background:var(--paper);
+  border:1px solid var(--line);
+  box-shadow:0 28px 90px rgba(0,0,0,.22);
+}
+.onboarding-shell>p{max-width:700px;color:var(--muted)}
+.onboarding-progress{display:flex;gap:7px;margin-bottom:32px}
+.onboarding-progress span{height:5px;flex:1;background:#e5e2d9}
+.onboarding-progress span.active{background:var(--purple)}
+.onboarding-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:30px 0}
+.onboarding-question{
+  min-height:210px;
+  padding:20px;
+  background:#f7f5ef;
+  border:1px solid var(--line);
+}
+.onboarding-question>span{display:block;margin-bottom:30px;color:var(--purple);font-size:12px;font-weight:900;letter-spacing:.08em}
+.risk-test label{font-size:12px;margin-top:10px}
+.onboarding-action{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.onboarding-action span{color:var(--muted);font-size:13px}
+
+.v8-home-metrics{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-top:18px;
+}
+.v8-metric{
+  min-height:178px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  padding:22px;
+  background:var(--paper);
+  border:1px solid var(--line);
+}
+.v8-metric>span{color:var(--muted);font-size:12px;font-weight:800}
+.v8-metric>strong{display:block;margin-top:auto;font-size:28px;line-height:1.08;letter-spacing:-.035em}
+.v8-metric>p{margin:7px 0 0;color:var(--muted);font-size:12px}
+.v8-metric b{font-size:44px}
+.v8-metric small{font-size:14px;color:var(--muted)}
+.level-metric{background:var(--purple);color:white;border-color:var(--purple)}
+.level-metric>span,.level-metric>p{color:#ddd8ff}
+.task-metric{background:var(--yellow-soft)}
+.task-metric>strong{font-size:20px}
+.score-metric{background:var(--green-soft)}
+.text-button{padding:5px 0;background:transparent;color:var(--purple);font-size:12px}
+.text-button:hover{transform:none;background:transparent;color:#4939ad}
+.profile-snapshot{padding:28px;border:1px solid var(--line);background:var(--blue-soft)}
+.profile-snapshot h3{font-size:24px}
+.profile-snapshot p{color:var(--muted)}
+
+.level-roadmap{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line)}
+.level-node{display:grid;gap:4px;padding:15px;border-right:1px solid var(--line);opacity:.42}
+.level-node:last-child{border-right:0}
+.level-node strong{font-size:20px}
+.level-node span{font-size:11px;color:var(--muted)}
+.level-node.complete{opacity:1;background:var(--green-soft)}
+.level-node.current{opacity:1;background:var(--yellow-soft)}
+.achievement.unlocked{border-color:var(--green);background:var(--green-soft)}
+.achievement.unlocked .achievement-mark::after{content:" ✓";color:var(--green)}
+
+.personality-panel{margin-bottom:16px}
+.personality-hero{
+  display:grid;
+  grid-template-columns:.9fr 1.1fr;
+  gap:0;
+  border:1px solid var(--line);
+}
+.personality-identity{padding:30px;background:var(--ink);color:white}
+.personality-identity .eyebrow{color:var(--yellow)}
+.personality-identity h3{font-size:32px}
+.personality-evidence{padding:30px;background:var(--purple-soft)}
+.personality-tags{display:flex;gap:7px;flex-wrap:wrap;margin-top:20px}
+.personality-tags span{padding:5px 9px;background:white;font-size:11px;font-weight:800}
+.ability-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+.ability-item{padding:14px;background:var(--paper);border:1px solid var(--line)}
+.ability-item strong{display:flex;justify-content:space-between;font-size:12px}
+.ability-item .progress-track{height:7px;margin-top:9px;background:#e9e6dd}
+.ability-item .progress-fill{background:var(--purple)}
+.review-advice{margin-top:12px;padding:22px;background:var(--yellow-soft);border-left:5px solid var(--yellow)}
+.review-complete{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:18px;padding:18px;border:1px solid var(--line);background:#f7f6f1}
+.review-complete span{color:var(--muted);font-size:13px}
+
 @media(max-width:960px){
   .app-header{flex-wrap:wrap}
   .main-nav{order:3;width:100%;overflow-x:auto}
@@ -370,6 +470,9 @@ th{background:#f2f0e9}
   #fund-detail{position:static}
   .fund-toolbar{grid-template-columns:repeat(2,1fr)}
   .fund-toolbar input{grid-column:1/-1}
+  .v8-home-metrics,.ability-grid{grid-template-columns:repeat(2,1fr)}
+  .onboarding-grid,.personality-hero{grid-template-columns:1fr}
+  .onboarding-question{min-height:0}
 }
 
 @media(max-width:680px){
@@ -393,5 +496,9 @@ th{background:#f2f0e9}
   .journal-entry{grid-template-columns:36px 1fr;gap:12px}
   .journal-dot{width:36px;height:36px}.journal-timeline::before{left:17px}
   .journal-content{padding:18px}.journal-top{display:block}
+  .v8-home-metrics,.level-roadmap,.ability-grid{grid-template-columns:1fr}
+  .level-node{border-right:0;border-bottom:1px solid var(--line)}
+  .onboarding-overlay{padding:0}.onboarding-shell{max-height:100vh;min-height:100vh;padding:28px 18px}
+  .onboarding-action,.review-complete{align-items:stretch;flex-direction:column}
 }
 
