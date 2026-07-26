@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>基金时光机 V6.1 投资训练版</title>
+<title>基金时光机 V6.2 基金数据库版</title>
 <style>
 body{font-family:"Microsoft YaHei";background:#f5f7fb;color:#172033;margin:0;padding:20px}
 .wrap{max-width:1100px;margin:auto}
@@ -18,19 +18,25 @@ textarea,input,select{width:90%;padding:10px;margin:6px;border-radius:8px;border
 .fund-card{border:2px solid transparent}
 .fund-card.selected{border-color:#5965e8;background:#f0f2ff}
 .risk-badge{display:inline-block;padding:3px 9px;border-radius:999px;background:#eef2ff;color:#4652c7;font-size:13px}
+.fund-toolbar{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;margin:12px 0}
+.fund-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.fund-meta span{background:#eef2ff;color:#4652c7;border-radius:999px;padding:3px 9px;font-size:13px}
+.import-panel{border:1px dashed #aeb6ef;background:#fafbff}
+.status-ok{color:#18794e}.status-error{color:#b42318}
 table{width:100%;border-collapse:collapse;margin-top:12px}
 th,td{text-align:left;padding:9px;border-bottom:1px solid #e5e7eb;font-size:14px}
 th{background:#eef2ff}
 .table-wrap{overflow-x:auto}
 @media(max-width:800px){.grid{grid-template-columns:1fr}}
 @media(max-width:800px){.form-grid{grid-template-columns:1fr}}
+@media(max-width:800px){.fund-toolbar{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="wrap">
 
 <div class="card">
-<h1>基金时光机 V6.1 投资训练版</h1>
+<h1>基金时光机 V6.2 基金数据库版</h1>
 <p>投资行为训练平台：不预测市场，训练你的决策能力。</p>
 <button onclick="show('learn')">新手学院</button>
 <button onclick="show('fundPool')">基金池</button>
@@ -73,9 +79,23 @@ th{background:#eef2ff}
 
 <div id="fundPool" class="card hide">
 <h2>基金池</h2>
-<p class="muted">先查看基金详情，再选择一只基金进入模拟交易。</p>
+<p class="muted">基金资料保存在本机浏览器数据库中。先导入基金数据，再搜索、筛选、查看详情并选择买入。</p>
+<div class="box import-panel">
+<h3>批量导入基金数据</h3>
+<p class="muted">支持 JSON 或 CSV。相同基金代码会自动更新，适合导入大量基金资料。</p>
+<input id="fund-import-file" type="file" accept=".json,.csv,application/json,text/csv">
+<button onclick="importFundFile()">导入基金数据</button>
+<a href="data/fund-import-template.csv" download>下载 CSV 模板</a>
+<div id="fund-import-status" class="muted">尚未导入数据。</div>
+</div>
+<div class="fund-toolbar">
+<input id="fund-search" type="search" placeholder="搜索基金代码、名称或公司" oninput="applyFundFilters()">
+<select id="fund-type-filter" onchange="applyFundFilters()"><option value="">全部基金类型</option></select>
+<select id="fund-risk-filter" onchange="applyFundFilters()"><option value="">全部风险等级</option></select>
+</div>
+<p id="fund-count" class="muted"></p>
 <div id="fund-list" class="grid"></div>
-<div id="fund-detail" class="box">请选择一只基金查看详情。</div>
+<div id="fund-detail" class="box">请选择一只基金查看完整资料。</div>
 </div>
 
 <div id="loss" class="card hide">
@@ -179,6 +199,9 @@ th{background:#eef2ff}
 const JOURNAL_KEY="fundTimeMachineV6Journal";
 const EVENTS_KEY="fundTimeMachineV6Events";
 const STATE_KEY="fundTimeMachineV6State";
+const FUND_DB_NAME="FundTimeMachineDB";
+const FUND_STORE_NAME="funds";
+const FUND_DB_VERSION=1;
 
 function readStorage(key,fallback){
 try{
@@ -195,18 +218,187 @@ let money=savedState.money||100000;
 let logs=Array.isArray(savedState.logs)?savedState.logs:[];
 let journal=readStorage(JOURNAL_KEY,[]);
 let eventHistory=readStorage(EVENTS_KEY,[]);
-let selectedFundId=savedState.selectedFundId||"";
+let selectedFundCode=savedState.selectedFundCode||savedState.selectedFundId||"";
+let fundRecords=[];
+let fundDatabase=null;
 let events=[
 "市场上涨，投资者情绪逐渐升温。",
 "热门板块快速上涨，市场开始狂热。",
 "市场突然调整，恐慌情绪增加。",
 "政策刺激出现，市场逐渐恢复。"
 ];
-const funds=[
-{id:"hs300",name:"沪深300指数基金",type:"宽基指数",risk:"中",description:"跟踪沪深300指数，覆盖沪深市场中规模大、流动性较好的代表性公司。"},
-{id:"new-energy",name:"新能源主题基金",type:"行业基金",risk:"高",description:"集中投资新能源相关行业，行业波动通常高于宽基指数。"},
-{id:"bond",name:"债券基金",type:"债券基金",risk:"低",description:"主要投资债券类资产，波动通常较低，但仍可能发生净值回撤。"}
-];
+
+function openFundDatabase(){
+return new Promise((resolve,reject)=>{
+const request=indexedDB.open(FUND_DB_NAME,FUND_DB_VERSION);
+request.onupgradeneeded=()=>{
+const db=request.result;
+const store=db.objectStoreNames.contains(FUND_STORE_NAME)
+?request.transaction.objectStore(FUND_STORE_NAME)
+:db.createObjectStore(FUND_STORE_NAME,{keyPath:"code"});
+[
+["name","name"],["company","company"],["type","type"],
+["riskLevel","riskLevel"],["inceptionDate","inceptionDate"]
+].forEach(([index,key])=>{
+if(!store.indexNames.contains(index))store.createIndex(index,key,{unique:false});
+});
+};
+request.onsuccess=()=>resolve(request.result);
+request.onerror=()=>reject(request.error);
+});
+}
+
+function getAllFunds(){
+return new Promise((resolve,reject)=>{
+const request=fundDatabase.transaction(FUND_STORE_NAME,"readonly")
+.objectStore(FUND_STORE_NAME).getAll();
+request.onsuccess=()=>resolve(request.result||[]);
+request.onerror=()=>reject(request.error);
+});
+}
+
+function putFunds(records){
+return new Promise((resolve,reject)=>{
+const transaction=fundDatabase.transaction(FUND_STORE_NAME,"readwrite");
+const store=transaction.objectStore(FUND_STORE_NAME);
+records.forEach(record=>store.put(record));
+transaction.oncomplete=()=>resolve();
+transaction.onerror=()=>reject(transaction.error);
+transaction.onabort=()=>reject(transaction.error||new Error("基金数据写入已中止"));
+});
+}
+
+function normalizeFund(raw,index){
+const pick=(...keys)=>{
+for(const key of keys){
+if(raw[key]!==undefined&&raw[key]!==null&&String(raw[key]).trim()!=="")return String(raw[key]).trim();
+}
+return "";
+};
+const code=pick("code","fundCode","fund_code","基金代码");
+const name=pick("name","fundName","fund_name","基金名称");
+if(!code||!name)throw new Error("第"+(index+1)+"条数据缺少基金代码或基金名称");
+const inceptionDate=pick("inceptionDate","inception_date","成立日期");
+if(inceptionDate&&!/^\d{4}-\d{2}-\d{2}$/.test(inceptionDate)){
+throw new Error("第"+(index+1)+"条成立日期必须为 YYYY-MM-DD");
+}
+const existingNav=raw.nav&&typeof raw.nav==="object"?raw.nav:{};
+return {
+code:code,
+name:name,
+company:pick("company","fundCompany","fund_company","基金公司")||"待补充",
+type:pick("type","fundType","fund_type","基金类型")||"未分类",
+riskLevel:pick("riskLevel","risk","risk_level","风险等级")||"待评估",
+inceptionDate:inceptionDate||null,
+currency:pick("currency","币种")||"CNY",
+nav:{
+latest:existingNav.latest??null,
+latestDate:existingNav.latestDate??null,
+historySource:existingNav.historySource??null,
+historyEndpoint:existingNav.historyEndpoint??null,
+lastSyncedAt:existingNav.lastSyncedAt??null
+},
+metadata:{
+source:raw.metadata?.source||raw.source||"import",
+importedAt:new Date().toISOString(),
+updatedAt:raw.metadata?.updatedAt||null
+}
+};
+}
+
+function parseCsv(text){
+const rows=[];
+let row=[],cell="",quoted=false;
+for(let i=0;i<text.length;i++){
+const char=text[i],next=text[i+1];
+if(char==='"'&&quoted&&next==='"'){cell+='"';i++;continue;}
+if(char==='"'){quoted=!quoted;continue;}
+if(char===","&&!quoted){row.push(cell);cell="";continue;}
+if((char==="\n"||char==="\r")&&!quoted){
+if(char==="\r"&&next==="\n")i++;
+row.push(cell);cell="";
+if(row.some(value=>value.trim()!==""))rows.push(row);
+row=[];continue;
+}
+cell+=char;
+}
+row.push(cell);
+if(row.some(value=>value.trim()!==""))rows.push(row);
+if(rows.length<2)return [];
+const headers=rows.shift().map(value=>value.trim().replace(/^\uFEFF/,""));
+return rows.map(values=>Object.fromEntries(headers.map((header,i)=>[header,(values[i]||"").trim()])));
+}
+
+async function importFundFile(){
+const input=document.getElementById("fund-import-file");
+const status=document.getElementById("fund-import-status");
+const file=input.files&&input.files[0];
+if(!file){
+status.className="status-error";
+status.textContent="请先选择 JSON 或 CSV 文件。";
+return;
+}
+try{
+status.className="muted";
+status.textContent="正在读取并导入数据…";
+const text=await file.text();
+const extension=file.name.split(".").pop().toLowerCase();
+let source;
+if(extension==="csv"){
+source=parseCsv(text);
+}else{
+const parsed=JSON.parse(text);
+source=Array.isArray(parsed)?parsed:parsed.funds;
+}
+if(!Array.isArray(source)||!source.length)throw new Error("文件中没有可导入的基金记录");
+const normalized=source.map(normalizeFund);
+await putFunds(normalized);
+await refreshFundRecords();
+status.className="status-ok";
+status.textContent="导入成功：共处理 "+normalized.length+" 条基金记录。";
+input.value="";
+}catch(error){
+status.className="status-error";
+status.textContent="导入失败："+error.message;
+}
+}
+
+async function seedFundDatabase(){
+const existing=await getAllFunds();
+if(existing.length)return;
+const response=await fetch("data/funds.json",{cache:"no-store"});
+if(!response.ok)throw new Error("无法读取初始基金数据库");
+const payload=await response.json();
+if(Array.isArray(payload.funds)&&payload.funds.length){
+await putFunds(payload.funds.map(normalizeFund));
+}
+}
+
+async function refreshFundRecords(){
+fundRecords=(await getAllFunds()).sort((a,b)=>a.code.localeCompare(b.code,"zh-CN"));
+if(selectedFundCode&&!fundRecords.some(item=>item.code===selectedFundCode)){
+selectedFundCode="";
+saveTrainingState();
+}
+refreshFundFilterOptions();
+renderFundPool();
+updateSelectedFund();
+}
+
+async function initializeFundDatabase(){
+const status=document.getElementById("fund-import-status");
+try{
+fundDatabase=await openFundDatabase();
+await seedFundDatabase();
+await refreshFundRecords();
+if(fundRecords.length){
+status.textContent="本机数据库已有 "+fundRecords.length+" 条基金记录。";
+}
+}catch(error){
+status.className="status-error";
+status.textContent="基金数据库初始化失败："+error.message;
+}
+}
 
 function show(id){
 document.querySelectorAll('.hide').forEach(x=>x.style.display='none');
@@ -219,7 +411,7 @@ if(id==="sim")renderSimulationRecords();
 
 function decision(type){
 const actionNames={buy:"买入",sell:"卖出",hold:"持有"};
-const selectedFund=funds.find(item=>item.id===selectedFundId);
+const selectedFund=fundRecords.find(item=>item.code===selectedFundCode);
 if(!selectedFund){
 alert("请先在基金池选择一只基金。");
 show("fundPool");
@@ -255,10 +447,17 @@ amount:amount,
 reason:reason,
 emotion:emotion,
 event:eventText,
-fundId:selectedFund.id,
+fundId:selectedFund.code,
+fundCode:selectedFund.code,
 fundName:selectedFund.name,
 fundType:selectedFund.type,
-fundRisk:selectedFund.risk,
+fundCompany:selectedFund.company,
+fundRisk:selectedFund.riskLevel,
+fundInceptionDate:selectedFund.inceptionDate,
+navSnapshot:{
+value:selectedFund.nav?.latest??null,
+date:selectedFund.nav?.latestDate??null
+},
 returnChange:change,
 returnRate:amount?change/amount*100:null
 });
@@ -324,35 +523,78 @@ return events[(day-1)%events.length];
 
 function saveTrainingState(){
 localStorage.setItem(STATE_KEY,JSON.stringify({
-day:day,money:money,logs:logs,selectedFundId:selectedFundId
+day:day,money:money,logs:logs,selectedFundCode:selectedFundCode
 }));
 }
 
 function renderFundPool(){
 const list=document.getElementById("fund-list");
-list.innerHTML=funds.map(fund=>
-"<div class='box fund-card "+(fund.id===selectedFundId?"selected":"")+"'>"
+const query=(document.getElementById("fund-search")?.value||"").trim().toLowerCase();
+const type=document.getElementById("fund-type-filter")?.value||"";
+const risk=document.getElementById("fund-risk-filter")?.value||"";
+const filtered=fundRecords.filter(fund=>{
+const searchable=[fund.code,fund.name,fund.company].join(" ").toLowerCase();
+return (!query||searchable.includes(query))&&(!type||fund.type===type)&&(!risk||fund.riskLevel===risk);
+});
+const visible=filtered.slice(0,120);
+document.getElementById("fund-count").textContent=fundRecords.length
+?"共 "+fundRecords.length+" 只基金，当前匹配 "+filtered.length+" 只"
+:"数据库为空，请先导入基金数据。";
+list.innerHTML=visible.map(fund=>
+"<div class='box fund-card "+(fund.code===selectedFundCode?"selected":"")+"'>"
 +"<h3>"+escapeHtml(fund.name)+"</h3>"
-+"<p>"+escapeHtml(fund.type)+"　<span class='risk-badge'>风险："+escapeHtml(fund.risk)+"</span></p>"
-+"<button onclick=\"showFundDetail('"+fund.id+"')\">查看详情</button></div>"
-).join("");
++"<p class='muted'>"+escapeHtml(fund.code)+" · "+escapeHtml(fund.company)+"</p>"
++"<div class='fund-meta'><span>"+escapeHtml(fund.type)+"</span><span>风险："+escapeHtml(fund.riskLevel)+"</span></div>"
++"<button type='button' data-fund-detail='"+escapeHtml(fund.code)+"'>查看详情</button></div>"
+).join("")||"<div class='box'>没有符合条件的基金。</div>";
+list.querySelectorAll("[data-fund-detail]").forEach(button=>{
+button.addEventListener("click",()=>showFundDetail(button.dataset.fundDetail));
+});
+if(filtered.length>visible.length){
+list.insertAdjacentHTML("beforeend","<div class='box muted'>为保证页面流畅，仅显示前 120 条。请使用搜索和筛选缩小范围。</div>");
+}
 updateSelectedFund();
 }
 
-function showFundDetail(id){
-const fund=funds.find(item=>item.id===id);
-if(!fund)return;
-document.getElementById("fund-detail").innerHTML=
-"<h3>"+escapeHtml(fund.name)+"</h3>"
-+"<p><strong>类型：</strong>"+escapeHtml(fund.type)+"</p>"
-+"<p><strong>风险：</strong>"+escapeHtml(fund.risk)+"</p>"
-+"<p>"+escapeHtml(fund.description)+"</p>"
-+"<button onclick=\"chooseFund('"+fund.id+"')\">选择此基金并去买入</button>";
+function applyFundFilters(){
+renderFundPool();
 }
 
-function chooseFund(id){
-if(!funds.some(item=>item.id===id))return;
-selectedFundId=id;
+function refreshFundFilterOptions(){
+const update=(id,values,label)=>{
+const select=document.getElementById(id);
+if(!select)return;
+const selected=select.value;
+select.innerHTML="<option value=''>"+label+"</option>"
++[...new Set(values.filter(Boolean))].sort((a,b)=>a.localeCompare(b,"zh-CN"))
+.map(value=>"<option value='"+escapeHtml(value)+"'>"+escapeHtml(value)+"</option>").join("");
+select.value=selected;
+};
+update("fund-type-filter",fundRecords.map(item=>item.type),"全部基金类型");
+update("fund-risk-filter",fundRecords.map(item=>item.riskLevel),"全部风险等级");
+}
+
+function showFundDetail(code){
+const fund=fundRecords.find(item=>item.code===code);
+if(!fund)return;
+const navStatus=fund.nav?.latest!=null
+?"最新净值 "+escapeHtml(fund.nav.latest)+"（"+escapeHtml(fund.nav.latestDate||"日期待补充")+"）"
+:"尚未接入净值；数据结构已预留历史净值来源、接口和同步时间。";
+document.getElementById("fund-detail").innerHTML=
+"<h3>"+escapeHtml(fund.name)+"</h3>"
++"<p><strong>基金代码：</strong>"+escapeHtml(fund.code)+"</p>"
++"<p><strong>基金公司：</strong>"+escapeHtml(fund.company)+"</p>"
++"<p><strong>类型：</strong>"+escapeHtml(fund.type)+"</p>"
++"<p><strong>风险等级：</strong>"+escapeHtml(fund.riskLevel)+"</p>"
++"<p><strong>成立日期：</strong>"+escapeHtml(fund.inceptionDate||"待补充")+"</p>"
++"<p><strong>净值数据：</strong>"+navStatus+"</p>"
++"<button type='button' id='choose-current-fund'>选择此基金并去买入</button>";
+document.getElementById("choose-current-fund").addEventListener("click",()=>chooseFund(fund.code));
+}
+
+function chooseFund(code){
+if(!fundRecords.some(item=>item.code===code))return;
+selectedFundCode=code;
 saveTrainingState();
 renderFundPool();
 show("sim");
@@ -362,9 +604,9 @@ updateSelectedFund();
 function updateSelectedFund(){
 const target=document.getElementById("selected-fund");
 if(!target)return;
-const fund=funds.find(item=>item.id===selectedFundId);
+const fund=fundRecords.find(item=>item.code===selectedFundCode);
 target.innerHTML=fund
-?"当前基金：<strong>"+escapeHtml(fund.name)+"</strong>｜"+escapeHtml(fund.type)+"｜风险："+escapeHtml(fund.risk)
+?"当前基金：<strong>"+escapeHtml(fund.name)+"（"+escapeHtml(fund.code)+"）</strong>｜"+escapeHtml(fund.company)+"｜"+escapeHtml(fund.type)+"｜风险："+escapeHtml(fund.riskLevel)
 :"尚未选择基金，请先进入基金池。";
 }
 
@@ -399,7 +641,8 @@ target.innerHTML="<div class='box'>暂无日志。请先在市场训练中完成
 return;
 }
 const rows=journal.slice().reverse().map(item=>
-"<tr><td>"+escapeHtml(item.date)+"</td><td>"+escapeHtml(item.fundName||"历史记录（未绑定基金）")+"</td>"
+"<tr><td>"+escapeHtml(item.date)+"</td><td>"+escapeHtml(item.fundName||"历史记录（未绑定基金）")
++(item.fundCode?"<br><span class='muted'>"+escapeHtml(item.fundCode)+" · "+escapeHtml(item.fundCompany||"")+"</span>":"")+"</td>"
 +"<td>"+escapeHtml(item.type)+"</td><td>"+formatMoney(item.amount)+"</td>"
 +"<td>"+escapeHtml(item.reason)+"</td><td>"+escapeHtml(item.emotion)+"</td>"
 +"<td>"+formatReturn(item.returnChange,item.returnRate)+"</td></tr>"
@@ -456,8 +699,13 @@ target.innerHTML=
 function buildReviewDataset(){
 return journal.map(item=>({
 fundId:item.fundId||null,
+fundCode:item.fundCode||item.fundId||null,
 fundName:item.fundName||"历史记录（未绑定基金）",
+fundCompany:item.fundCompany||null,
 fundType:item.fundType||null,
+fundRisk:item.fundRisk||null,
+fundInceptionDate:item.fundInceptionDate||null,
+navSnapshot:item.navSnapshot||null,
 action:item.type,
 amount:Number(item.amount||0),
 reason:item.reason||"",
@@ -534,7 +782,8 @@ document.getElementById("event").innerText="第"+day+"天："+currentEvent();
 document.getElementById("log").innerText=logs.join("；");
 renderSimulationRecords();
 renderFundPool();
-window.FundTimeMachineReview={version:"6.1",getDataset:buildReviewDataset};
+initializeFundDatabase();
+window.FundTimeMachineReview={version:"6.2",getDataset:buildReviewDataset};
 </script>
 </body>
 </html>
