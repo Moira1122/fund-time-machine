@@ -235,51 +235,43 @@ body{padding-bottom:74px}.wrap{padding:0 14px 34px}
 <div class="home-stage">
 <section class="home-hero">
 <div class="home-hero-content">
-<div class="eyebrow">Your investment journey</div>
+<div class="home-welcome"><span class="welcome-spark">✦</span><span>欢迎回来，训练者</span></div>
 <h1>今天，练一个<span>好决定</span>。</h1>
 <p>这里不预测涨跌，而是在真实市场环境中训练你的投资能力。</p>
-<div class="hero-actions">
-<button onclick="show('growth')">查看我的成长档案</button>
-</div>
-</div>
-<div class="hero-visual" aria-hidden="true">
-<div class="visual-orbit orbit-one"></div>
-<div class="visual-orbit orbit-two"></div>
-<div class="visual-core">成长</div>
-<span class="visual-note note-one">记录</span>
-<span class="visual-note note-two">训练</span>
-<span class="visual-note note-three">复盘</span>
-</div>
-</section>
-<aside class="daily-card">
-<div>
-<div class="challenge-label">今日任务</div>
-<h2 id="home-challenge-title">完成初始投资画像</h2>
-<p id="home-challenge-copy">先让系统认识你的经验、目标和风险偏好。</p>
-</div>
-<div>
-<p class="reward"><span class="reward-dot"></span>完成后自动更新成长进度</p>
-<button id="home-task-action" onclick="runTodayTask()">去完成</button>
-</div>
-</aside>
-</div>
-
 <div class="v8-home-metrics">
 <section class="v8-metric">
-<span>连续训练</span><strong><b id="home-streak">0</b> 天</strong><p>每一次记录都算成长</p>
+<span>连续训练天数</span><strong><b id="home-streak">0</b> 天</strong><p>每一次记录都算成长</p>
 </section>
 <section class="v8-metric">
-<span>模拟收益</span><strong><b id="home-sim-return">¥0</b></strong><p>只用于训练，不代表真实收益</p>
+<span>模拟总收益</span><strong><b id="home-sim-return">¥0</b></strong><p>只用于训练，不代表真实收益</p>
 </section>
 <section class="v8-metric score-metric">
 <span>投资能力评分</span><strong><b id="home-ability-score">0</b><small>/100</small></strong><p id="home-score-copy">从学习和训练中积累</p>
 </section>
 </div>
+</div>
+</section>
+<aside class="daily-card">
+<div>
+<div class="task-heading-row"><div class="challenge-label"><span></span>今日任务</div><div class="target-art" aria-hidden="true"><i></i><b></b></div></div>
+<h2 id="home-challenge-title">完成初始投资画像</h2>
+<p id="home-challenge-copy">先让系统认识你的经验、目标和风险偏好。</p>
+</div>
+<div>
+<div class="market-glimpse">
+<span>今日训练场景</span>
+<strong>在波动中做一次有理由的选择</strong>
+<small>完成后自动更新成长进度</small>
+</div>
+<button id="home-task-action" onclick="runTodayTask()">开始训练 <span>→</span></button>
+</div>
+</aside>
+</div>
 
 <section class="home-growth-panel">
-<div class="growth-emblem" aria-hidden="true">✦</div>
+<div class="growth-emblem" aria-hidden="true"><span>★</span></div>
 <div class="growth-level-copy">
-<div class="eyebrow">Growth progress</div>
+<div class="eyebrow">成长进度</div>
 <h3><span id="home-level-name">投资启程者</span> <small id="home-level-number">Lv1</small></h3>
 <p id="home-level-progress-copy">完成今天的任务，向下一等级前进。</p>
 </div>
@@ -291,14 +283,29 @@ body{padding-bottom:74px}.wrap{padding:0 14px 34px}
 </section>
 
 <section class="quick-access-section">
-<div class="section-heading"><div><div class="eyebrow">Explore</div><h3>继续你的成长旅程</h3></div><span class="muted">四个入口，一套成长路径</span></div>
+<div class="section-heading"><div><div class="eyebrow">成长路径</div><h3>从一次练习，走向稳定判断</h3></div><span class="muted">认识 · 练习 · 记录 · 复盘</span></div>
 <div class="quick-access-grid">
-<button class="feature-card" onclick="show('sim')"><span class="feature-icon icon-blue">↗</span><span><strong>市场训练</strong><small>在市场变化中练习做决定</small></span><i>进入</i></button>
-<button class="feature-card" onclick="show('fundPool')"><span class="feature-icon icon-mint">◌</span><span><strong>基金超市</strong><small>认识不同类型与风险的基金</small></span><i>浏览</i></button>
-<button class="feature-card" onclick="show('journal')"><span class="feature-icon icon-pink">✎</span><span><strong>投资日志</strong><small>记录每一次选择和当时情绪</small></span><i>查看</i></button>
-<button class="feature-card" onclick="show('report')"><span class="feature-icon icon-lilac">◎</span><span><strong>复盘中心</strong><small>发现习惯，形成自己的投资纪律</small></span><i>复盘</i></button>
+<button class="feature-card feature-market" onclick="show('sim')"><span><strong>市场训练</strong><small>在真实历史中练习做决定</small></span><span class="feature-art art-market" aria-hidden="true"><i></i><i></i><i></i><b></b></span><i class="feature-status">今日可训练</i></button>
+<button class="feature-card feature-fund" onclick="show('fundPool')"><span><strong>基金超市</strong><small>探索不同风格与风险的基金</small></span><span class="feature-art art-fund" aria-hidden="true"><i></i><b></b></span><i class="feature-status">建立基金认知</i></button>
+<button class="feature-card feature-journal" onclick="show('journal')"><span><strong>投资日志</strong><small>记下选择、理由和当时情绪</small></span><span class="feature-art art-journal" aria-hidden="true"><i></i><b></b></span><i class="feature-status">每次选择都有迹可循</i></button>
+<button class="feature-card feature-review" onclick="show('report')"><span><strong>复盘中心</strong><small>从行为里看见自己的模式</small></span><span class="feature-art art-review" aria-hidden="true"><i></i><b></b></span><i class="feature-status">把经历变成能力</i></button>
 </div>
 </section>
+
+<section class="home-quote">
+<div class="quote-seed" aria-hidden="true"><i></i><i></i><b></b></div>
+<div><strong>好的投资判断，来自一次次诚实的记录。</strong><p>不急着猜中市场，先学会理解自己的每一次选择。</p></div>
+<span>基金时光机 · 陪你长期成长</span>
+</section>
+
+<nav class="home-dock" aria-label="首页快捷导航">
+<button onclick="show('home')" class="active"><span>⌂</span>首页</button>
+<button onclick="show('sim')"><span>↗</span>市场训练</button>
+<button onclick="show('fundPool')"><span>◌</span>基金</button>
+<button onclick="show('journal')"><span>▤</span>投资日志</button>
+<button onclick="show('growth')"><span>✦</span>成长</button>
+<button onclick="show('report')"><span>◎</span>复盘</button>
+</nav>
 </div>
 
 <div id="growth" class="card hide">
