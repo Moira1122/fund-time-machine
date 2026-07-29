@@ -1,1820 +1,397 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<title>基金时光机 V8 用户成长系统</title>
-<style media="not all">
-:root{
---ink:#17211b;--muted:#68756e;--line:#e4e9e6;--soft:#f5f7f5;--paper:#fff;
---brand:#176b4d;--brand-dark:#0d4f38;--brand-soft:#e8f4ee;--accent:#d9a441;
---danger:#b5473c;--shadow:0 12px 32px rgba(26,55,43,.07)
-}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{font-family:Inter,"Microsoft YaHei","PingFang SC",system-ui,sans-serif;background:#f3f5f3;color:var(--ink);margin:0;line-height:1.6}
-button,input,select,textarea{font:inherit}
-button{background:var(--brand);color:#fff;border:1px solid var(--brand);border-radius:10px;padding:10px 16px;cursor:pointer;font-weight:650;transition:.2s ease}
-button:hover{background:var(--brand-dark);border-color:var(--brand-dark);transform:translateY(-1px)}
-button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid rgba(23,107,77,.18);outline-offset:2px}
-a{color:var(--brand);font-weight:650;text-decoration:none}
-a:hover{text-decoration:underline}
-h1,h2,h3,p{margin-top:0}
-h1{font-size:clamp(30px,5vw,54px);line-height:1.08;letter-spacing:-.035em}
-h2{font-size:clamp(24px,3vw,34px);line-height:1.2;letter-spacing:-.025em;margin-bottom:8px}
-h3{font-size:17px;margin-bottom:8px}
-.wrap{max-width:1240px;margin:auto;padding:0 24px 64px}
-.app-header{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:28px;margin:0 -24px 28px;padding:14px 24px;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
-.brand{display:flex;align-items:center;gap:12px;min-width:max-content}
-.brand-mark{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:var(--brand);color:#fff;font-weight:800;letter-spacing:-.04em}
-.brand-copy{line-height:1.2}.brand-copy strong{display:block;font-size:15px}.brand-copy span{color:var(--muted);font-size:12px}
-.main-nav{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
-.main-nav::-webkit-scrollbar{display:none}
-.nav-item{background:transparent;color:#526058;border-color:transparent;padding:8px 12px;white-space:nowrap;font-size:14px}
-.nav-item:hover{background:var(--soft);color:var(--ink);border-color:transparent;transform:none}
-.nav-item.active{background:var(--brand-soft);color:var(--brand-dark)}
-.card{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,4vw,42px);margin:18px 0;box-shadow:var(--shadow)}
-.box{background:var(--soft);border:1px solid #e8ece9;padding:18px;border-radius:14px;margin:12px 0}
-.hide{display:none}
-.page-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:28px}
-.eyebrow{display:inline-flex;align-items:center;gap:7px;color:var(--brand);font-size:13px;font-weight:750;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
-.eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--brand)}
-.page-heading p{max-width:680px;margin:0;color:var(--muted)}
-.hero{position:relative;overflow:hidden;padding:clamp(30px,6vw,68px);border-radius:18px;background:linear-gradient(135deg,#edf7f1 0%,#f9f5e9 100%);border:1px solid #dde8e1}
-.hero::after{content:"";position:absolute;width:300px;height:300px;border-radius:50%;right:-100px;top:-130px;background:rgba(23,107,77,.08)}
-.hero-content{position:relative;z-index:1;max-width:760px}
-.hero p{font-size:17px;color:#526058;max-width:650px}
-.hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
-.btn-secondary{background:#fff;color:var(--ink);border-color:var(--line)}
-.btn-secondary:hover{background:var(--soft);color:var(--ink);border-color:#ccd5cf}
-.btn-danger{background:#fff;color:var(--danger);border-color:#e9c7c3}
-.btn-danger:hover{background:#fff5f4;color:#98382f;border-color:#dca9a3}
-.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:22px 0}
-.metric{padding:20px;border:1px solid var(--line);border-radius:15px;background:#fff}
-.metric-label{color:var(--muted);font-size:13px;margin-bottom:7px}
-.metric-value{font-size:26px;line-height:1.1;font-weight:780;letter-spacing:-.03em}
-.metric-note{color:var(--muted);font-size:12px;margin-top:6px}
-.section-heading{display:flex;justify-content:space-between;align-items:center;margin:32px 0 14px}
-.section-heading h3{font-size:20px;margin:0}
-.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.quick-card{min-height:180px;display:flex;flex-direction:column;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;text-align:left;color:var(--ink)}
-.quick-card:hover{background:#fbfcfb;border-color:#cbd8d0;color:var(--ink)}
-.quick-card .quick-index{display:grid;place-items:center;width:32px;height:32px;border-radius:10px;background:var(--brand-soft);color:var(--brand);font-size:13px;margin-bottom:24px}
-.quick-card strong{font-size:18px}.quick-card span{color:var(--muted);font-weight:400;margin-top:6px}
-textarea,input,select{width:100%;padding:11px 12px;margin:5px 0;border-radius:10px;border:1px solid #d8dfda;background:#fff;color:var(--ink)}
-textarea{min-height:92px;resize:vertical}
-label{display:block;color:#455149;font-size:14px;font-weight:650}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
-.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-.muted{color:var(--muted);font-size:14px}
-.stat{border-left:3px solid var(--brand);background:#fff}
-.fund-toolbar{display:grid;grid-template-columns:2fr repeat(4,minmax(120px,1fr));gap:10px;padding:14px;background:var(--soft);border:1px solid var(--line);border-radius:14px;margin:16px 0}
-.fund-workspace{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(280px,.75fr);gap:18px;align-items:start}
-#fund-list{grid-template-columns:repeat(2,minmax(0,1fr))}
-#fund-detail{position:sticky;top:92px;margin:0;background:#fbfcfb}
-.fund-card{background:#fff;border:1px solid var(--line);min-height:210px;padding:20px;display:flex;flex-direction:column}
-.fund-card:hover{border-color:#b9c9c0;box-shadow:0 10px 24px rgba(26,55,43,.07)}
-.fund-card.selected{border-color:var(--brand);background:#f3faf6;box-shadow:0 0 0 2px rgba(23,107,77,.08)}
-.fund-card button{margin-top:auto;align-self:flex-start}
-.fund-meta{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
-.fund-meta span,.risk-badge{display:inline-block;background:var(--brand-soft);color:var(--brand-dark);border-radius:999px;padding:3px 9px;font-size:12px}
-.import-panel{border:1px dashed #a9bdb1;background:#fbfdfb}
-.import-panel summary{cursor:pointer;font-weight:750;color:var(--brand-dark)}
-.import-content{padding-top:14px}
-.status-ok{color:#18794e}.status-error{color:#b42318}
-.simulation-overview{display:grid;grid-template-columns:1.2fr 1fr .7fr;gap:14px;margin-bottom:18px}
-.simulation-overview .box{margin:0}
-.asset-panel{background:var(--brand-dark);color:#fff;border-color:var(--brand-dark)}
-.asset-panel .metric-label{color:#cfe2d8}.asset-panel .metric-value{font-size:32px}
-.feedback-panel{grid-column:1/-1;background:#fffaf0;border-color:#eee0bd}
-.decision-panel{padding:24px;border:1px solid var(--line);border-radius:16px;background:#fbfcfb}
-.decision-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-.decision-actions button{margin:0}
-#pre-buy-questionnaire{background:#fff;border-color:var(--line)}
-table{width:100%;border-collapse:separate;border-spacing:0;margin-top:12px;min-width:860px}
-th,td{text-align:left;padding:13px 12px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:top}
-th{position:sticky;top:0;background:#f3f7f4;color:#47534c;font-weight:750}
-tbody tr:hover td{background:#fafcfb}
-.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}
-.log-summary{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 18px;border-radius:14px;background:var(--soft);margin-bottom:18px}
-@media(max-width:980px){
-.app-header{align-items:flex-start;flex-direction:column;gap:10px}
-.main-nav{width:100%}.fund-toolbar{grid-template-columns:repeat(2,1fr)}
-.fund-toolbar input{grid-column:1/-1}.fund-workspace{grid-template-columns:1fr}
-#fund-detail{position:static}.simulation-overview{grid-template-columns:1fr 1fr}.feedback-panel{grid-column:1/-1}
-}
-@media(max-width:720px){
-body{padding-bottom:74px}.wrap{padding:0 14px 34px}
-.app-header{position:fixed;top:auto;bottom:0;left:0;right:0;margin:0;padding:8px 10px;border-top:1px solid var(--line);border-bottom:0;box-shadow:0 -8px 24px rgba(23,33,27,.08)}
-.brand{display:none}.main-nav{gap:2px}.nav-item{padding:9px 12px;font-size:13px}
-.card{padding:20px 16px;border-radius:16px;margin:12px 0}.page-heading{display:block;margin-bottom:20px}
-.metric-grid{grid-template-columns:repeat(2,1fr)}.quick-grid{grid-template-columns:1fr}
-.form-grid,.fund-toolbar,.simulation-overview{grid-template-columns:1fr}.fund-toolbar input{grid-column:auto}
-#fund-list{grid-template-columns:1fr}.hero{padding:30px 22px}.hero-actions button{width:100%}
-.decision-actions{display:grid;grid-template-columns:1fr 1fr}.decision-actions button{width:100%}
-}
-</style>
-<link rel="stylesheet" href="design-system.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="基金时光机本地预览版">
+  <title>基金时光机｜投资决策训练平台</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div class="onboarding-overlay" id="onboarding-overlay" role="dialog" aria-modal="true" aria-label="生成初始投资画像">
-<div class="onboarding-shell">
-<button class="onboarding-close" type="button" onclick="dismissOnboarding()" aria-label="稍后完成画像">稍后完成</button>
-<div class="onboarding-progress" aria-label="画像填写进度">
-<span class="active" data-onboarding-progress="1">1 · 经验</span>
-<span data-onboarding-progress="2">2 · 目标</span>
-<span data-onboarding-progress="3">3 · 风险</span>
-</div>
-<section class="onboarding-step active" data-onboarding-step="1">
-<div class="eyebrow">Step 1 of 3</div>
-<h2 id="onboarding-title">你和投资，熟悉到哪一步？</h2>
-<p>没有标准答案。我们只用它调整学习起点，不评价投资水平。</p>
-<label class="onboarding-question"><span>投资经验</span>
-<select id="profile-experience">
-<option value="">请选择</option>
-<option value="刚开始了解">刚开始了解</option>
-<option value="有过少量投资">有过少量投资</option>
-<option value="持续投资1年以上">持续投资1年以上</option>
-</select>
-</label>
-<div class="onboarding-action"><span>第 1 步，共 3 步</span><button type="button" onclick="goOnboardingStep(2)">下一步</button></div>
-</section>
-<section class="onboarding-step" data-onboarding-step="2">
-<div class="eyebrow">Step 2 of 3</div>
-<h2>你最想先练会什么？</h2>
-<p>今日任务会优先围绕这个目标安排。</p>
-<label class="onboarding-question"><span>投资目标</span>
-<select id="profile-goal">
-<option value="">请选择</option>
-<option value="建立投资基础">建立投资基础</option>
-<option value="养成长期投资习惯">养成长期投资习惯</option>
-<option value="改善决策与纪律">改善决策与纪律</option>
-</select>
-</label>
-<div class="onboarding-action"><button class="btn-secondary" type="button" onclick="goOnboardingStep(1)">上一步</button><button type="button" onclick="goOnboardingStep(3)">下一步</button></div>
-</section>
-<section class="onboarding-step" data-onboarding-step="3">
-<div class="eyebrow">Step 3 of 3</div>
-<h2>面对波动时，你更接近哪种状态？</h2>
-<p>风险画像用于训练提示，不替代金融机构的正式风险评估。</p>
-<div class="onboarding-question risk-test">
-<span>风险测试</span>
-<label>面对 10% 的短期下跌
-<select id="risk-loss">
-<option value="">请选择</option>
-<option value="1">会明显不安并考虑退出</option>
-<option value="2">会复核计划后再决定</option>
-<option value="3">能接受并按长期计划观察</option>
-</select>
-</label>
-<label>这笔资金预计多久不用
-<select id="risk-horizon">
-<option value="">请选择</option>
-<option value="1">1 年以内</option>
-<option value="2">1—3 年</option>
-<option value="3">3 年以上</option>
-</select>
-</label>
-</div>
-<div class="onboarding-action">
-<button class="btn-secondary" type="button" onclick="goOnboardingStep(2)">上一步</button>
-<div><span id="profile-form-status">答案只保存在当前浏览器。</span><button type="button" onclick="saveInitialProfile()">生成我的画像</button></div>
-</div>
-</section>
-</div>
-</div>
-<div class="wrap">
-
-<header class="app-header">
-<div class="brand">
-<div class="brand-mark" aria-hidden="true">◷</div>
-<div class="brand-copy"><strong>基金时光机</strong><span>投资成长训练平台</span></div>
-</div>
-<nav class="main-nav" aria-label="主要导航">
-<button class="nav-item" data-page="home" onclick="show('home')">首页</button>
-<button class="nav-item" data-page="sim" onclick="show('sim')">市场训练</button>
-<button class="nav-item" data-page="fundPool" onclick="show('fundPool')">基金</button>
-<button class="nav-item" data-page="journal" onclick="show('journal')">投资日志</button>
-<button class="nav-item" data-page="growth" onclick="show('growth')">成长</button>
-<button class="nav-item" data-page="report" onclick="show('report')">复盘中心</button>
-</nav>
-<details class="nav-more">
-<summary>更多训练</summary>
-<div class="more-menu">
-<button class="nav-item" data-page="learn" onclick="show('learn')">新手学院</button>
-<button class="nav-item" data-page="strategy" onclick="show('strategy')">策略实验室</button>
-<button class="nav-item" data-page="loss" onclick="show('loss')">亏损复盘</button>
-<button class="nav-item" data-page="coach" onclick="show('coach')">AI 教练</button>
-<button class="nav-item" data-page="challenge" onclick="show('challenge')">训练挑战</button>
-<button class="nav-item" data-page="rules" onclick="show('rules')">我的规则</button>
-</div>
-</details>
-<div class="level-pill"><span>等级</span><strong id="nav-level-name">投资启程者</strong></div>
-<nav class="mobile-nav" aria-label="移动端导航">
-<button class="nav-item" data-page="home" onclick="show('home')">首页</button>
-<button class="nav-item" data-page="sim" onclick="show('sim')">训练</button>
-<button class="nav-item" data-page="fundPool" onclick="show('fundPool')">基金</button>
-<button class="nav-item" data-page="journal" onclick="show('journal')">日志</button>
-<button class="nav-item" id="mobile-more-trigger" type="button" onclick="toggleMobileMenu()">更多</button>
-</nav>
-</header>
-<div class="mobile-more-panel" id="mobile-more-panel">
-<div class="mobile-more-head"><strong>全部功能</strong><button type="button" onclick="toggleMobileMenu(false)">关闭</button></div>
-<div class="mobile-more-grid">
-<button data-page="growth" onclick="show('growth')">成长档案</button>
-<button data-page="report" onclick="show('report')">复盘中心</button>
-<button data-page="learn" onclick="show('learn')">新手学院</button>
-<button data-page="strategy" onclick="show('strategy')">策略实验室</button>
-<button data-page="loss" onclick="show('loss')">亏损复盘</button>
-<button data-page="coach" onclick="show('coach')">AI 教练</button>
-<button data-page="challenge" onclick="show('challenge')">训练挑战</button>
-<button data-page="rules" onclick="show('rules')">我的规则</button>
-</div>
-</div>
-
-<div id="home" class="card hide growth-home">
-<div class="home-stage">
-<section class="home-hero">
-<div class="home-hero-content">
-<div class="home-welcome"><span class="welcome-spark">✦</span><span>欢迎回来，训练者</span></div>
-<h1>今天，练一个<span>好决定</span>。</h1>
-<p>这里不预测涨跌，而是在真实市场环境中训练你的投资能力。</p>
-<div class="v8-home-metrics">
-<section class="v8-metric">
-<span>连续训练天数</span><strong><b id="home-streak">0</b> 天</strong><p>每一次记录都算成长</p>
-</section>
-<section class="v8-metric">
-<span>模拟总收益</span><strong><b id="home-sim-return">¥0</b></strong><p>只用于训练，不代表真实收益</p>
-</section>
-<section class="v8-metric score-metric">
-<span>投资能力评分</span><strong><b id="home-ability-score">0</b><small>/100</small></strong><p id="home-score-copy">从学习和训练中积累</p>
-</section>
-</div>
-</div>
-</section>
-<aside class="daily-card">
-<div>
-<div class="task-heading-row"><div class="challenge-label"><span></span>今日任务</div><div class="target-art" aria-hidden="true"><i></i><b></b></div></div>
-<h2 id="home-challenge-title">完成初始投资画像</h2>
-<p id="home-challenge-copy">先让系统认识你的经验、目标和风险偏好。</p>
-</div>
-<div>
-<div class="market-glimpse">
-<span>今日训练场景</span>
-<strong>在波动中做一次有理由的选择</strong>
-<small>完成后自动更新成长进度</small>
-</div>
-<button id="home-task-action" onclick="runTodayTask()">开始训练 <span>→</span></button>
-</div>
-</aside>
-</div>
-
-<section class="home-growth-panel">
-<div class="growth-emblem" aria-hidden="true"><span>★</span></div>
-<div class="growth-level-copy">
-<div class="eyebrow">成长进度</div>
-<h3><span id="home-level-name">投资启程者</span> <small id="home-level-number">Lv1</small></h3>
-<p id="home-level-progress-copy">完成今天的任务，向下一等级前进。</p>
-</div>
-<div class="growth-progress-wrap">
-<div class="progress-meta"><span id="home-growth-title">成长进度</span><strong id="home-growth-percent">0%</strong></div>
-<div class="progress-track"><div class="progress-fill" id="home-level-progress"></div></div>
-</div>
-<button class="btn-soft" onclick="show('growth')">查看成长体系</button>
-</section>
-
-<section class="quick-access-section">
-<div class="section-heading"><div><div class="eyebrow">成长路径</div><h3>从一次练习，走向稳定判断</h3></div><span class="muted">认识 · 练习 · 记录 · 复盘</span></div>
-<div class="quick-access-grid">
-<button class="feature-card feature-market" onclick="show('sim')"><span><strong>市场训练</strong><small>在真实历史中练习做决定</small></span><span class="feature-art art-market" aria-hidden="true"><i></i><i></i><i></i><b></b></span><i class="feature-status">今日可训练</i></button>
-<button class="feature-card feature-fund" onclick="show('fundPool')"><span><strong>基金超市</strong><small>探索不同风格与风险的基金</small></span><span class="feature-art art-fund" aria-hidden="true"><i></i><b></b></span><i class="feature-status">建立基金认知</i></button>
-<button class="feature-card feature-journal" onclick="show('journal')"><span><strong>投资日志</strong><small>记下选择、理由和当时情绪</small></span><span class="feature-art art-journal" aria-hidden="true"><i></i><b></b></span><i class="feature-status">每次选择都有迹可循</i></button>
-<button class="feature-card feature-review" onclick="show('report')"><span><strong>复盘中心</strong><small>从行为里看见自己的模式</small></span><span class="feature-art art-review" aria-hidden="true"><i></i><b></b></span><i class="feature-status">把经历变成能力</i></button>
-</div>
-</section>
-
-<section class="home-quote">
-<div class="quote-seed" aria-hidden="true"><i></i><i></i><b></b></div>
-<div><strong>好的投资判断，来自一次次诚实的记录。</strong><p>不急着猜中市场，先学会理解自己的每一次选择。</p></div>
-<span>基金时光机 · 陪你长期成长</span>
-</section>
-
-<nav class="home-dock" aria-label="首页快捷导航">
-<button onclick="show('home')" class="active"><span>⌂</span>首页</button>
-<button onclick="show('sim')"><span>↗</span>市场训练</button>
-<button onclick="show('fundPool')"><span>◌</span>基金</button>
-<button onclick="show('journal')"><span>▤</span>投资日志</button>
-<button onclick="show('growth')"><span>✦</span>成长</button>
-<button onclick="show('report')"><span>◎</span>复盘</button>
-</nav>
-</div>
-
-<div id="growth" class="card hide">
-<div class="page-heading"><div><div class="eyebrow">Growth system</div><h2>我的投资成长</h2><p>等级不代表收益高低，而是你完成记录、计划与复盘训练的进度。</p></div></div>
-<div class="growth-board">
-<section class="growth-profile">
-<div class="eyebrow">Current level</div>
-<div class="level-number" id="growth-level-number">1</div>
-<div class="level-name" id="growth-level-name">投资启程者</div>
-<p id="growth-level-description">完成画像，开始认识风险与基金。</p>
-<div class="xp-track"><div class="xp-fill" id="growth-xp-fill"></div></div>
-<p id="growth-xp-copy">0 / 100 XP</p>
-</section>
-<div class="growth-detail">
-<div class="growth-message"><strong id="growth-feedback-title">先完成第一次有理由的决策。</strong><p id="growth-feedback-copy">记录越完整，成长反馈越有意义。</p></div>
-<div class="level-roadmap">
-<div class="level-node" id="level-node-1"><strong>Lv1</strong><span>投资启程者</span></div>
-<div class="level-node" id="level-node-2"><strong>Lv2</strong><span>学习训练者</span></div>
-<div class="level-node" id="level-node-3"><strong>Lv3</strong><span>纪律实践者</span></div>
-<div class="level-node" id="level-node-4"><strong>Lv4</strong><span>成长投资者</span></div>
-</div>
-<div class="achievement-grid">
-<div class="achievement" id="achievement-first-buy"><div class="achievement-mark">01</div><h3>第一次出发</h3><p class="muted">完成首次模拟买入。</p></div>
-<div class="achievement" id="achievement-drawdown"><div class="achievement-mark">02</div><h3>见过波动</h3><p class="muted">经历一次模拟回撤。</p></div>
-<div class="achievement" id="achievement-training"><div class="achievement-mark">03</div><h3>训练完成</h3><p class="muted">完成一次完整决策。</p></div>
-<div class="achievement" id="achievement-strategy"><div class="achievement-mark">04</div><h3>策略建立者</h3><p class="muted">在实验室完成策略比较。</p></div>
-<div class="achievement" id="achievement-review"><div class="achievement-mark">05</div><h3>复盘行动派</h3><p class="muted">完成第一次正式复盘。</p></div>
-<div class="achievement" id="achievement-rule"><div class="achievement-mark">06</div><h3>规则制定者</h3><p class="muted">写下自己的投资规则。</p></div>
-</div>
-</div>
-</div>
-</div>
-
-<div id="learn" class="card hide">
-<div class="page-heading"><div><div class="eyebrow">Learning center</div><h2>新手学院</h2><p>用清晰的基础知识建立投资判断框架。</p></div></div>
-<div class="grid">
-<div class="box"><h3>基金是什么</h3><p>基金把许多投资者的资金集中起来，由专业机构按约定范围进行投资。</p></div>
-<div class="box"><h3>基金分类</h3><p>常见类型包括货币基金、债券基金、混合基金和股票基金，风险通常依次提高。</p></div>
-<div class="box"><h3>风险收益关系</h3><p>潜在收益越高，通常需要承受越大的波动，没有只涨不跌的投资。</p></div>
-<div class="box"><h3>定投是什么</h3><p>定投是在固定时间投入固定金额，用分批买入降低择时压力。</p></div>
-<div class="box"><h3>投资前准备</h3><p>先准备应急资金、明确投资期限和可承受亏损，再设定仓位与退出规则。</p></div>
-<div class="box"><h3>仓位</h3><p>仓位代表投入资金占总资金的比例。例如有10000元，投入4000元，仓位就是40%。</p></div>
-<div class="box"><h3>最大回撤</h3><p>最大回撤代表资产从最高点下降到最低点的最大跌幅。</p></div>
-</div>
-<div class="box">
-<h3>第一次模拟投资练习</h3>
-<div class="form-grid">
-<input id="practice-capital" type="number" min="100" value="10000" placeholder="可用资金">
-<input id="practice-amount" type="number" min="1" value="3000" placeholder="计划投入金额">
-<select id="practice-risk">
-<option value="低">低风险承受能力</option>
-<option value="中" selected>中等风险承受能力</option>
-<option value="高">高风险承受能力</option>
-</select>
-</div>
-<button onclick="startFirstPractice()">生成练习建议</button>
-<div id="practice-result" class="muted">输入你的计划，先练习判断仓位是否合适。</div>
-</div>
-<button id="complete-learning-button" onclick="completeLearning()">完成学习</button>
-</div>
-
-<div id="fundPool" class="card hide">
-<div class="page-heading">
-<div><div class="eyebrow">Fund explorer</div><h2>基金池</h2><p>从 30 只代表性基金中搜索、筛选并理解每只基金，再进入模拟决策。</p></div>
-</div>
-<details class="box import-panel">
-<summary>批量导入基金数据</summary>
-<div class="import-content">
-<p class="muted">支持 JSON 或 CSV。相同基金代码会自动更新，适合导入大量基金资料。</p>
-<input id="fund-import-file" type="file" accept=".json,.csv,application/json,text/csv">
-<button onclick="importFundFile()">导入基金数据</button>
-<a href="data/fund-import-template.csv" download>下载 CSV 模板</a>
-<div id="fund-import-status" class="muted">尚未导入数据。</div>
-</div>
-</details>
-<div class="fund-toolbar">
-<input id="fund-search" type="search" placeholder="搜索基金代码、名称或公司" oninput="applyFundFilters()">
-<select id="fund-category-filter" onchange="applyFundFilters()"><option value="">全部分类标签</option></select>
-<select id="fund-type-filter" onchange="applyFundFilters()"><option value="">全部基金类型</option></select>
-<select id="fund-direction-filter" onchange="applyFundFilters()"><option value="">全部投资方向</option></select>
-<select id="fund-risk-filter" onchange="applyFundFilters()"><option value="">全部风险等级</option></select>
-</div>
-<div class="fund-workspace">
-<div>
-<p id="fund-count" class="muted"></p>
-<div id="fund-list" class="grid"></div>
-</div>
-<div id="fund-detail" class="box">请选择一只基金查看完整资料。</div>
-</div>
-</div>
-
-<div id="loss" class="card hide">
-<div class="page-heading"><div><div class="eyebrow">Loss review</div><h2>亏损复盘</h2><p>识别亏损背后的决策习惯，而不是只盯着一次结果。</p></div></div>
-<p>请选择你最常遇到的问题：</p>
-<button onclick="analysis('追涨')">看到上涨就买</button>
-<button onclick="analysis('恐慌')">下跌就卖</button>
-<button onclick="analysis('频繁交易')">经常换基金</button>
-<div id="analysis"></div>
-</div>
-
-<div id="sim" class="card hide">
-<div class="page-heading"><div><div class="eyebrow">Daily training</div><h2>今天的市场挑战</h2><p>先观察市场，再写计划，最后做决定。训练的目标不是猜对，而是保持清醒。</p></div></div>
-<div class="training-steps">
-<div class="training-step current" id="training-step-observe">01 · 观察市场</div>
-<div class="training-step" id="training-step-plan">02 · 写下计划</div>
-<div class="training-step" id="training-step-decision">03 · 做出决定</div>
-<div class="training-step" id="training-step-feedback">04 · 查看反馈</div>
-</div>
-<div class="simulation-overview">
-<section class="scenario-card">
-<div class="scenario-kicker">第 <span id="scenario-day">1</span> 天 · 市场情境</div>
-<div id="event">第1天：市场上涨，投资者情绪逐渐升温。</div>
-<p>不要急着判断对错。先问自己：我现在的决定，是来自计划还是情绪？</p>
-</section>
-<div class="training-side">
-<div class="selected-fund-card" id="selected-fund">尚未选择基金，请先进入基金池。</div>
-<div class="asset-panel"><div class="metric-label">模拟资产</div><div class="metric-value">¥<span id="money">100000</span></div><p class="muted">只用于训练，不代表真实收益</p></div>
-<div class="feedback-panel" id="result-feedback">完成决定后，第二日反馈会出现在这里。</div>
-</div>
-</div>
-<div class="decision-panel">
-<h3>写下你的判断</h3>
-<p class="muted">这一步比点击买入更重要。金额、情绪和回答会一起进入成长日志。</p>
-<div class="form-grid">
-<input id="trade-amount" type="number" min="0" value="1000" placeholder="操作金额">
-<select id="trade-emotion">
-<option value="平静">平静</option>
-<option value="乐观">乐观</option>
-<option value="兴奋">兴奋</option>
-<option value="犹豫">犹豫</option>
-<option value="焦虑">焦虑</option>
-<option value="恐慌">恐慌</option>
-</select>
-</div>
-<div class="box" id="pre-buy-questionnaire">
-<h3>买入前投资问答</h3>
-<textarea id="trade-reason" placeholder="为什么想买入这只基金？" oninput="updateTrainingSteps()"></textarea>
-<div class="form-grid">
-<label>预计持有时间
-<select id="expected-holding-period" onchange="updateTrainingSteps()">
-<option value="">请选择</option>
-<option value="少于1个月">少于1个月</option>
-<option value="1-6个月">1-6个月</option>
-<option value="6-12个月">6-12个月</option>
-<option value="1-3年">1-3年</option>
-<option value="3年以上">3年以上</option>
-</select>
-</label>
-<label>如果下跌20%，你准备怎么处理？
-<select id="decline-response" onchange="updateTrainingSteps()">
-<option value="">请选择</option>
-<option value="按原计划持有并复核买入理由">按原计划持有并复核买入理由</option>
-<option value="按照计划分批加仓">按照计划分批加仓</option>
-<option value="减仓控制风险">减仓控制风险</option>
-<option value="执行止损卖出">执行止损卖出</option>
-<option value="暂时不确定">暂时不确定</option>
-</select>
-</label>
-</div>
-<p class="muted">买入时三项必须填写；回答会随交易一起写入投资日志，供未来复盘使用。</p>
-</div>
-<div class="decision-actions">
-<button class="btn-secondary" onclick="nextDay()">下一交易日</button>
-<button onclick="decision('buy')">买入</button>
-<button class="btn-secondary" onclick="decision('hold')">继续观察</button>
-<button class="btn-danger" onclick="decision('sell')">卖出</button>
-</div>
-<p id="log"></p>
-</div>
-<div class="training-history">
-<div class="box"><h3>每日事件记录</h3><div id="daily-events" class="muted"></div></div>
-<div class="box"><h3>用户决策记录</h3><div id="decision-records" class="muted"></div></div>
-</div>
-</div>
-
-<div id="strategy" class="card hide">
-<div class="page-heading"><div><div class="eyebrow">Strategy lab</div><h2>策略实验室</h2><p>用同一组模拟行情比较不同执行方法。</p></div></div>
-<div class="form-grid">
-<input id="strategy-capital" type="number" min="1000" value="12000" placeholder="模拟总资金">
-<input id="strategy-periods" type="number" min="3" max="24" value="12" placeholder="模拟期数">
-</div>
-<p class="muted">使用同一组模拟涨跌比较三种基础策略，不代表真实收益。</p>
-<div class="grid">
-<div class="box">定投策略<br><button onclick="test('定投')">测试</button></div>
-<div class="box">下跌加仓<br><button onclick="test('下跌加仓')">测试</button></div>
-<div class="box">长期持有<br><button onclick="test('长期持有')">测试</button></div>
-</div>
-<div id="result"></div>
-</div>
-
-<div id="coach" class="card hide">
-<div class="page-heading"><div><div class="eyebrow">Decision coach</div><h2>AI 投资教练</h2><p>基于本地规则，帮助你重新审视投资问题。</p></div></div>
-<textarea id="question" placeholder="输入你的问题"></textarea>
-<button onclick="ask()">分析</button>
-<div class="box" id="answer"></div>
-</div>
-
-<div id="challenge" class="card hide">
-<div class="page-heading"><div><div class="eyebrow">Practice challenge</div><h2>训练挑战</h2><p>用可执行的小目标建立稳定的投资纪律。</p></div></div>
-<div class="box">
-挑战：不要追涨<br>
-目标：连续执行自己的规则30天。
-</div>
-<div class="box">
-挑战：面对下跌<br>
-目标：控制恐慌交易。
-</div>
-</div>
-
-<div id="journal" class="card hide">
-<div class="page-heading"><div><div class="eyebrow">Growth journal</div><h2>我的成长日志</h2><p>这里记录的不是“猜对了几次”，而是你当时为什么行动、如何面对风险。</p></div></div>
-<div class="journal-intro"><span>每条完整记录都会累积成长经验值</span><button class="btn-secondary" onclick="show('sim')">完成新的训练</button></div>
-<div id="journal-list"></div>
-</div>
-
-<div id="report" class="card hide">
-<div class="page-heading">
-<div><div class="eyebrow">Behavior review</div><h2>复盘中心</h2><p>把买卖行为、情绪和计划放在一起，生成动态投资人格与下一步建议。</p></div>
-</div>
-<div id="review-personality" class="personality-panel"></div>
-<div id="review-summary">
-<div class="box">完成至少一次市场决策后，这里会生成复盘结果。</div>
-</div>
-<div class="review-complete">
-<span>阅读结果并写下一条准备改变的行为，就算完成一次复盘。</span>
-<button onclick="finishReview()">完成本次复盘</button>
-</div>
-</div>
-
-<div id="rules" class="card hide">
-<div class="page-heading"><div><div class="eyebrow">My discipline</div><h2>我的投资规则</h2><p>在市场波动之前，先把仓位、回撤和行动边界写清楚。</p></div></div>
-<input id="rule-position" placeholder="单只基金最大仓位，例如40%">
-<input id="rule-drawdown" placeholder="最大接受回撤，例如15%">
-<textarea id="rule-content" placeholder="我的投资规则"></textarea>
-<button onclick="saveInvestmentRules()">保存规则</button>
-</div>
-
-</div>
-
-<script>
-const JOURNAL_KEY="fundTimeMachineV6Journal";
-const EVENTS_KEY="fundTimeMachineV6Events";
-const STATE_KEY="fundTimeMachineV6State";
-const FUND_DB_NAME="FundTimeMachineDB";
-const FUND_STORE_NAME="funds";
-const FUND_DB_VERSION=1;
-const FUND_SEED_VERSION="6.3";
-const FUND_SEED_KEY="fundTimeMachineFundSeedVersion";
-const PROFILE_KEY="fundTimeMachineV8Profile";
-const GROWTH_ACTIVITY_KEY="fundTimeMachineV8GrowthActivity";
-
-function readStorage(key,fallback){
-try{
-const value=JSON.parse(localStorage.getItem(key));
-return value??fallback;
-}catch(e){
-return fallback;
-}
-}
-
-const savedState=readStorage(STATE_KEY,{day:1,money:100000,logs:[]});
-let day=savedState.day||1;
-let money=savedState.money||100000;
-let logs=Array.isArray(savedState.logs)?savedState.logs:[];
-let journal=readStorage(JOURNAL_KEY,[]);
-let eventHistory=readStorage(EVENTS_KEY,[]);
-let selectedFundCode=savedState.selectedFundCode||savedState.selectedFundId||"";
-let investmentProfile=readStorage(PROFILE_KEY,null);
-let growthActivity=readStorage(GROWTH_ACTIVITY_KEY,{
-learningCompleted:false,
-trainingDates:[],
-reviewDates:[],
-strategyBuilt:false,
-rulesEstablished:false,
-rules:null
-});
-let fundRecords=[];
-let fundDatabase=null;
-let events=[
-"市场上涨，投资者情绪逐渐升温。",
-"热门板块快速上涨，市场开始狂热。",
-"市场突然调整，恐慌情绪增加。",
-"政策刺激出现，市场逐渐恢复。"
-];
-
-function openFundDatabase(){
-return new Promise((resolve,reject)=>{
-const request=indexedDB.open(FUND_DB_NAME,FUND_DB_VERSION);
-request.onupgradeneeded=()=>{
-const db=request.result;
-const store=db.objectStoreNames.contains(FUND_STORE_NAME)
-?request.transaction.objectStore(FUND_STORE_NAME)
-:db.createObjectStore(FUND_STORE_NAME,{keyPath:"code"});
-[
-["name","name"],["company","company"],["type","type"],
-["riskLevel","riskLevel"],["inceptionDate","inceptionDate"]
-].forEach(([index,key])=>{
-if(!store.indexNames.contains(index))store.createIndex(index,key,{unique:false});
-});
-};
-request.onsuccess=()=>resolve(request.result);
-request.onerror=()=>reject(request.error);
-});
-}
-
-function getAllFunds(){
-return new Promise((resolve,reject)=>{
-const request=fundDatabase.transaction(FUND_STORE_NAME,"readonly")
-.objectStore(FUND_STORE_NAME).getAll();
-request.onsuccess=()=>resolve(request.result||[]);
-request.onerror=()=>reject(request.error);
-});
-}
-
-function putFunds(records){
-return new Promise((resolve,reject)=>{
-const transaction=fundDatabase.transaction(FUND_STORE_NAME,"readwrite");
-const store=transaction.objectStore(FUND_STORE_NAME);
-records.forEach(record=>store.put(record));
-transaction.oncomplete=()=>resolve();
-transaction.onerror=()=>reject(transaction.error);
-transaction.onabort=()=>reject(transaction.error||new Error("基金数据写入已中止"));
-});
-}
-
-function deriveInvestmentDirection(tags,category){
-const genericTags=new Set([
-"宽基指数","行业主题","海外基金","债券基金","货币基金",
-"ETF","ETF联接","指数","主动权益"
-]);
-return tags.find(tag=>!genericTags.has(tag))||category||"其他";
-}
-
-function describeInvestmentCharacteristics(category,direction){
-const descriptions={
-"宽基指数":"分散跟踪"+direction+"，透明度较高，净值会随整体市场波动。",
-"行业主题":"集中投资"+direction+"相关资产，行业集中度和波动通常较高。",
-"海外基金":"主要投资"+direction+"相关海外资产，同时承受境外市场与汇率波动。",
-"债券基金":"主要投资"+direction+"相关固定收益资产，表现与利率和信用环境有关。",
-"货币基金":"以"+direction+"为主要用途，流动性通常较高，收益弹性相对较低。"
-};
-return descriptions[category]||"根据基金合同约定进行投资，具体范围以基金公开资料为准。";
-}
-
-function describeSuitableInvestor(riskLevel){
-if(/R1/.test(riskLevel))return "重视资金流动性、风险承受能力较低的人群。";
-if(/R2|中低/.test(riskLevel))return "追求相对稳健、能接受小幅波动并计划中期持有的人群。";
-if(/R3|中风险/.test(riskLevel))return "能够承受中等波动，并愿意持有一年以上的人群。";
-if(/R4|R5|中高|高风险/.test(riskLevel))return "能够承受较大净值波动，并计划长期持有的人群。";
-if(/低风险/.test(riskLevel))return "重视资金流动性、风险承受能力较低的人群。";
-return "应先评估自身投资期限、资金用途和风险承受能力。";
-}
-
-function normalizeFund(raw,index){
-const pick=(...keys)=>{
-for(const key of keys){
-if(raw[key]!==undefined&&raw[key]!==null&&String(raw[key]).trim()!=="")return String(raw[key]).trim();
-}
-return "";
-};
-const code=pick("code","fundCode","fund_code","基金代码");
-const name=pick("name","fundName","fund_name","基金名称");
-if(!code||!name)throw new Error("第"+(index+1)+"条数据缺少基金代码或基金名称");
-const category=pick("category","fundCategory","fund_category","分类")||"其他";
-const classificationTags=Array.isArray(raw.classificationTags)
-?raw.classificationTags.map(value=>String(value).trim()).filter(Boolean)
-:pick("classificationTags","classification_tags","分类标签").split(/[|、;]/).map(value=>value.trim()).filter(Boolean);
-const riskLevel=pick("riskLevel","risk","risk_level","风险等级")||"待评估";
-const investmentDirection=pick("investmentDirection","investment_direction","投资方向")
-||deriveInvestmentDirection(classificationTags,category);
-const inceptionDate=pick("inceptionDate","inception_date","成立日期");
-if(inceptionDate&&!/^\d{4}-\d{2}-\d{2}$/.test(inceptionDate)){
-throw new Error("第"+(index+1)+"条成立日期必须为 YYYY-MM-DD");
-}
-const existingNav=raw.nav&&typeof raw.nav==="object"?raw.nav:{};
-return {
-code:code,
-name:name,
-company:pick("company","fundCompany","fund_company","基金公司")||"待补充",
-type:pick("type","fundType","fund_type","基金类型")||"未分类",
-category:category,
-classificationTags:classificationTags,
-investmentDirection:investmentDirection,
-investmentCharacteristics:pick("investmentCharacteristics","investment_characteristics","投资特点")
-||describeInvestmentCharacteristics(category,investmentDirection),
-suitableFor:pick("suitableFor","suitable_for","适合人群")
-||describeSuitableInvestor(riskLevel),
-riskLevel:riskLevel,
-riskSource:pick("riskSource","risk_source","风险来源")||"训练分级",
-inceptionDate:inceptionDate||null,
-currency:pick("currency","币种")||"CNY",
-nav:{
-latest:existingNav.latest??null,
-latestDate:existingNav.latestDate??null,
-historySource:existingNav.historySource??null,
-historyEndpoint:existingNav.historyEndpoint??null,
-lastSyncedAt:existingNav.lastSyncedAt??null
-},
-metadata:{
-source:raw.metadata?.source||raw.source||"import",
-importedAt:raw.metadata?.importedAt||new Date().toISOString(),
-updatedAt:raw.metadata?.updatedAt||null
-}
-};
-}
-
-function parseCsv(text){
-const rows=[];
-let row=[],cell="",quoted=false;
-for(let i=0;i<text.length;i++){
-const char=text[i],next=text[i+1];
-if(char==='"'&&quoted&&next==='"'){cell+='"';i++;continue;}
-if(char==='"'){quoted=!quoted;continue;}
-if(char===","&&!quoted){row.push(cell);cell="";continue;}
-if((char==="\n"||char==="\r")&&!quoted){
-if(char==="\r"&&next==="\n")i++;
-row.push(cell);cell="";
-if(row.some(value=>value.trim()!==""))rows.push(row);
-row=[];continue;
-}
-cell+=char;
-}
-row.push(cell);
-if(row.some(value=>value.trim()!==""))rows.push(row);
-if(rows.length<2)return [];
-const headers=rows.shift().map(value=>value.trim().replace(/^\uFEFF/,""));
-return rows.map(values=>Object.fromEntries(headers.map((header,i)=>[header,(values[i]||"").trim()])));
-}
-
-async function importFundFile(){
-const input=document.getElementById("fund-import-file");
-const status=document.getElementById("fund-import-status");
-const file=input.files&&input.files[0];
-if(!file){
-status.className="status-error";
-status.textContent="请先选择 JSON 或 CSV 文件。";
-return;
-}
-try{
-status.className="muted";
-status.textContent="正在读取并导入数据…";
-const text=await file.text();
-const extension=file.name.split(".").pop().toLowerCase();
-let source;
-if(extension==="csv"){
-source=parseCsv(text);
-}else{
-const parsed=JSON.parse(text);
-source=Array.isArray(parsed)?parsed:parsed.funds;
-}
-if(!Array.isArray(source)||!source.length)throw new Error("文件中没有可导入的基金记录");
-const normalized=source.map(normalizeFund);
-await putFunds(normalized);
-await refreshFundRecords();
-status.className="status-ok";
-status.textContent="导入成功：共处理 "+normalized.length+" 条基金记录。";
-input.value="";
-}catch(error){
-status.className="status-error";
-status.textContent="导入失败："+error.message;
-}
-}
-
-async function seedFundDatabase(){
-const existing=await getAllFunds();
-if(localStorage.getItem(FUND_SEED_KEY)===FUND_SEED_VERSION)return;
-const response=await fetch("data/funds.json",{cache:"no-store"});
-if(!response.ok)throw new Error("无法读取初始基金数据库");
-const payload=await response.json();
-if(Array.isArray(payload.funds)&&payload.funds.length){
-const normalizedExisting=existing.map(normalizeFund);
-const existingByCode=new Map(normalizedExisting.map(item=>[item.code,item]));
-const seeds=payload.funds.map(normalizeFund);
-const seedCodes=new Set(seeds.map(item=>item.code));
-const enriched=seeds.map(seed=>{
-const current=existingByCode.get(seed.code);
-if(!current)return seed;
-return {
-...current,
-category:current.category||seed.category,
-classificationTags:current.classificationTags?.length?current.classificationTags:seed.classificationTags,
-investmentDirection:current.investmentDirection||seed.investmentDirection,
-investmentCharacteristics:current.investmentCharacteristics||seed.investmentCharacteristics,
-suitableFor:current.suitableFor||seed.suitableFor,
-riskSource:current.riskSource||seed.riskSource,
-nav:{...seed.nav,...(current.nav||{})},
-metadata:{...seed.metadata,...(current.metadata||{})}
-};
-});
-const importedOnly=normalizedExisting.filter(item=>!seedCodes.has(item.code));
-if(enriched.length||importedOnly.length)await putFunds([...enriched,...importedOnly]);
-}
-localStorage.setItem(FUND_SEED_KEY,FUND_SEED_VERSION);
-}
-
-async function refreshFundRecords(){
-fundRecords=(await getAllFunds()).sort((a,b)=>a.code.localeCompare(b.code,"zh-CN"));
-if(selectedFundCode&&!fundRecords.some(item=>item.code===selectedFundCode)){
-selectedFundCode="";
-saveTrainingState();
-}
-refreshFundFilterOptions();
-renderFundPool();
-updateSelectedFund();
-renderHomeStats();
-}
-
-async function initializeFundDatabase(){
-const status=document.getElementById("fund-import-status");
-try{
-fundDatabase=await openFundDatabase();
-await seedFundDatabase();
-await refreshFundRecords();
-if(fundRecords.length){
-status.textContent="本机数据库已有 "+fundRecords.length+" 条基金记录。";
-}
-}catch(error){
-status.className="status-error";
-status.textContent="基金数据库初始化失败："+error.message;
-}
-}
-
-function localDateKey(){
-return new Date().toLocaleDateString("sv-SE");
-}
-
-function saveGrowthActivity(){
-localStorage.setItem(GROWTH_ACTIVITY_KEY,JSON.stringify(growthActivity));
-}
-
-function initializeV8(){
-growthActivity={
-learningCompleted:Boolean(growthActivity.learningCompleted),
-trainingDates:Array.isArray(growthActivity.trainingDates)?growthActivity.trainingDates:[],
-reviewDates:Array.isArray(growthActivity.reviewDates)?growthActivity.reviewDates:[],
-strategyBuilt:Boolean(growthActivity.strategyBuilt),
-rulesEstablished:Boolean(growthActivity.rulesEstablished),
-rules:growthActivity.rules||null
-};
-if(!investmentProfile&&!sessionStorage.getItem("fundTimeMachineV8OnboardingDismissed"))openProfileEditor();
-renderHomeStats();
-}
-
-function openProfileEditor(){
-const overlay=document.getElementById("onboarding-overlay");
-if(investmentProfile){
-document.getElementById("profile-experience").value=investmentProfile.experience||"";
-document.getElementById("profile-goal").value=investmentProfile.goal||"";
-document.getElementById("risk-loss").value=String(investmentProfile.riskAnswers?.loss||"");
-document.getElementById("risk-horizon").value=String(investmentProfile.riskAnswers?.horizon||"");
-}
-goOnboardingStep(1,true);
-overlay.classList.add("open");
-document.body.style.overflow="hidden";
-}
-
-function dismissOnboarding(){
-sessionStorage.setItem("fundTimeMachineV8OnboardingDismissed","1");
-document.getElementById("onboarding-overlay").classList.remove("open");
-document.body.style.overflow="";
-}
-
-function goOnboardingStep(step,skipValidation=false){
-const experience=document.getElementById("profile-experience");
-const goal=document.getElementById("profile-goal");
-if(!skipValidation&&step>1&&!experience.value){
-experience.classList.add("field-error");
-experience.focus();
-return;
-}
-if(!skipValidation&&step>2&&!goal.value){
-goal.classList.add("field-error");
-goal.focus();
-return;
-}
-experience.classList.remove("field-error");
-goal.classList.remove("field-error");
-document.querySelectorAll("[data-onboarding-step]").forEach(node=>{
-node.classList.toggle("active",Number(node.dataset.onboardingStep)===step);
-});
-document.querySelectorAll("[data-onboarding-progress]").forEach(node=>{
-const position=Number(node.dataset.onboardingProgress);
-node.classList.toggle("active",position===step);
-node.classList.toggle("complete",position<step);
-});
-}
-
-function saveInitialProfile(){
-const experience=document.getElementById("profile-experience").value;
-const goal=document.getElementById("profile-goal").value;
-const loss=Number(document.getElementById("risk-loss").value);
-const horizon=Number(document.getElementById("risk-horizon").value);
-const status=document.getElementById("profile-form-status");
-if(!experience||!goal||!loss||!horizon){
-status.textContent="请完成投资经验、目标和两道风险测试。";
-status.className="status-error";
-return;
-}
-const riskScore=loss+horizon;
-const riskLevel=riskScore<=3?"稳健型":riskScore<=5?"平衡型":"进取型";
-const goalProfile={
-"建立投资基础":"基础建设者",
-"养成长期投资习惯":"长期规划者",
-"改善决策与纪律":"纪律练习者"
-}[goal];
-investmentProfile={
-version:"8.0",
-experience:experience,
-goal:goal,
-riskScore:riskScore,
-riskLevel:riskLevel,
-profileName:riskLevel+" · "+goalProfile,
-riskAnswers:{loss:loss,horizon:horizon},
-updatedAt:new Date().toISOString(),
-createdAt:investmentProfile?.createdAt||new Date().toISOString()
-};
-localStorage.setItem(PROFILE_KEY,JSON.stringify(investmentProfile));
-sessionStorage.removeItem("fundTimeMachineV8OnboardingDismissed");
-document.getElementById("onboarding-overlay").classList.remove("open");
-document.body.style.overflow="";
-status.textContent="画像已生成";
-status.className="status-ok";
-renderHomeStats();
-}
-
-function toggleMobileMenu(force){
-const panel=document.getElementById("mobile-more-panel");
-const shouldOpen=typeof force==="boolean"?force:!panel.classList.contains("open");
-panel.classList.toggle("open",shouldOpen);
-}
-
-function trackTrainingDay(){
-const today=localDateKey();
-if(!growthActivity.trainingDates.includes(today)){
-growthActivity.trainingDates.push(today);
-growthActivity.trainingDates=growthActivity.trainingDates.slice(-120);
-saveGrowthActivity();
-}
-}
-
-function getTrainingStreak(){
-const dates=new Set(growthActivity.trainingDates);
-if(!dates.size)return 0;
-let cursor=new Date();
-const today=localDateKey();
-if(!dates.has(today)){
-cursor.setDate(cursor.getDate()-1);
-}
-let streak=0;
-while(streak<365){
-const key=cursor.toLocaleDateString("sv-SE");
-if(!dates.has(key))break;
-streak++;
-cursor.setDate(cursor.getDate()-1);
-}
-return streak;
-}
-
-function completeLearning(){
-growthActivity.learningCompleted=true;
-saveGrowthActivity();
-document.getElementById("complete-learning-button").textContent="已完成基础学习 ✓";
-renderHomeStats();
-alert("学习完成度已更新，成长等级会自动重新计算。");
-}
-
-function saveInvestmentRules(){
-const position=document.getElementById("rule-position").value.trim();
-const drawdown=document.getElementById("rule-drawdown").value.trim();
-const content=document.getElementById("rule-content").value.trim();
-if(!position||!drawdown||!content){
-alert("请把仓位、回撤和投资规则填写完整。");
-return;
-}
-growthActivity.rulesEstablished=true;
-growthActivity.rules={position:position,drawdown:drawdown,content:content,updatedAt:new Date().toISOString()};
-saveGrowthActivity();
-renderHomeStats();
-alert("投资规则已保存，并解锁“规则制定者”成就。");
-}
-
-function finishReview(){
-if(!journal.length){
-alert("先完成一次市场训练，才有可以复盘的决策。");
-return;
-}
-const today=localDateKey();
-if(growthActivity.reviewDates.includes(today)){
-alert("今天的复盘已经记录。明天再回来看看新的行为变化。");
-return;
-}
-growthActivity.reviewDates.push(today);
-saveGrowthActivity();
-renderReview();
-renderHomeStats();
-alert("本次复盘已完成，成长进度已经更新。");
-}
-
-function getAbilityScores(){
-const completedPlans=journal.filter(item=>
-item.preBuyAnswers||(item.expectedHoldingPeriod&&item.decline20Response)
-).length;
-const planRate=journal.length?completedPlans/journal.length:0;
-const scores={
-learning:growthActivity.learningCompleted?100:investmentProfile?35:0,
-training:Math.min(100,Math.round(journal.length/8*100)),
-review:Math.min(100,Math.round(growthActivity.reviewDates.length/3*100)),
-discipline:Math.min(100,Math.round(planRate*100))
-};
-const total=Math.round(
-scores.learning*.25+scores.training*.35+scores.review*.25+scores.discipline*.15
-);
-return {...scores,total,completedPlans};
-}
-
-function getGrowthState(){
-const ability=getAbilityScores();
-const progressPoints=Math.round(
-(growthActivity.learningCompleted?25:0)
-+Math.min(journal.length,8)/8*45
-+Math.min(growthActivity.reviewDates.length,3)/3*30
-);
-const levels=[
-{level:1,name:"投资启程者",min:0,max:25,description:"完成画像，开始认识风险与基金。"},
-{level:2,name:"学习训练者",min:25,max:55,description:"通过学习和市场训练建立基础判断。"},
-{level:3,name:"纪律实践者",min:55,max:85,description:"持续写计划、做决定并完成复盘。"},
-{level:4,name:"成长投资者",min:85,max:100,description:"能稳定地从训练、复盘和规则中成长。"}
-];
-const current=[...levels].reverse().find(item=>progressPoints>=item.min)||levels[0];
-const progress=current.level===4
-?100
-:Math.min(100,Math.max(0,(progressPoints-current.min)/(current.max-current.min)*100));
-return {
-xp:progressPoints,
-current:current,
-progress:progress,
-completedPlans:ability.completedPlans,
-ability:ability
-};
-}
-
-function getPersonalityProfile(){
-if(!journal.length){
-return {
-name:"待发现的观察者",
-summary:"完成几次真实的模拟决策后，系统会根据买卖、计划和情绪生成动态人格。",
-evidence:["暂无买入行为","暂无卖出行为","等待情绪记录"]
-};
-}
-const buys=journal.filter(item=>item.type==="买入");
-const sells=journal.filter(item=>item.type==="卖出");
-const holds=journal.filter(item=>item.type==="持有");
-const planned=journal.filter(item=>item.expectedHoldingPeriod&&item.decline20Response).length;
-const anxious=journal.filter(item=>/焦虑|恐慌|兴奋/.test(item.emotion||"")).length;
-const chase=buys.filter(item=>/上涨|热门|追涨|怕错过/.test(item.reason||"")).length;
-const panic=sells.filter(item=>/焦虑|恐慌/.test(item.emotion||"")).length;
-let name="平衡决策型";
-let summary="你的买卖行为相对均衡。继续积累记录，观察不同市场情境下是否保持一致。";
-if(planned/journal.length>=.7){
-name="计划执行型";
-summary="你多数时候会先写计划再行动，优势是可复盘，下一步要检查是否真正按计划执行。";
-}else if(anxious/journal.length>=.45||panic>0){
-name="情绪敏感型";
-summary="你的决定较容易受到焦虑、恐慌或兴奋影响，适合在操作前增加冷静等待规则。";
-}else if(holds.length/journal.length>=.4){
-name="耐心观察型";
-summary="你愿意在不确定时继续观察，优势是减少冲动，下一步要明确观察的结束条件。";
-}else if(buys.length>sells.length*2){
-name="主动探索型";
-summary="你更倾向主动寻找机会，下一步要特别检查买入频率、仓位和退出计划。";
-}
-return {
-name:name,
-summary:summary,
-evidence:[
-"买入 "+buys.length+" 次，卖出 "+sells.length+" 次，持有 "+holds.length+" 次",
-"完整计划率 "+Math.round(planned/journal.length*100)+"%",
-"情绪波动线索 "+anxious+" 次，追涨线索 "+chase+" 次"
-]
-};
-}
-
-function getTodayTask(){
-if(!investmentProfile)return {text:"完成初始投资画像",target:"profile"};
-if(!growthActivity.learningCompleted)return {text:"完成一节投资基础学习",target:"learn"};
-if(!selectedFundCode)return {text:"认识并选择一只基金",target:"fundPool"};
-if(!journal.length)return {text:"完成第一次市场决策",target:"sim"};
-if(!growthActivity.reviewDates.length)return {text:"完成第一次行为复盘",target:"report"};
-if(!growthActivity.strategyBuilt)return {text:"建立一个基础策略",target:"strategy"};
-return {text:"完成今天的市场训练",target:"sim"};
-}
-
-function getTodayTaskDescription(task){
-return {
-profile:"用一分钟生成经验、目标与风险画像。",
-learn:"先理解风险与收益，再进入模拟市场。",
-fundPool:"从类型、方向和风险开始认识一只基金。",
-sim:"写下理由和下跌应对，再做一次模拟决定。",
-report:"把行为、情绪和结果整理成一条改进建议。",
-strategy:"比较定投、下跌加仓与长期持有的差异。"
-}[task.target]||"完成一小步，成长进度会自动更新。";
-}
-
-function runTodayTask(){
-const task=getTodayTask();
-if(task.target==="profile")openProfileEditor();
-else show(task.target);
-}
-
-function getGrowthFeedback(){
-if(!journal.length){
-return {
-title:"今天的目标不是赚钱，是做出第一个有理由的决定。",
-copy:"先选一只基金，再完成一次市场挑战。写下理由，比猜中涨跌更重要。"
-};
-}
-const emotionCounts={};
-journal.forEach(item=>{
-const emotion=item.emotion||"未记录";
-emotionCounts[emotion]=(emotionCounts[emotion]||0)+1;
-});
-const mainEmotion=Object.keys(emotionCounts).sort((a,b)=>emotionCounts[b]-emotionCounts[a])[0];
-if(journal.length<3){
-return {
-title:"你已经开始把想法变成可复盘的记录。",
-copy:"再完成 "+(3-journal.length)+" 次训练，就能解锁第一份行为反馈。"
-};
-}
-if(journal.length<8){
-return {
-title:"你最常带着“"+mainEmotion+"”做决定。",
-copy:"下一次行动前，先读一遍自己的下跌应对计划，看看决定是否仍然一致。"
-};
-}
-return {
-title:"你正在形成自己的投资纪律。",
-copy:"持续对照理由、情绪和结果，复盘中心会帮助你识别重复出现的行为模式。"
-};
-}
-
-function updatePathStep(id,complete,current){
-const node=document.getElementById(id);
-if(!node)return;
-node.classList.toggle("complete",complete);
-node.classList.toggle("current",current);
-}
-
-function updateAchievement(id,unlocked){
-const node=document.getElementById(id);
-if(!node)return;
-node.classList.toggle("locked",!unlocked);
-node.classList.toggle("unlocked",unlocked);
-}
-
-function renderHomeStats(){
-const growth=getGrowthState();
-const feedback=getGrowthFeedback();
-const personality=getPersonalityProfile();
-const task=getTodayTask();
-const hasFund=Boolean(selectedFundCode);
-const hasPlan=growth.completedPlans>0;
-const hasDecision=journal.length>0;
-const hasReview=growthActivity.reviewDates.length>0;
-const steps=[hasFund,hasPlan,hasDecision,hasReview];
-const nextStep=steps.findIndex(item=>!item);
-const profileName=investmentProfile?.profileName||"等待生成投资画像";
-const profileCopy=investmentProfile
-?"目标："+investmentProfile.goal+" · 经验："+investmentProfile.experience+" · 风险偏好："+investmentProfile.riskLevel
-:"完成新用户引导后，这里会显示你的目标与风险偏好。";
-const simulatedReturn=money-100000;
-const nextLevelCopy=growth.current.level===4
-?"你已经达到当前成长体系的最高等级。"
-:"距离 Lv"+(growth.current.level+1)+" 还需要 "+Math.max(0,growth.current.max-growth.xp)+" 点成长经验。";
-
-const textValues={
-"nav-level-name":growth.current.name,
-"home-level-name":growth.current.name,
-"home-level-number":"Lv."+growth.current.level,
-"home-streak":getTrainingStreak(),
-"home-sim-return":(simulatedReturn>=0?"+":"")+formatMoney(simulatedReturn),
-"home-ability-score":growth.ability.total,
-"home-score-copy":"学习 "+growth.ability.learning+" · 训练 "+growth.ability.training+" · 复盘 "+growth.ability.review,
-"home-level-progress-copy":nextLevelCopy,
-"home-growth-percent":Math.round(growth.progress)+"%",
-"home-profile-name":profileName,
-"home-profile-copy":profileCopy,
-"growth-level-number":"Lv."+growth.current.level,
-"growth-level-name":growth.current.name,
-"growth-level-description":growth.current.description,
-"growth-xp-copy":"成长完成度 "+growth.xp+"% · 学习、训练和复盘共同决定等级",
-"home-growth-title":feedback.title,
-"home-growth-copy":feedback.copy,
-"growth-feedback-title":feedback.title,
-"growth-feedback-copy":feedback.copy+" 当前动态人格："+personality.name+"。",
-"home-challenge-title":task.text,
-"home-challenge-copy":getTodayTaskDescription(task),
-"home-progress-copy":steps.filter(Boolean).length+" / 4 个成长节点已完成",
-"scenario-day":day
-};
-Object.keys(textValues).forEach(id=>{
-const node=document.getElementById(id);
-if(node)node.textContent=textValues[id];
-});
-["growth-xp-fill"].forEach(id=>{
-const node=document.getElementById(id);
-if(node)node.style.width=growth.progress+"%";
-});
-const homeLevelProgress=document.getElementById("home-level-progress");
-if(homeLevelProgress)homeLevelProgress.style.width=growth.progress+"%";
-const simulatedReturnNode=document.getElementById("home-sim-return");
-if(simulatedReturnNode){
-simulatedReturnNode.classList.toggle("positive",simulatedReturn>=0);
-simulatedReturnNode.classList.toggle("negative",simulatedReturn<0);
-}
-
-updatePathStep("path-fund",hasFund,nextStep===0);
-updatePathStep("path-plan",hasPlan,nextStep===1);
-updatePathStep("path-decision",hasDecision,nextStep===2);
-updatePathStep("path-review",hasReview,nextStep===3);
-for(let level=1;level<=4;level++){
-const node=document.getElementById("level-node-"+level);
-if(node){
-node.classList.toggle("complete",level<growth.current.level);
-node.classList.toggle("current",level===growth.current.level);
-}
-}
-updateAchievement("achievement-first-buy",journal.some(item=>item.type==="买入"));
-updateAchievement("achievement-drawdown",journal.some(item=>Number(item.returnChange)<0)||money<100000);
-updateAchievement("achievement-training",journal.length>0);
-updateAchievement("achievement-strategy",growthActivity.strategyBuilt);
-updateAchievement("achievement-review",growthActivity.reviewDates.length>0);
-updateAchievement("achievement-rule",growthActivity.rulesEstablished);
-const learningButton=document.getElementById("complete-learning-button");
-if(learningButton&&growthActivity.learningCompleted)learningButton.textContent="已完成基础学习 ✓";
-if(growthActivity.rules){
-const ruleValues={
-"rule-position":growthActivity.rules.position,
-"rule-drawdown":growthActivity.rules.drawdown,
-"rule-content":growthActivity.rules.content
-};
-Object.entries(ruleValues).forEach(([id,value])=>{
-const field=document.getElementById(id);
-if(field&&!field.value)field.value=value||"";
-});
-}
-}
-
-function show(id){
-document.querySelectorAll('.hide').forEach(x=>x.style.display='none');
-const target=document.getElementById(id);
-if(!target)return;
-target.style.display='block';
-document.querySelectorAll(".nav-more[open]").forEach(menu=>menu.removeAttribute("open"));
-toggleMobileMenu(false);
-document.querySelectorAll("[data-page]").forEach(button=>{
-button.classList.toggle("active",button.dataset.page===id);
-});
-const mobileMore=document.getElementById("mobile-more-trigger");
-if(mobileMore)mobileMore.classList.toggle("active",[
-"growth","report","learn","strategy","loss","coach","challenge","rules"
-].includes(id));
-if(id==="home"||id==="growth")renderHomeStats();
-if(id==="fundPool")renderFundPool();
-if(id==="journal")renderJournal();
-if(id==="report")renderReview();
-if(id==="sim")renderSimulationRecords();
-window.scrollTo({top:0,behavior:"smooth"});
-}
-
-function decision(type){
-const actionNames={buy:"买入",sell:"卖出",hold:"持有"};
-const selectedFund=fundRecords.find(item=>item.code===selectedFundCode);
-if(!selectedFund){
-alert("请先在基金池选择一只基金。");
-show("fundPool");
-return;
-}
-const reason=document.getElementById("trade-reason").value.trim();
-const emotion=document.getElementById("trade-emotion").value;
-const expectedHoldingPeriod=document.getElementById("expected-holding-period").value;
-const decline20Response=document.getElementById("decline-response").value;
-let amount=Number(document.getElementById("trade-amount").value);
-if(!reason){
-alert("请先写下本次投资理由。");
-return;
-}
-if(type==="buy"&&(!expectedHoldingPeriod||!decline20Response)){
-alert("买入前请完成预计持有时间和下跌20%的处理方式。");
-return;
-}
-if(type!=="hold"&&(!amount||amount<=0)){
-alert("买入或卖出时请输入大于0的金额。");
-return;
-}
-if(type==="hold")amount=0;
-
-const previousMoney=money;
-const eventText=currentEvent();
-let change=0;
-if(type==="buy")change=Math.round((Math.random()-.5)*3000);
-if(type==="sell")change=Math.round((Math.random()-.5)*2000);
-if(type==="hold")change=Math.round((Math.random()-.5)*1000);
-money+=change;
-const msg=actionNames[type]+"操作记录";
-
-journal.push({
-date:new Date().toLocaleString("zh-CN",{hour12:false}),
-day:day,
-type:actionNames[type],
-amount:amount,
-reason:reason,
-emotion:emotion,
-event:eventText,
-fundId:selectedFund.code,
-fundCode:selectedFund.code,
-fundName:selectedFund.name,
-fundType:selectedFund.type,
-fundCategory:selectedFund.category,
-fundInvestmentDirection:selectedFund.investmentDirection,
-fundCompany:selectedFund.company,
-fundRisk:selectedFund.riskLevel,
-fundInceptionDate:selectedFund.inceptionDate,
-buyReason:reason,
-expectedHoldingPeriod:expectedHoldingPeriod||null,
-decline20Response:decline20Response||null,
-preBuyAnswers:type==="buy"?{
-buyReason:reason,
-expectedHoldingPeriod:expectedHoldingPeriod,
-decline20Response:decline20Response,
-answeredAt:new Date().toISOString()
-}:null,
-reviewFields:{
-holdingHorizon:expectedHoldingPeriod||null,
-lossToleranceResponse:decline20Response||null,
-decisionEmotion:emotion,
-marketEvent:eventText,
-fundCategory:selectedFund.category,
-investmentDirection:selectedFund.investmentDirection
-},
-navSnapshot:{
-value:selectedFund.nav?.latest??null,
-date:selectedFund.nav?.latestDate??null
-},
-returnChange:change,
-returnRate:amount?change/amount*100:null
-});
-localStorage.setItem(JOURNAL_KEY,JSON.stringify(journal));
-trackTrainingDay();
-
-day++;
-document.getElementById("money").innerText=money;
-document.getElementById("event").innerText="第"+day+"天："+currentEvent();
-logs.push(msg);
-document.getElementById("log").innerText=logs.join("；");
-document.getElementById("result-feedback").innerText=
-"第"+day+"日结果反馈：上一日选择“"+actionNames[type]+"”，模拟资产变化"
-+(change>=0?"+":"")+change+"元，当前资产"+money+"元。";
-recordCurrentEvent();
-saveTrainingState();
-renderSimulationRecords();
-}
-
-function nextDay(){
-day++;
-const change=Math.round((Math.random()-.5)*1000);
-money+=change;
-trackTrainingDay();
-document.getElementById("money").innerText=money;
-document.getElementById("event").innerText="第"+day+"天："+currentEvent();
-logs.push("推进至第"+day+"天");
-document.getElementById("log").innerText=logs.join("；");
-document.getElementById("result-feedback").innerText=
-"第"+day+"日结果反馈：上一日未进行买卖，模拟资产变化"
-+(change>=0?"+":"")+change+"元。";
-recordCurrentEvent();
-saveTrainingState();
-renderSimulationRecords();
-}
-
-function analysis(x){
-let tips={
-"追涨":"你的问题可能是买入时受到市场情绪影响，建议建立分批买入规则。",
-"恐慌":"短期波动不一定代表长期价值变化，先检查自己的风险承受能力。",
-"频繁交易":"频繁操作可能增加错误概率，尝试提前制定交易规则。"
-};
-document.getElementById("analysis").innerHTML="<div class='box'>AI分析："+tips[x]+"</div>";
-}
-
-function test(x){
-const capital=Math.max(1000,Number(document.getElementById("strategy-capital").value)||12000);
-const periods=Math.min(24,Math.max(3,Number(document.getElementById("strategy-periods").value)||12));
-const comparison=simulateStrategies(capital,periods);
-const rows=comparison.map(item=>
-"<tr><td>"+(item.name===x?"<strong>"+item.name+"</strong>":item.name)+"</td>"
-+"<td>"+formatMoney(item.final)+"</td><td>"+formatMoney(item.final-capital)+"</td>"
-+"<td>"+((item.final/capital-1)*100).toFixed(2)+"%</td></tr>"
-).join("");
-document.getElementById("result").innerHTML=
-"<div class='box'><strong>已运行："+escapeHtml(x)+"策略</strong>"
-+"<div class='table-wrap'><table><thead><tr><th>策略</th><th>期末资产</th><th>模拟收益</th><th>收益率</th></tr></thead>"
-+"<tbody>"+rows+"</tbody></table></div>"
-+"<p class='muted'>结果来自内置模拟涨跌序列，仅用于理解策略差异。</p></div>";
-growthActivity.strategyBuilt=true;
-saveGrowthActivity();
-renderHomeStats();
-}
-
-function currentEvent(){
-return events[(day-1)%events.length];
-}
-
-function saveTrainingState(){
-localStorage.setItem(STATE_KEY,JSON.stringify({
-day:day,money:money,logs:logs,selectedFundCode:selectedFundCode
-}));
-}
-
-function fundCategoryColor(category){
-return {
-"宽基指数":"#9f9ad2",
-"行业主题":"#d7a1a9",
-"海外基金":"#94aec9",
-"债券基金":"#93b9aa",
-"货币基金":"#cfbf98"
-}[category]||"#9f9ad2";
-}
-
-function fundRiskScore(riskLevel){
-const matched=String(riskLevel||"").match(/R([1-5])/);
-if(matched)return Number(matched[1]);
-if(/高/.test(riskLevel))return 4;
-if(/中/.test(riskLevel))return 3;
-return 1;
-}
-
-function renderFundPool(){
-const list=document.getElementById("fund-list");
-const query=(document.getElementById("fund-search")?.value||"").trim().toLowerCase();
-const category=document.getElementById("fund-category-filter")?.value||"";
-const type=document.getElementById("fund-type-filter")?.value||"";
-const direction=document.getElementById("fund-direction-filter")?.value||"";
-const risk=document.getElementById("fund-risk-filter")?.value||"";
-const filtered=fundRecords.filter(fund=>{
-const searchable=[
-fund.code,fund.name,fund.company,fund.category,fund.investmentDirection,
-fund.investmentCharacteristics,fund.suitableFor,...(fund.classificationTags||[])
-].join(" ").toLowerCase();
-return (!query||searchable.includes(query))
-&&(!category||fund.category===category)
-&&(!type||fund.type===type)
-&&(!direction||fund.investmentDirection===direction)
-&&(!risk||fund.riskLevel===risk);
-});
-const visible=filtered.slice(0,120);
-document.getElementById("fund-count").textContent=fundRecords.length
-?"共 "+fundRecords.length+" 只基金，当前匹配 "+filtered.length+" 只"
-:"数据库为空，请先导入基金数据。";
-list.innerHTML=visible.map(fund=>{
-const riskScore=fundRiskScore(fund.riskLevel);
-const riskDots=Array.from({length:5},(_,index)=>"<i class='"+(index<riskScore?"on":"")+"'></i>").join("");
-return "<article class='fund-card "+(fund.code===selectedFundCode?"selected":"")+"' style='--fund-color:"+fundCategoryColor(fund.category)+"'>"
-+"<div class='fund-code'>"+escapeHtml(fund.code)+" · "+escapeHtml(fund.company)+"</div>"
-+"<h3>"+escapeHtml(fund.name)+"</h3>"
-+"<div class='fund-meta'><span>"+escapeHtml(fund.category)+"</span><span>"+escapeHtml(fund.type)+"</span></div>"
-+"<div class='risk-dots' aria-label='风险等级 "+escapeHtml(fund.riskLevel)+"'>"+riskDots+"<span class='muted'>"+escapeHtml(fund.riskLevel)+"</span></div>"
-+"<p class='fund-learning-note'><strong>这次会练什么：</strong>"+escapeHtml(fund.investmentCharacteristics)+"</p>"
-+"<button type='button' data-fund-detail='"+escapeHtml(fund.code)+"'>了解这只基金</button></article>";
-}).join("")||"<div class='box'>没有符合条件的基金。</div>";
-list.querySelectorAll("[data-fund-detail]").forEach(button=>{
-button.addEventListener("click",()=>showFundDetail(button.dataset.fundDetail));
-});
-if(filtered.length>visible.length){
-list.insertAdjacentHTML("beforeend","<div class='box muted'>为保证页面流畅，仅显示前 120 条。请使用搜索和筛选缩小范围。</div>");
-}
-updateSelectedFund();
-}
-
-function applyFundFilters(){
-renderFundPool();
-}
-
-function refreshFundFilterOptions(){
-const update=(id,values,label)=>{
-const select=document.getElementById(id);
-if(!select)return;
-const selected=select.value;
-select.innerHTML="<option value=''>"+label+"</option>"
-+[...new Set(values.filter(Boolean))].sort((a,b)=>a.localeCompare(b,"zh-CN"))
-.map(value=>"<option value='"+escapeHtml(value)+"'>"+escapeHtml(value)+"</option>").join("");
-select.value=selected;
-};
-update("fund-type-filter",fundRecords.map(item=>item.type),"全部基金类型");
-update("fund-category-filter",fundRecords.map(item=>item.category),"全部分类标签");
-update("fund-direction-filter",fundRecords.map(item=>item.investmentDirection),"全部投资方向");
-update("fund-risk-filter",fundRecords.map(item=>item.riskLevel),"全部风险等级");
-}
-
-function showFundDetail(code){
-const fund=fundRecords.find(item=>item.code===code);
-if(!fund)return;
-const navStatus=fund.nav?.latest!=null
-?"最新净值 "+escapeHtml(fund.nav.latest)+"（"+escapeHtml(fund.nav.latestDate||"日期待补充")+"）"
-:"尚未接入净值；数据结构已预留历史净值来源、接口和同步时间。";
-document.getElementById("fund-detail").innerHTML=
-"<div class='eyebrow'>认识这只基金</div>"
-+"<h2>"+escapeHtml(fund.name)+"</h2>"
-+"<p class='muted'>"+escapeHtml(fund.code)+" · "+escapeHtml(fund.company)+"</p>"
-+"<div class='box'><strong>它投向哪里</strong><p>"+escapeHtml(fund.investmentDirection)+" · "+escapeHtml(fund.category)+" · "+escapeHtml(fund.type)+"</p></div>"
-+"<div class='box'><strong>你会面对什么</strong><p>"+escapeHtml(fund.investmentCharacteristics)+"</p><p>风险："+escapeHtml(fund.riskLevel)+"</p></div>"
-+"<div class='box'><strong>适合怎样的练习者</strong><p>"+escapeHtml(fund.suitableFor)+"</p></div>"
-+"<p class='muted'>成立日期："+escapeHtml(fund.inceptionDate||"待补充")+"<br>净值数据："+navStatus+"<br>风险来源："+escapeHtml(fund.riskSource||"训练分级")+"</p>"
-+"<button type='button' id='choose-current-fund'>选择并开始训练</button>";
-document.getElementById("choose-current-fund").addEventListener("click",()=>chooseFund(fund.code));
-}
-
-function chooseFund(code){
-if(!fundRecords.some(item=>item.code===code))return;
-selectedFundCode=code;
-saveTrainingState();
-renderFundPool();
-show("sim");
-updateSelectedFund();
-}
-
-function updateSelectedFund(){
-const target=document.getElementById("selected-fund");
-if(!target)return;
-const fund=fundRecords.find(item=>item.code===selectedFundCode);
-target.innerHTML=fund
-?"当前基金：<strong>"+escapeHtml(fund.name)+"（"+escapeHtml(fund.code)+"）</strong>｜"+escapeHtml(fund.company)+"｜"+escapeHtml(fund.type)+"｜风险："+escapeHtml(fund.riskLevel)
-:"尚未选择基金，请先进入基金池。";
-}
-
-function recordCurrentEvent(){
-if(!eventHistory.some(item=>item.day===day)){
-eventHistory.push({day:day,event:currentEvent()});
-localStorage.setItem(EVENTS_KEY,JSON.stringify(eventHistory));
-}
-}
-
-function updateTrainingSteps(){
-const hasReason=Boolean(document.getElementById("trade-reason").value.trim());
-const hasPlan=hasReason
-&&Boolean(document.getElementById("expected-holding-period").value)
-&&Boolean(document.getElementById("decline-response").value);
-const feedbackText=document.getElementById("result-feedback").textContent;
-const hasFeedback=/第\d+日结果反馈/.test(feedbackText);
-const states={
-"training-step-observe":{complete:hasReason,current:!hasReason},
-"training-step-plan":{complete:hasPlan,current:hasReason&&!hasPlan},
-"training-step-decision":{complete:hasFeedback,current:hasPlan&&!hasFeedback},
-"training-step-feedback":{complete:false,current:hasFeedback}
-};
-Object.entries(states).forEach(([id,state])=>{
-const node=document.getElementById(id);
-if(!node)return;
-node.classList.toggle("complete",state.complete);
-node.classList.toggle("current",state.current);
-});
-}
-
-function renderSimulationRecords(){
-const daily=document.getElementById("daily-events");
-const decisions=document.getElementById("decision-records");
-if(daily){
-daily.innerHTML=eventHistory.slice(-6).reverse().map(item=>
-"第"+item.day+"天："+escapeHtml(item.event)
-).join("<br>")||"暂无事件记录";
-}
-if(decisions){
-decisions.innerHTML=journal.slice(-6).reverse().map(item=>
-escapeHtml(item.date)+"｜"+escapeHtml(item.fundName||"历史记录（未绑定基金）")
-+"｜"+escapeHtml(item.type)+"｜"+formatMoney(item.amount)+"｜"+escapeHtml(item.emotion)
-).join("<br>")||"暂无决策记录";
-}
-updateSelectedFund();
-updateTrainingSteps();
-renderHomeStats();
-}
-
-function formatInvestmentPlan(item){
-if(!item.expectedHoldingPeriod&&!item.decline20Response){
-return "<span class='muted'>历史记录未填写</span>";
-}
-return "预计持有："+escapeHtml(item.expectedHoldingPeriod||"未填写")
-+"<br>下跌20%："+escapeHtml(item.decline20Response||"未填写");
-}
-
-function renderJournal(){
-const target=document.getElementById("journal-list");
-if(!journal.length){
-target.innerHTML="<div class='growth-message'><strong>你的成长日志还没有内容。</strong><p>去市场训练完成第一次有理由的决定，这里会出现第一条成长记录。</p></div>";
-return;
-}
-const entries=journal.slice().reverse().map((item,index)=>{
-const actionClass=item.type==="卖出"?"sell":item.type==="持有"?"hold":"";
-return "<article class='journal-entry'>"
-+"<div class='journal-dot'>"+(journal.length-index)+"</div>"
-+"<div class='journal-content'>"
-+"<div class='journal-top'><div><span class='journal-action "+actionClass+"'>"+escapeHtml(item.type)+"</span>"
-+"<div class='journal-fund'>"+escapeHtml(item.fundName||"历史记录（未绑定基金）")+"</div>"
-+"<div class='journal-date'>"+escapeHtml(item.date)+(item.fundCode?" · "+escapeHtml(item.fundCode):"")+"</div></div>"
-+"<strong>"+formatMoney(item.amount)+"</strong></div>"
-+"<div class='journal-grid'>"
-+"<div class='journal-field'><span>当时的理由</span><strong>"+escapeHtml(item.reason||"未记录")+"</strong></div>"
-+"<div class='journal-field'><span>心理状态</span><strong>"+escapeHtml(item.emotion||"未记录")+"</strong></div>"
-+"<div class='journal-field'><span>后续反馈</span><strong>"+formatReturn(item.returnChange,item.returnRate)+"</strong></div>"
-+"<div class='journal-field'><span>预计持有</span><strong>"+escapeHtml(item.expectedHoldingPeriod||"未填写")+"</strong></div>"
-+"<div class='journal-field'><span>下跌20%的计划</span><strong>"+escapeHtml(item.decline20Response||"未填写")+"</strong></div>"
-+"<div class='journal-field'><span>训练方向</span><strong>"+escapeHtml(item.fundInvestmentDirection||item.fundType||"未记录")+"</strong></div>"
-+"</div></div></article>";
-}).join("");
-target.innerHTML="<div class='journal-timeline'>"+entries+"</div>";
-}
-
-function renderPersonalityPanel(){
-const target=document.getElementById("review-personality");
-if(!target)return;
-const personality=getPersonalityProfile();
-const ability=getAbilityScores();
-const dimensions=[
-["学习完成度",ability.learning],
-["训练积累",ability.training],
-["复盘习惯",ability.review],
-["计划纪律",ability.discipline]
-];
-const abilityHtml=dimensions.map(([label,value])=>
-"<div class='ability-item'><strong><span>"+label+"</span><span>"+value+"</span></strong>"
-+"<div class='progress-track'><div class='progress-fill' style='width:"+value+"%'></div></div></div>"
-).join("");
-const advice=!journal.length
-?"先完成一次市场训练，动态人格会根据真实行为生成。"
-:ability.discipline<50
-?"下一步建议：买入前完整写下持有时间和下跌应对，提高计划纪律。"
-:ability.review<50
-?"下一步建议：完成一次正式复盘，把结果转化为下一次行动规则。"
-:"下一步建议：继续观察人格是否在上涨、下跌和震荡情境中保持一致。";
-target.innerHTML=
-"<div class='personality-hero'>"
-+"<section class='personality-identity'><div class='eyebrow'>Dynamic personality</div>"
-+"<h3>"+escapeHtml(personality.name)+"</h3><p>"+escapeHtml(personality.summary)+"</p>"
-+"<div class='personality-tags'>"+personality.evidence.map(item=>"<span>"+escapeHtml(item)+"</span>").join("")+"</div></section>"
-+"<section class='personality-evidence'><div class='eyebrow'>Investment ability</div>"
-+"<h3>投资能力评分 "+ability.total+" / 100</h3><div class='ability-grid'>"+abilityHtml+"</div></section>"
-+"</div><div class='review-advice'><strong>"+escapeHtml(advice)+"</strong></div>";
-}
-
-function renderReview(){
-const target=document.getElementById("review-summary");
-renderPersonalityPanel();
-if(!journal.length){
-target.innerHTML="<div class='box'>暂无可复盘日志。请先在市场训练中完成一次决策，系统会再分析买卖行为、情绪和计划。</div>";
-return;
-}
-const buys=journal.filter(item=>item.type==="买入");
-const sells=journal.filter(item=>item.type==="卖出");
-const holds=journal.filter(item=>item.type==="持有");
-const reviewDataset=buildReviewDataset();
-const average=list=>list.length?Math.round(list.reduce((sum,item)=>sum+Number(item.amount||0),0)/list.length):0;
-const plannedCount=journal.filter(item=>item.expectedHoldingPeriod&&item.decline20Response).length;
-const planRate=Math.round(plannedCount/journal.length*100);
-const emotions={};
-journal.forEach(item=>emotions[item.emotion]=(emotions[item.emotion]||0)+1);
-const mainEmotion=Object.keys(emotions).sort((a,b)=>emotions[b]-emotions[a])[0]||"暂无";
-const chaseCount=buys.filter(item=>
-/上涨|热门|追涨|怕错过/.test(item.reason)&&!/按计划|分批|规则|估值/.test(item.reason)
-).length;
-const panicSellCount=sells.filter(item=>
-/恐慌|焦虑/.test(item.emotion)||(/下跌|害怕|亏损/.test(item.reason)&&!/按计划|止损|规则/.test(item.reason))
-).length;
-const errors=[];
-if(chaseCount)errors.push("疑似追涨买入 "+chaseCount+" 次");
-if(panicSellCount)errors.push("疑似情绪化卖出 "+panicSellCount+" 次");
-if(journal.length>=8)errors.push("操作较频繁，建议检查是否遵守既定规则");
-if(!errors.length)errors.push("暂未发现明显重复错误，继续完整记录投资理由");
-const losingByType={};
-reviewDataset.filter(item=>item.returnChange<0&&item.fundType).forEach(item=>{
-losingByType[item.fundType]=(losingByType[item.fundType]||0)+1;
-});
-const losingTypeText=Object.keys(losingByType).length
-?Object.entries(losingByType).map(([type,count])=>type+" "+count+" 次").join("；")
-:"当前没有可识别的基金类型亏损记录。";
-
-target.innerHTML=
-"<div class='review-summary-grid'>"
-+"<article class='review-summary-card'><div class='eyebrow'>Behavior</div><h3>行为节奏</h3>"
-+"<p><strong>"+journal.length+" 次决定</strong> · 买入 "+buys.length+" · 卖出 "+sells.length+" · 持有 "+holds.length+"</p>"
-+"<p>"+(buys.length?"平均买入 "+formatMoney(average(buys))+"。":"暂无买入记录。")+" "
-+(sells.length?"平均卖出 "+formatMoney(average(sells))+"。":"暂无卖出记录。")+"</p></article>"
-+"<article class='review-summary-card'><div class='eyebrow'>Emotion</div><h3>情绪与纪律</h3>"
-+"<p>最常记录的情绪是 <strong>“"+escapeHtml(mainEmotion)+"”</strong>，完整计划率 <strong>"+planRate+"%</strong>。</p>"
-+"<p>追涨线索 "+chaseCount+" 次 · 情绪化卖出线索 "+panicSellCount+" 次。</p></article>"
-+"<article class='review-summary-card'><div class='eyebrow'>Risk</div><h3>风险回看</h3>"
-+"<p>"+errors.map(escapeHtml).join("；")+"。</p>"
-+"<p>基金类型亏损："+escapeHtml(losingTypeText)+" 已完成复盘 "+growthActivity.reviewDates.length+" 次。</p></article>"
-+"</div>";
-}
-
-function buildReviewDataset(){
-return journal.map(item=>({
-fundId:item.fundId||null,
-fundCode:item.fundCode||item.fundId||null,
-fundName:item.fundName||"历史记录（未绑定基金）",
-fundCompany:item.fundCompany||null,
-fundType:item.fundType||null,
-fundCategory:item.fundCategory||null,
-fundInvestmentDirection:item.fundInvestmentDirection||null,
-fundRisk:item.fundRisk||null,
-fundInceptionDate:item.fundInceptionDate||null,
-navSnapshot:item.navSnapshot||null,
-action:item.type,
-amount:Number(item.amount||0),
-reason:item.reason||"",
-buyReason:item.buyReason||item.reason||"",
-expectedHoldingPeriod:item.expectedHoldingPeriod||null,
-decline20Response:item.decline20Response||null,
-preBuyAnswers:item.preBuyAnswers||null,
-reviewFields:item.reviewFields||{
-holdingHorizon:item.expectedHoldingPeriod||null,
-lossToleranceResponse:item.decline20Response||null,
-decisionEmotion:item.emotion||null,
-marketEvent:item.event||null,
-fundCategory:item.fundCategory||null,
-investmentDirection:item.fundInvestmentDirection||null
-},
-emotion:item.emotion||"",
-returnChange:item.returnChange==null?null:Number(item.returnChange),
-returnRate:item.returnRate==null?null:Number(item.returnRate),
-date:item.date
-}));
-}
-
-function startFirstPractice(){
-const capital=Math.max(0,Number(document.getElementById("practice-capital").value));
-const amount=Math.max(0,Number(document.getElementById("practice-amount").value));
-const risk=document.getElementById("practice-risk").value;
-const ratio=capital?amount/capital*100:0;
-let advice="仓位处于练习范围，可以继续写下买入理由和退出条件。";
-if(!capital||!amount)advice="请填写有效的可用资金和计划投入金额。";
-else if(amount>capital)advice="计划投入超过可用资金，请先降低投入金额。";
-else if((risk==="低"&&ratio>30)||(risk==="中"&&ratio>60))advice="这个仓位可能高于当前风险承受能力，建议分批投入。";
-document.getElementById("practice-result").innerText="计划仓位："+ratio.toFixed(1)+"%。"+advice;
-}
-
-function simulateStrategies(capital,periods){
-const baseReturns=[0.025,-0.04,0.018,-0.025,0.035,0.012,-0.03,0.022,0.016,-0.018,0.028,0.01];
-const returns=Array.from({length:periods},(_,i)=>baseReturns[i%baseReturns.length]);
-let dca=0;
-const perPeriod=capital/periods;
-returns.forEach(rate=>dca=(dca+perPeriod)*(1+rate));
-
-let hold=capital;
-returns.forEach(rate=>hold*=1+rate);
-
-const weights=returns.map(rate=>rate<0?1.6:0.7);
-const weightTotal=weights.reduce((sum,value)=>sum+value,0);
-let dip=0;
-returns.forEach((rate,index)=>{
-dip=(dip+capital*weights[index]/weightTotal)*(1+rate);
-});
-return[
-{name:"定投",final:dca},
-{name:"下跌加仓",final:dip},
-{name:"长期持有",final:hold}
-];
-}
-
-function formatMoney(value){
-return "¥"+Number(value||0).toLocaleString("zh-CN",{maximumFractionDigits:0});
-}
-
-function formatReturn(change,rate){
-if(change==null||change===""||!Number.isFinite(Number(change)))return "历史记录暂无数据";
-const amount=Number(change);
-const rateText=Number.isFinite(Number(rate))?"（"+Number(rate).toFixed(2)+"%）":"";
-return (amount>=0?"+":"")+formatMoney(amount)+rateText;
-}
-
-function escapeHtml(value){
-return String(value??"").replace(/[&<>"']/g,char=>({
-"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-})[char]);
-}
-
-function ask(){
-let q=document.getElementById("question").value;
-let result="建议先观察你的交易纪律，而不是只关注一次涨跌。";
-if(q.includes("亏"))result="你的亏损可能来自追涨、恐慌卖出或缺少规则。建议记录每次交易理由。";
-if(q.includes("仓位"))result="仓位越高，收益和波动都会被放大，需要匹配自己的风险承受能力。";
-document.getElementById("answer").innerText=result;
-}
-
-recordCurrentEvent();
-document.getElementById("money").innerText=money;
-document.getElementById("event").innerText="第"+day+"天："+currentEvent();
-document.getElementById("log").innerText=logs.join("；");
-renderSimulationRecords();
-renderFundPool();
-initializeFundDatabase();
-initializeV8();
-show("home");
-window.FundTimeMachineReview={
-version:"8.0",
-getDataset:buildReviewDataset,
-getProfile:()=>investmentProfile,
-getPersonality:getPersonalityProfile,
-getAbilityScores:getAbilityScores
-};
-</script>
+  <main>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+
+    <header class="site-header glass">
+      <button class="brand" data-go="home">
+        <span class="brand-mark">时</span>
+        <span><strong>基金时光机</strong><small>Decision Lab</small></span>
+      </button>
+      <nav aria-label="主导航">
+        <button class="active" data-go="home">首页</button>
+        <button data-go="academy">新手学院</button>
+        <button data-go="market">市场训练</button>
+        <button data-go="funds">基金池</button>
+        <button data-go="journal">投资日志</button>
+        <button data-go="review">复盘中心</button>
+      </nav>
+      <div class="header-actions">
+        <button class="streak" data-go="review"><span>✦</span><b>12</b> 天连续</button>
+        <button class="profile">M</button>
+      </div>
+    </header>
+
+    <div class="onboarding-layer" id="onboarding-layer" hidden>
+      <section class="onboarding-card glass" role="dialog" aria-modal="true" aria-labelledby="onboarding-title">
+        <div class="onboarding-top">
+          <button class="brand onboarding-brand" type="button">
+            <span class="brand-mark">时</span>
+            <span><strong>第一次训练</strong><small>START HERE</small></span>
+          </button>
+          <button class="onboarding-skip" id="onboarding-skip" type="button">暂时跳过</button>
+        </div>
+
+        <div class="onboarding-progress four" aria-label="新手引导进度">
+          <span class="active" data-step-dot="1"><i>1</i>认识自己</span>
+          <b></b>
+          <span data-step-dot="2"><i>2</i>先学概念</span>
+          <b></b>
+          <span data-step-dot="3"><i>3</i>试一次</span>
+          <b></b>
+          <span data-step-dot="4"><i>4</i>开始训练</span>
+        </div>
+
+        <div class="onboarding-step" data-onboarding-step="1">
+          <span class="kicker">STEP 1 OF 4</span>
+          <h2 id="onboarding-title">先了解你，再开始训练。</h2>
+          <p>没有标准答案。这里不会评价你的投资水平，只用答案调整第一次训练的难度。</p>
+
+          <div class="choice-group">
+            <span>你对基金熟悉到哪一步？</span>
+            <div class="choice-grid three">
+              <button class="choice-card" data-profile-choice="experience" data-value="刚开始了解">
+                <b>刚开始了解</b><small>需要更多概念解释</small>
+              </button>
+              <button class="choice-card" data-profile-choice="experience" data-value="买过一些基金">
+                <b>买过一些基金</b><small>想改善操作习惯</small>
+              </button>
+              <button class="choice-card" data-profile-choice="experience" data-value="有持续投资经验">
+                <b>有持续投资经验</b><small>想检验自己的策略</small>
+              </button>
+            </div>
+          </div>
+
+          <div class="choice-group">
+            <span>你这次最想训练什么？</span>
+            <div class="choice-grid three">
+              <button class="choice-card compact" data-profile-choice="goal" data-value="认识基金">
+                <b>认识基金</b>
+              </button>
+              <button class="choice-card compact" data-profile-choice="goal" data-value="控制情绪">
+                <b>控制情绪</b>
+              </button>
+              <button class="choice-card compact" data-profile-choice="goal" data-value="测试策略">
+                <b>测试策略</b>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="onboarding-step" data-onboarding-step="2" hidden>
+          <span class="kicker">STEP 2 OF 4 · 只理解一件事</span>
+          <h2>基金，就是大家一起买一个“篮子”。</h2>
+          <p>先不学专业词。只看下面这笔 100 元是怎么走的。</p>
+
+          <div class="money-story">
+            <div><span>你拿出</span><strong>¥100</strong><small>投入某只基金</small></div>
+            <b>→</b>
+            <div><span>基金把钱用来买</span><strong>一篮子资产</strong><small>可能是股票、债券等</small></div>
+            <b>→</b>
+            <div><span>篮子里的资产价格变化</span><strong>你的钱也会变</strong><small>可能增加，也可能减少</small></div>
+          </div>
+
+          <div class="plain-warning">
+            <span>先记住</span>
+            <div><strong>基金不是存款，也不是保证赚钱。</strong><p>它只是帮助你用一笔钱参与一篮子资产。不同基金装的东西不同，风险也不同。</p></div>
+          </div>
+
+          <div class="learning-note">
+            <span>这里不会一次讲完</span>
+            <strong>基金类型、怎么买卖、费用、定投、如何选择与风险控制，会在“新手学院”里逐课学习。</strong>
+          </div>
+        </div>
+
+        <div class="onboarding-step" data-onboarding-step="3" hidden>
+          <span class="kicker">STEP 3 OF 4 · 互动练习</span>
+          <h2>先别急着决定买多少。</h2>
+          <p>不了解基金时，不应该被迫从几个大金额里选一个。先回答两个生活问题，系统再给你一个小额体验起点。</p>
+
+          <div class="practice-balance">
+            <span>假设你现在共有</span>
+            <strong>¥10,000</strong>
+            <small>这是虚拟情境，不代表这一万元都适合投资。</small>
+          </div>
+
+          <div class="choice-group">
+            <span>这笔钱里，有没有未来三个月确定要用的钱？</span>
+            <div class="choice-grid three">
+              <button class="choice-card compact" data-profile-choice="liquidity" data-value="有"><b>有</b><small>生活费、房租或近期支出</small></button>
+              <button class="choice-card compact" data-profile-choice="liquidity" data-value="没有"><b>没有</b><small>近期没有明确用途</small></button>
+              <button class="choice-card compact" data-profile-choice="liquidity" data-value="不确定"><b>不确定</b><small>还没有认真算过</small></button>
+            </div>
+          </div>
+
+          <div class="choice-group">
+            <span>如果第一次体验后暂时亏了 50 元，你的感受更接近？</span>
+            <div class="choice-grid three">
+              <button class="choice-card compact" data-profile-choice="lossComfort" data-value="很难受"><b>会很难受</b><small>可能马上想停止</small></button>
+              <button class="choice-card compact" data-profile-choice="lossComfort" data-value="有点在意"><b>有点在意</b><small>但愿意先了解原因</small></button>
+              <button class="choice-card compact" data-profile-choice="lossComfort" data-value="能接受"><b>可以接受</b><small>知道体验会有波动</small></button>
+            </div>
+          </div>
+
+          <div class="guided-amount" id="guided-amount" hidden>
+            <div class="guided-amount-copy">
+              <span>建议的首次模拟金额</span>
+              <strong>¥<output id="guided-amount-output">100</output></strong>
+              <p id="guided-amount-reason">先用很小的金额熟悉买入、涨跌和复盘流程，不追求收益。</p>
+            </div>
+            <div class="guided-slider">
+              <label for="guided-amount-range">你可以自己调整</label>
+              <input id="guided-amount-range" type="range" min="50" max="1000" step="50" value="100">
+              <div><span>¥50</span><span>¥1,000</span></div>
+            </div>
+            <div class="allocation-result">
+              <div><span>占这一万元</span><strong id="practice-position">1% 仓位</strong></div>
+              <div><span>这笔基金下跌 10%</span><strong id="practice-impact">总资金约减少 ¥10</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="onboarding-step result-step" data-onboarding-step="4" hidden>
+          <span class="kicker">YOUR STARTING PROFILE</span>
+          <h2 id="onboarding-result-title">你的学习路线已经准备好。</h2>
+          <p id="onboarding-result-copy">这只是起点。新手会先进入学院补齐基础，再进行第一次市场训练。</p>
+
+          <div class="starter-profile">
+            <div class="starter-persona"><span id="profile-symbol">学</span><div><small>当前学习起点</small><strong id="profile-name">基础学习起点</strong><p id="profile-summary">先理解风险，再进入第一次市场训练。</p></div></div>
+            <div class="starter-rules">
+              <div><span>首次模拟金额</span><strong id="summary-position">¥100</strong></div>
+              <div><span>亏损感受</span><strong id="summary-reaction">有点在意</strong></div>
+            </div>
+          </div>
+
+          <div class="recommended-training">
+            <span class="tag mint">推荐首次训练</span>
+            <div class="recommendation-main">
+              <span class="fund-symbol blue" id="recommended-symbol">沪</span>
+              <div><h3 id="recommended-fund">沪深300指数训练基金</h3><p id="recommended-reason">标的较分散，适合练习第一次分批买入。</p></div>
+            </div>
+            <div class="first-task">
+              <span>你的第一个任务</span>
+              <strong>在三天市场波动中完成一次有理由的决定，并查看第二天结果。</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="onboarding-actions">
+          <button class="quiet-button" id="onboarding-back" type="button" hidden>← 上一步</button>
+          <span id="onboarding-hint">完成两项选择后继续</span>
+          <button class="primary-button" id="onboarding-next" type="button" disabled>下一步 →</button>
+        </div>
+      </section>
+    </div>
+
+    <section class="app-view static-page view home-view" id="view-home">
+      <section class="hero glass">
+        <div class="hero-copy">
+          <div class="eyebrow"><span class="pulse-dot"></span>今日训练已准备好</div>
+          <h1>今天，练一个<span>好决定。</span></h1>
+          <p>这里不预测涨跌。你将在未知的历史市场里做选择、写下理由，再从结果中看清自己的投资习惯。</p>
+          <div class="hero-actions">
+            <button class="primary-button" data-go="market">开始今日训练 <span>→</span></button>
+            <button class="quiet-button" data-go="academy">我是新手，先学基础</button>
+          </div>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <div class="orb orb-one"></div><div class="orb orb-two"></div>
+          <div class="portfolio-card">
+            <div class="portfolio-head"><span>训练账户</span><span class="tag mint">模拟资金</span></div>
+            <strong id="home-account-total">¥ 100,000</strong><span class="soft-positive" id="home-account-return">本轮 +0.00%</span>
+            <div class="mini-chart"><i style="height:32%"></i><i style="height:43%"></i><i style="height:39%"></i><i style="height:54%"></i><i style="height:50%"></i><i style="height:64%"></i><i style="height:58%"></i><i style="height:72%"></i><i style="height:78%"></i></div>
+          </div>
+          <div class="floating-note"><span>本轮进度</span><strong id="home-training-days">1 / 5 天</strong></div>
+        </div>
+      </section>
+
+      <section class="stat-grid">
+        <article class="stat-card glass"><span class="stat-icon lavender">↗</span><div><small>投资能力评分</small><strong id="home-skill-score">60</strong><em>/ 100</em></div><span class="trend" id="home-score-note">从第一笔记录开始成长</span></article>
+        <article class="stat-card glass"><span class="stat-icon mint">◫</span><div><small>已完成训练</small><strong id="home-round-count">0</strong><em>轮</em></div><span class="trend" id="home-round-note">当前正在第 1 轮</span></article>
+        <article class="stat-card glass"><span class="stat-icon peach">◎</span><div><small>复盘完成率</small><strong id="home-review-rate">0</strong><em>%</em></div><span class="trend" id="home-review-note">等待产生可复盘记录</span></article>
+      </section>
+
+      <section class="home-columns">
+        <article class="today-card glass">
+          <div class="section-heading"><div><span class="tag rose">今日任务</span><h2 id="home-task-title">完成今天的市场决定</h2></div><span class="lesson-count" id="home-task-count">01 / 05</span></div>
+          <p id="home-task-copy">根据今天能看到的信息做决定，并记录此刻的真实情绪。</p>
+          <div class="task-meta"><span>约 5 分钟</span><span>可获得 80 经验</span></div>
+          <div class="progress-track"><i id="home-task-progress" style="width:20%"></i></div>
+          <button class="text-button" data-go="market">继续训练 →</button>
+        </article>
+        <article class="growth-card glass">
+          <div class="section-heading"><div><span class="tag lilac">成长档案</span><h2 id="home-level-title">Lv.1 投资观察者</h2></div><span class="level-badge" id="home-level-badge">1</span></div>
+          <p id="home-level-copy">先完成学习、决策和复盘，让每一步都有记录。</p>
+          <div class="level-row"><span id="home-exp-current">0 / 100 经验</span><span id="home-exp-left">还差 100</span></div>
+          <div class="progress-track lilac-track"><i id="home-level-progress" style="width:0%"></i></div>
+          <button class="text-button" data-go="review">查看成长报告 →</button>
+        </article>
+      </section>
+
+      <section class="entry-section">
+        <div class="section-title-row"><div><span class="kicker">YOUR TRAINING SPACE</span><h2>选择今天的训练方向</h2></div><p>每个模块使用同一份训练记录，学过、做过和复盘过的内容会连起来。</p></div>
+        <div class="entry-grid">
+          <button class="entry-card glass blue" data-go="market"><span class="entry-icon">◌</span><h3>市场训练</h3><p>进入未知历史周期，只用当时的信息做决定。</p><span class="entry-link">进入模块 <b>→</b></span></button>
+          <button class="entry-card glass mint" data-go="funds"><span class="entry-icon">◇</span><h3>基金池</h3><p>按训练价值选择标的，先理解风险再买入。</p><span class="entry-link">进入模块 <b>→</b></span></button>
+          <button class="entry-card glass peach" data-go="journal"><span class="entry-icon">✎</span><h3>投资日志</h3><p>回看每次操作前的理由、情绪与后来结果。</p><span class="entry-link">进入模块 <b>→</b></span></button>
+          <button class="entry-card glass lilac" data-go="review"><span class="entry-icon">◎</span><h3>复盘中心</h3><p>找到重复出现的行为模式，而非只盯收益。</p><span class="entry-link">进入模块 <b>→</b></span></button>
+        </div>
+      </section>
+    </section>
+
+    <section class="app-view static-page view" id="view-academy" hidden>
+      <section class="page-intro">
+        <div><span class="kicker">BEGINNER ACADEMY</span><h1>从完全不懂，到能看懂一次基金决策。</h1><p>这里不是教你背术语，也不告诉你买哪只基金。每一课只解决一个真实问题，学完再进入模拟市场。</p></div>
+        <div class="academy-progress-card glass"><strong id="academy-progress-count">0 / 8</strong><span>已完成课程</span><div class="progress-track"><i id="academy-progress-bar" style="width:0%"></i></div></div>
+      </section>
+
+      <section class="academy-layout">
+        <aside class="academy-roadmap glass">
+          <div class="academy-roadmap-head"><span class="tag lilac">学习路线</span><h2>新手需要知道的 9 件事</h2><p>按顺序学习，避免只懂几个词却不知道怎么做。</p></div>
+          <div id="academy-lesson-list"></div>
+        </aside>
+        <article class="academy-lesson glass">
+          <div class="lesson-header"><span class="kicker" id="lesson-order">LESSON 01</span><span class="tag mint" id="lesson-duration">约 3 分钟</span></div>
+          <h2 id="lesson-title">理财之前，先分清哪笔钱能投资</h2>
+          <p class="lesson-question" id="lesson-question">如果这笔钱下个月就要交房租，它适合拿去买基金吗？</p>
+          <div class="lesson-explain">
+            <span>用普通话解释</span>
+            <p id="lesson-explain">基金会涨也会跌，急用的钱没有时间等待市场恢复。开始之前，先留下日常开支和应急资金。</p>
+          </div>
+          <div class="lesson-example">
+            <span>举个例子</span>
+            <strong id="lesson-example">你有 2 万元，但未来三个月需要 1.2 万元生活费，那么真正可以考虑长期投资的不是全部 2 万元。</strong>
+          </div>
+          <div class="lesson-special" id="lesson-special" hidden></div>
+          <div class="lesson-interaction" id="lesson-interaction"></div>
+          <div class="lesson-takeaways" id="lesson-takeaways"></div>
+          <div class="lesson-actions">
+            <button class="quiet-button" id="lesson-prev">← 上一课</button>
+            <button class="primary-button" id="lesson-complete">学懂了，进入下一课 →</button>
+          </div>
+        </article>
+      </section>
+    </section>
+
+    <section class="app-view static-page view" id="view-funds" hidden>
+      <section class="page-intro">
+        <div><span class="kicker">FUND TRAINING LIBRARY</span><h1>先理解，再选择。</h1><p>这里展示的是离线训练标的，用于练习不同资产的行为特点，不构成基金推荐。</p></div>
+        <div class="soft-count"><strong>15</strong><span>个代表性训练标的</span></div>
+      </section>
+      <section class="filter-panel glass">
+        <label class="search-box"><span>⌕</span><input id="fund-search" placeholder="搜索基金名称、代码或类型"></label>
+        <div class="filter-chips" id="fund-filters">
+          <button class="active" data-filter="全部">全部</button><button data-filter="宽基指数">宽基指数</button><button data-filter="行业主题">行业主题</button><button data-filter="固收类">固收类</button><button data-filter="另类资产">另类资产</button>
+        </div>
+      </section>
+      <section class="fund-grid" id="fund-grid"></section>
+    </section>
+
+    <section class="app-view static-page view" id="view-market" hidden>
+      <section class="page-intro market-title">
+        <div><span class="kicker">HISTORICAL MARKET SIMULATION</span><h1>未知市场训练</h1><p>年份暂时隐藏。你只能依据当天公开的信息，像真正身处其中一样做决定。</p></div>
+        <div class="session-controls"><span class="tag mint">离线历史剧本 · 不接 API</span><button class="quiet-button" id="restart-session">重新开始</button><button class="quiet-button" id="end-session">结束本轮</button></div>
+      </section>
+      <section class="market-layout">
+        <div class="market-stage glass">
+          <div class="market-stage-head"><div><span id="market-progress">训练进度 1 / 3</span><h2 id="market-date">未知周期 · 第 18 天</h2></div><div class="day-switch"><button id="prev-day">←</button><button id="next-day">下一交易日 →</button></div></div>
+          <div class="market-snapshot">
+            <div class="index-change"><small>今日主要指数</small><strong class="negative" id="market-index">-2.76%</strong><span>较前一交易日</span></div>
+            <div class="temperature"><div class="temperature-label"><span>市场温度</span><strong id="market-temp">38°</strong></div><div class="temperature-track"><i id="temp-bar" style="width:38%"></i></div><div class="temperature-scale"><span>冷静</span><span>过热</span></div></div>
+            <div class="market-mood"><small>市场情绪</small><strong id="market-mood">谨慎</strong><span>来自当日环境摘要</span></div>
+          </div>
+          <article class="event-card"><div class="event-date"><span>今</span><small>日事件</small></div><div><h3 id="event-title">市场连续第三天下跌，热门板块出现明显分化</h3><p id="event-detail">部分投资者开始减仓，长期资金仍保持克制。你只能看到此刻已经发生的信息。</p><span class="source-note">训练事件摘要 · 仅展示此刻可知信息</span></div></article>
+          <div class="allocation-card">
+            <div class="allocation-copy"><span class="kicker">YOUR ACCOUNT</span><h3>当前模拟账户</h3><strong id="account-total">¥100,000</strong><small>可用现金 <b id="account-cash">¥100,000</b></small></div>
+            <div class="donut" id="account-donut"><div><strong id="account-position">0%</strong><span>当前仓位</span></div></div>
+            <div class="allocation-legend"><span><i class="dot-blue"></i>基金持仓 <b id="account-holding-value">¥0</b></span><span><i class="dot-white"></i>累计收益 <b id="account-profit">¥0</b></span></div>
+          </div>
+          <section class="holdings-panel">
+            <div class="holdings-heading"><div><span class="tag blue">我的持仓</span><h3>每只基金分别计算</h3></div><span id="holdings-count">0 只基金</span></div>
+            <div class="holdings-table-head"><span>基金</span><span>持有金额</span><span>今日涨跌</span><span>累计收益</span><span></span></div>
+            <div id="holdings-list"></div>
+          </section>
+        </div>
+        <aside class="decision-panel glass">
+          <span class="tag lilac">今天你怎么做？</span><h2>可以连续操作多只基金。</h2><p>买入或卖出后仍可继续选择另一只基金；没有操作的持仓会自动继续保留。</p>
+          <div class="segmented" id="decision-tabs"><button data-decision="买入">买入</button><button class="active" data-decision="持有">持有</button><button data-decision="卖出">卖出</button></div>
+          <label class="field"><span>选择训练标的</span><select id="training-fund"></select></label>
+          <label class="field" id="amount-field" hidden><span id="amount-label">操作金额</span><div class="money-input"><b>¥</b><input id="training-amount" type="number" min="1" value="300"></div><div class="amount-quick" id="amount-quick"></div><small id="amount-help">不能超过可用现金</small></label>
+          <label class="field"><span>我的理由</span><textarea id="training-reason" rows="3">按原计划执行，不因单日涨跌改变</textarea></label>
+          <div class="field"><span>我现在的情绪</span><div class="mood-row" id="mood-row"><button class="active" data-mood="平静">◡ 平静</button><button data-mood="期待">✦ 期待</button><button data-mood="担心">◔ 担心</button><button data-mood="兴奋">↑ 兴奋</button></div></div>
+          <button class="primary-button wide" id="save-decision">确认这笔操作</button>
+          <div class="success-message" id="save-message" hidden>操作已写入日志。你可以继续操作其他基金，或进入下一交易日。</div>
+          <button class="quiet-button wide next-day-panel-button" id="finish-day">完成今天，进入下一交易日 →</button>
+        </aside>
+      </section>
+      <section class="session-summary glass" id="session-summary" hidden>
+        <div><span class="tag mint">本轮训练总结</span><h2>这一轮，不只看赚了多少。</h2><p id="session-summary-copy">系统会同时整理账户结果、操作习惯和复盘完成度。</p></div>
+        <div class="session-summary-grid">
+          <article><small>最终资产</small><strong id="summary-total">¥100,000</strong></article>
+          <article><small>本轮收益</small><strong id="summary-return">+0.00%</strong></article>
+          <article><small>最大回撤</small><strong id="summary-drawdown">0.00%</strong></article>
+          <article><small>已记录决定</small><strong id="summary-actions">0 次</strong></article>
+        </div>
+        <div class="session-summary-actions"><button class="quiet-button" data-go="review">查看行为复盘</button><button class="primary-button" id="summary-new-session">开始新一轮 →</button></div>
+      </section>
+    </section>
+
+    <section class="app-view static-page view" id="view-journal" hidden>
+      <section class="page-intro"><div><span class="kicker">DECISION JOURNAL</span><h1>你的决定，有迹可循。</h1><p>结果只是答案的一部分。更重要的是，你当时看见了什么、感受到了什么。</p></div><button class="quiet-button" id="export-journal">导出本轮日志</button></section>
+      <section class="journal-review-task glass" id="journal-review-task">
+        <div class="review-task-copy"><span class="tag mint">今日复盘任务</span><h2 id="review-task-title">回看昨天的决定</h2><p id="review-task-copy">先看当时的理由，再看后来结果。复盘不是用结果判断自己聪不聪明。</p></div>
+        <div class="review-task-body" id="review-task-body">
+          <div class="review-original"><span id="review-entry-day">第 08 天</span><strong id="review-entry-action">买入 · 沪深300指数训练基金</strong><p id="review-entry-reason">按训练前制定的分批买入计划执行</p></div>
+          <div class="review-result"><span id="review-result-label">下一交易日变化</span><strong id="review-entry-result">等待结果</strong><small>结果不能反过来改变当时能看到的信息</small></div>
+          <div class="review-choice"><span>如果回到当时、仍然不知道结果，你会？</span><div id="review-choice-row"><button data-review-choice="保持决定">保持决定</button><button data-review-choice="调整决定">调整决定</button><button data-review-choice="还不确定">还不确定</button></div></div>
+          <label class="review-note"><span>现在的复盘记录</span><textarea id="review-note-input" rows="2" placeholder="例如：理由仍然成立，但当时投入金额有点大"></textarea></label>
+          <button class="primary-button" id="save-review-note" disabled>保存这次复盘</button>
+        </div>
+        <div class="review-empty" id="review-empty" hidden><strong>本轮记录都已完成复盘</strong><p>下一次市场决定写入日志后，这里会出现新的复盘任务。</p></div>
+      </section>
+      <section class="journal-summary"><article class="glass"><small>本轮记录</small><strong id="journal-count">3</strong><span>次决定</span></article><article class="glass"><small>最常见情绪</small><strong id="journal-top-mood">平静</strong><span>来自真实记录</span></article><article class="glass"><small>待复盘</small><strong id="journal-pending-count">3</strong><span>条记录</span></article></section>
+      <section class="timeline glass">
+        <div class="timeline-heading"><div><span class="tag peach">本轮训练</span><h2>决策时间线</h2></div><div class="journal-filters" id="journal-filters"><button class="active" data-journal-filter="全部">全部</button><button data-journal-filter="买入">买入</button><button data-journal-filter="持有">持有</button><button data-journal-filter="卖出">卖出</button><button data-journal-filter="已复盘">已复盘</button></div></div>
+        <div id="journal-list"></div>
+      </section>
+    </section>
+
+    <section class="app-view static-page view" id="view-review" hidden>
+      <section class="page-intro"><div><span class="kicker">BEHAVIOR REVIEW</span><h1>复盘不是批评自己。</h1><p>它是在一次次决定中，找到那些会重复出现的模式。</p></div><span class="tag mint">报告随日志实时更新</span></section>
+      <section class="review-hero glass">
+        <div class="persona"><span class="persona-orb" id="persona-orb">观</span><div><span class="tag lilac">当前投资人格</span><h2 id="persona-title">等待更多记录</h2><p id="persona-copy">完成几次真实决定和复盘后，系统才会形成投资人格判断。</p></div></div>
+        <div class="score-ring" style="--score:266deg"><div><strong id="discipline-score">74</strong><span>纪律分</span></div></div>
+      </section>
+      <section class="review-grid">
+        <article class="behavior-card glass"><div class="section-heading"><div><span class="tag mint">你的优势</span><h2>停下来思考</h2></div><span class="soft-icon mint">✓</span></div><p>你开始把情绪和操作分开，平静状态下的决策越来越多。</p><div class="metric-row"><span>平静决策占比</span><strong id="calm-rate">67%</strong></div><div class="progress-track mint-track"><i id="calm-bar" style="width:67%"></i></div></article>
+        <article class="behavior-card glass"><div class="section-heading"><div><span class="tag rose">需要留意</span><h2>上涨后的冲动</h2></div><span class="soft-icon rose">!</span></div><p>当理由提到“上涨、热门或害怕错过”，下一轮可尝试给决定增加一天冷静期。</p><div class="metric-row"><span>追涨信号</span><strong id="chase-count">1 次</strong></div><div class="progress-track rose-track"><i id="chase-bar" style="width:22%"></i></div></article>
+      </section>
+      <section class="insight-layout">
+        <article class="insight-card glass"><div class="timeline-heading"><div><span class="tag blue">本轮洞察</span><h2>行为比收益更值得比较</h2></div></div><div class="insight-list"><div><span>01</span><p><strong>规则执行更稳定</strong>你有意识地按照原计划分批投入，而不是一次性重仓。</p></div><div><span>02</span><p><strong>行业基金仍会触发兴奋</strong>高波动标的上涨时，你更容易产生“怕错过”的理由。</p></div><div><span>03</span><p><strong>持有不等于什么都不做</strong>写下“为什么继续持有”，能减少无意识等待。</p></div></div></article>
+        <article class="next-card glass"><span class="tag peach">下一轮建议</span><h2>给热门行情加一道冷静门槛</h2><p>当某个标的连续上涨时，先回答三个问题，再决定是否买入。</p><ol><li>这次买入是否超过仓位上限？</li><li>如果明天下跌 10%，计划会改变吗？</li><li>理由来自长期判断，还是害怕错过？</li></ol><button class="primary-button wide" id="set-rule">设为下轮训练规则</button></article>
+      </section>
+    </section>
+
+    <footer><button class="brand" data-go="home"><span class="brand-mark">时</span><span><strong>基金时光机</strong><small>Decision Lab</small></span></button><p>用历史训练决策，不预测未来收益。</p><span>本地预览版 · 所有数据仅为训练演示</span></footer>
+
+    <div class="mobile-nav glass">
+      <button class="active" data-go="home"><span>⌂</span><small>首页</small></button>
+      <button data-go="market"><span>◌</span><small>训练</small></button>
+      <button data-go="funds"><span>◇</span><small>基金池</small></button>
+      <button data-go="journal"><span>✎</span><small>日志</small></button>
+      <button data-go="review"><span>◎</span><small>复盘</small></button>
+    </div>
+    <div class="notice-toast" id="toast"></div>
+  </main>
+  <script src="app.js"></script>
 </body>
 </html>
-
