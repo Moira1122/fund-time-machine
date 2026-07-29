@@ -22,6 +22,7 @@
         <button data-go="academy">新手学院</button>
         <button data-go="market">市场训练</button>
         <button data-go="funds">基金池</button>
+        <button data-go="strategy">策略实验室</button>
         <button data-go="journal">投资日志</button>
         <button data-go="review">复盘中心</button>
       </nav>
@@ -215,7 +216,7 @@
       </section>
 
       <section class="stat-grid">
-        <article class="stat-card glass"><span class="stat-icon lavender">↗</span><div><small>投资能力评分</small><strong id="home-skill-score">60</strong><em>/ 100</em></div><span class="trend" id="home-score-note">从第一笔记录开始成长</span></article>
+        <article class="stat-card glass"><span class="stat-icon lavender">↗</span><div><small>训练纪律分</small><strong id="home-skill-score">60</strong><em>/ 100</em></div><span class="trend" id="home-score-note">只反映本产品内的记录与复盘，不代表真实投资能力</span></article>
         <article class="stat-card glass"><span class="stat-icon mint">◫</span><div><small>已完成训练</small><strong id="home-round-count">0</strong><em>轮</em></div><span class="trend" id="home-round-note">当前正在第 1 轮</span></article>
         <article class="stat-card glass"><span class="stat-icon peach">◎</span><div><small>复盘完成率</small><strong id="home-review-rate">0</strong><em>%</em></div><span class="trend" id="home-review-note">等待产生可复盘记录</span></article>
       </section>
@@ -244,6 +245,7 @@
           <button class="entry-card glass mint" data-go="funds"><span class="entry-icon">◇</span><h3>基金池</h3><p>按训练价值选择标的，先理解风险再买入。</p><span class="entry-link">进入模块 <b>→</b></span></button>
           <button class="entry-card glass peach" data-go="journal"><span class="entry-icon">✎</span><h3>投资日志</h3><p>回看每次操作前的理由、情绪与后来结果。</p><span class="entry-link">进入模块 <b>→</b></span></button>
           <button class="entry-card glass lilac" data-go="review"><span class="entry-icon">◎</span><h3>复盘中心</h3><p>找到重复出现的行为模式，而非只盯收益。</p><span class="entry-link">进入模块 <b>→</b></span></button>
+          <button class="entry-card glass blue" data-go="strategy"><span class="entry-icon">⌁</span><h3>策略实验室</h3><p>用同一段行情比较定投、下跌加仓与一次投入后持有。</p><span class="entry-link">进入模块 <b>→</b></span></button>
         </div>
       </section>
     </section>
@@ -251,7 +253,7 @@
     <section class="app-view static-page view" id="view-academy" hidden>
       <section class="page-intro">
         <div><span class="kicker">BEGINNER ACADEMY</span><h1>从完全不懂，到能看懂一次基金决策。</h1><p>这里不是教你背术语，也不告诉你买哪只基金。每一课只解决一个真实问题，学完再进入模拟市场。</p></div>
-        <div class="academy-progress-card glass"><strong id="academy-progress-count">0 / 8</strong><span>已完成课程</span><div class="progress-track"><i id="academy-progress-bar" style="width:0%"></i></div></div>
+        <div class="academy-progress-card glass"><strong id="academy-progress-count">0 / 9</strong><span>已完成课程</span><div class="progress-track"><i id="academy-progress-bar" style="width:0%"></i></div></div>
       </section>
 
       <section class="academy-layout">
@@ -285,7 +287,7 @@
     <section class="app-view static-page view" id="view-funds" hidden>
       <section class="page-intro">
         <div><span class="kicker">FUND TRAINING LIBRARY</span><h1>先理解，再选择。</h1><p>这里展示的是离线训练标的，用于练习不同资产的行为特点，不构成基金推荐。</p></div>
-        <div class="soft-count"><strong>15</strong><span>个代表性训练标的</span></div>
+        <div class="soft-count"><strong id="fund-library-count">30</strong><span>个离线基金样本</span></div>
       </section>
       <section class="filter-panel glass">
         <label class="search-box"><span>⌕</span><input id="fund-search" placeholder="搜索基金名称、代码或类型"></label>
@@ -293,7 +295,30 @@
           <button class="active" data-filter="全部">全部</button><button data-filter="宽基指数">宽基指数</button><button data-filter="行业主题">行业主题</button><button data-filter="固收类">固收类</button><button data-filter="另类资产">另类资产</button>
         </div>
       </section>
+      <section class="share-class-guide glass">
+        <div class="share-guide-heading">
+          <div><span class="tag lilac">买基金前先看懂</span><h2>A、C、B、D 不是收益等级</h2></div>
+          <p>它们通常代表不同收费或销售安排，不代表哪一类更赚钱。相同基金的不同份额，主要区别往往在费用。</p>
+        </div>
+        <div class="share-guide-grid">
+          <article><strong>A 类</strong><span>常见为买入时收申购费、不收销售服务费。是否划算要看实际费率和持有时间。</span></article>
+          <article><strong>C 类</strong><span>常见为买入时不收申购费、按年计提销售服务费；持有超过一年后的规则已发生变化。</span></article>
+          <article><strong>B 类</strong><span>有时表示后端收费，也可能有其他含义。不能只看字母，必须查看该基金文件。</span></article>
+          <article><strong>D 等其他份额</strong><span>可能按渠道、币种、投资人或收费方式区分，没有全市场统一解释。</span></article>
+        </div>
+        <p class="share-guide-note">训练页使用简化费率帮助理解。真实购买前应查看基金产品资料概要、招募说明书和销售平台实际费率。</p>
+      </section>
       <section class="fund-grid" id="fund-grid"></section>
+      <details class="fund-import glass">
+        <summary>导入更多基金基础资料</summary>
+        <div class="fund-import-body">
+          <p>支持 JSON 或 CSV。本地导入的数据只保存在当前浏览器，并自动使用模拟行情用于训练。</p>
+          <label class="fund-import-field"><span>选择基金资料文件</span><input id="fund-import-file" type="file" accept=".json,.csv,application/json,text/csv"></label>
+          <button class="quiet-button" id="import-funds">导入文件</button>
+          <button class="quiet-button" id="reset-imported-funds">清除自定义基金</button>
+          <span id="fund-import-status">当前使用内置样本库</span>
+        </div>
+      </details>
     </section>
 
     <section class="app-view static-page view" id="view-market" hidden>
@@ -301,6 +326,11 @@
         <div><span class="kicker">HISTORICAL MARKET SIMULATION</span><h1>未知市场训练</h1><p>年份暂时隐藏。你只能依据当天公开的信息，像真正身处其中一样做决定。</p></div>
         <div class="session-controls"><span class="tag mint">离线历史剧本 · 不接 API</span><button class="quiet-button" id="restart-session">重新开始</button><button class="quiet-button" id="end-session">结束本轮</button></div>
       </section>
+      <section class="scenario-strip glass">
+        <label><span>选择训练剧本</span><select id="scenario-select"></select></label>
+        <div><small>剧本说明</small><strong id="scenario-copy">场景年份在结束后揭晓，训练期间只显示当时可知信息。</strong></div>
+      </section>
+      <div class="simulation-disclosure" role="note"><strong>请注意：这是离线训练行情。</strong><span>真实基金名称仅用于基础资料识别，本页每日涨跌均为模拟数据，不是该基金的真实历史净值，也不构成收益展示或推荐。</span></div>
       <section class="market-layout">
         <div class="market-stage glass">
           <div class="market-stage-head"><div><span id="market-progress">训练进度 1 / 3</span><h2 id="market-date">未知周期 · 第 18 天</h2></div><div class="day-switch"><button id="prev-day">←</button><button id="next-day">下一交易日 →</button></div></div>
@@ -323,10 +353,34 @@
         </div>
         <aside class="decision-panel glass">
           <span class="tag lilac">今天你怎么做？</span><h2>可以连续操作多只基金。</h2><p>买入或卖出后仍可继续选择另一只基金；没有操作的持仓会自动继续保留。</p>
+          <div class="active-rule-card">
+            <span>本轮投资规则</span>
+            <strong id="active-rule-summary">单次投入不超过 ¥1,000；单只基金不超过总资产 30%</strong>
+            <button class="text-button" id="edit-rules" type="button">调整规则</button>
+          </div>
+          <div class="rule-editor" id="rule-editor" hidden>
+            <label>单次投入上限<input id="rule-max-amount" type="number" min="50" step="50" value="1000"></label>
+            <label>单只基金仓位上限<input id="rule-max-position" type="number" min="5" max="100" step="5" value="30"></label>
+            <button class="quiet-button" id="save-rules" type="button">保存规则</button>
+          </div>
           <div class="segmented" id="decision-tabs"><button data-decision="买入">买入</button><button class="active" data-decision="持有">持有</button><button data-decision="卖出">卖出</button></div>
           <label class="field"><span>选择训练标的</span><select id="training-fund"></select></label>
           <label class="field" id="amount-field" hidden><span id="amount-label">操作金额</span><div class="money-input"><b>¥</b><input id="training-amount" type="number" min="1" value="300"></div><div class="amount-quick" id="amount-quick"></div><small id="amount-help">不能超过可用现金</small></label>
           <label class="field"><span>我的理由</span><textarea id="training-reason" rows="3">按原计划执行，不因单日涨跌改变</textarea></label>
+          <div class="buy-plan" id="buy-plan">
+            <label class="field"><span>选择基金份额</span><select id="share-class"><option value="A">A 类份额</option><option value="C">C 类份额</option></select><small>字母不代表收益高低，下面会按金额和持有时间估算费用。</small></label>
+            <label class="field"><span>预计持有多久</span><select id="holding-period"><option value="">请选择</option><option>1个月以内</option><option>3至12个月</option><option>1年以上</option></select></label>
+            <label class="field"><span>如果下跌20%</span><select id="decline-response"><option value="">请选择</option><option>按原计划继续观察</option><option>重新检查理由后决定</option><option>可能立即卖出</option><option>按规则分批加仓</option></select></label>
+            <div class="fee-estimate" id="fee-estimate">
+              <div class="fee-estimate-head"><span>费用学习估算</span><strong id="fee-recommendation">先选择预计持有时间</strong></div>
+              <div class="fee-compare">
+                <article id="fee-a-card"><small>A 类估算</small><strong id="fee-a-total">—</strong><span id="fee-a-copy">买入时可能收申购费</span></article>
+                <article id="fee-c-card"><small>C 类估算</small><strong id="fee-c-total">—</strong><span id="fee-c-copy">持有期间可能收销售服务费</span></article>
+              </div>
+              <p id="fee-detail">赎回费还与实际持有天数有关；持有不足 7 日通常成本很高，不适合频繁进出。</p>
+              <small>这是离线教学估算，不会从模拟账户重复扣除；真实费率以该基金法律文件和销售平台为准。</small>
+            </div>
+          </div>
           <div class="field"><span>我现在的情绪</span><div class="mood-row" id="mood-row"><button class="active" data-mood="平静">◡ 平静</button><button data-mood="期待">✦ 期待</button><button data-mood="担心">◔ 担心</button><button data-mood="兴奋">↑ 兴奋</button></div></div>
           <button class="primary-button wide" id="save-decision">确认这笔操作</button>
           <div class="success-message" id="save-message" hidden>操作已写入日志。你可以继续操作其他基金，或进入下一交易日。</div>
@@ -342,6 +396,27 @@
           <article><small>已记录决定</small><strong id="summary-actions">0 次</strong></article>
         </div>
         <div class="session-summary-actions"><button class="quiet-button" data-go="review">查看行为复盘</button><button class="primary-button" id="summary-new-session">开始新一轮 →</button></div>
+      </section>
+    </section>
+
+    <section class="app-view static-page view" id="view-strategy" hidden>
+      <section class="page-intro">
+        <div><span class="kicker">STRATEGY LAB</span><h1>先比较方法，再形成自己的规则。</h1><p>三种策略使用同一只基金、同一段离线行情和同样的预算。结果只用于理解方法差异。</p></div>
+        <span class="tag mint">完全离线 · 不预测未来</span>
+      </section>
+      <section class="strategy-controls glass">
+        <label class="field"><span>测试基金</span><select id="strategy-fund"></select></label>
+        <label class="field"><span>初始资金</span><div class="money-input"><b>¥</b><input id="strategy-capital" type="number" min="1000" step="1000" value="10000"></div></label>
+        <label class="field"><span>每次投入</span><div class="money-input"><b>¥</b><input id="strategy-contribution" type="number" min="100" step="100" value="1000"></div></label>
+        <label class="field"><span>下跌加仓触发线</span><select id="strategy-dip"><option value="2">单日下跌2%</option><option value="3" selected>单日下跌3%</option><option value="5">单日下跌5%</option></select></label>
+        <button class="primary-button" id="run-strategy">开始比较</button>
+      </section>
+      <section class="strategy-grid" id="strategy-results"></section>
+      <div class="simulation-disclosure" role="note"><strong>当前只比较 8 个模拟交易日。</strong><span>“一次投入后持有”只是短周期行为代理，不能据此判断真实长期收益；接入多年历史数据后才能检验长期策略。</span></div>
+      <section class="strategy-explain glass">
+        <span class="tag blue">怎么看结果</span>
+        <h2>收益不是唯一答案。</h2>
+        <p>同时比较最终资产、最大回撤、操作次数和资金利用率。能长期执行的策略，才可能成为你的规则。</p>
       </section>
     </section>
 
@@ -376,8 +451,33 @@
         <article class="behavior-card glass"><div class="section-heading"><div><span class="tag rose">需要留意</span><h2>上涨后的冲动</h2></div><span class="soft-icon rose">!</span></div><p>当理由提到“上涨、热门或害怕错过”，下一轮可尝试给决定增加一天冷静期。</p><div class="metric-row"><span>追涨信号</span><strong id="chase-count">1 次</strong></div><div class="progress-track rose-track"><i id="chase-bar" style="width:22%"></i></div></article>
       </section>
       <section class="insight-layout">
-        <article class="insight-card glass"><div class="timeline-heading"><div><span class="tag blue">本轮洞察</span><h2>行为比收益更值得比较</h2></div></div><div class="insight-list"><div><span>01</span><p><strong>规则执行更稳定</strong>你有意识地按照原计划分批投入，而不是一次性重仓。</p></div><div><span>02</span><p><strong>行业基金仍会触发兴奋</strong>高波动标的上涨时，你更容易产生“怕错过”的理由。</p></div><div><span>03</span><p><strong>持有不等于什么都不做</strong>写下“为什么继续持有”，能减少无意识等待。</p></div></div></article>
-        <article class="next-card glass"><span class="tag peach">下一轮建议</span><h2>给热门行情加一道冷静门槛</h2><p>当某个标的连续上涨时，先回答三个问题，再决定是否买入。</p><ol><li>这次买入是否超过仓位上限？</li><li>如果明天下跌 10%，计划会改变吗？</li><li>理由来自长期判断，还是害怕错过？</li></ol><button class="primary-button wide" id="set-rule">设为下轮训练规则</button></article>
+        <article class="insight-card glass"><div class="timeline-heading"><div><span class="tag blue">本轮洞察</span><h2>行为比收益更值得比较</h2></div></div><div class="insight-list"><div><span>01</span><p><strong id="insight-title-1">等待规则记录</strong><span id="insight-copy-1">完成操作后，这里会检查规则执行情况。</span></p></div><div><span>02</span><p><strong id="insight-title-2">等待情绪记录</strong><span id="insight-copy-2">真实理由会帮助识别追涨和恐慌信号。</span></p></div><div><span>03</span><p><strong id="insight-title-3">等待结果复盘</strong><span id="insight-copy-3">进入下一交易日后再对照原始理由。</span></p></div></div></article>
+        <article class="next-card glass"><span class="tag peach">下一轮建议</span><h2 id="next-advice-title">先完成一笔完整记录</h2><p id="next-advice-copy">做出决定、进入下一交易日，再回看原始理由。</p><ol><li>这次买入是否超过仓位上限？</li><li>如果明天下跌 10%，计划会改变吗？</li><li>理由来自长期判断，还是害怕错过？</li></ol><button class="primary-button wide" id="set-rule">设为下轮训练规则</button></article>
+      </section>
+      <section class="growth-dashboard">
+        <article class="glass profile-memory">
+          <div class="timeline-heading"><div><span class="tag lilac">初始画像</span><h2>你从哪里开始</h2></div></div>
+          <div id="saved-profile-summary">完成首次引导后，这里会保留你的学习目标与风险感受。</div>
+        </article>
+        <article class="glass achievement-panel">
+          <div class="timeline-heading"><div><span class="tag mint">训练成就</span><h2>每一步都算成长</h2></div></div>
+          <div class="achievement-grid" id="achievement-grid"></div>
+        </article>
+      </section>
+      <section class="challenge-panel glass">
+        <div class="timeline-heading"><div><span class="tag peach">训练挑战</span><h2>把知识变成可以完成的小任务</h2></div></div>
+        <div class="challenge-grid" id="challenge-grid"></div>
+      </section>
+      <section class="history-panel glass">
+        <div class="timeline-heading"><div><span class="tag blue">历史训练报告</span><h2>回看每一轮，而不只看次数</h2></div></div>
+        <div id="round-history"></div>
+      </section>
+      <section class="coach-panel glass">
+        <div class="timeline-heading"><div><span class="tag lilac">本地投资教练</span><h2>先用你的日志回答，不联网也不荐基</h2></div></div>
+        <div class="coach-prompts"><button data-coach-prompt="我的主要问题是什么">我的主要问题</button><button data-coach-prompt="我有没有追涨">我有没有追涨</button><button data-coach-prompt="我的规则执行得怎么样">规则执行情况</button></div>
+        <label class="field"><span>输入你的问题</span><textarea id="coach-question" rows="2" placeholder="例如：为什么我总在上涨后想买？"></textarea></label>
+        <button class="primary-button" id="ask-coach">分析我的记录</button>
+        <div class="coach-answer" id="coach-answer">完成几次训练后，本地教练会根据日志给出反馈。</div>
       </section>
     </section>
 
@@ -390,8 +490,41 @@
       <button data-go="journal"><span>✎</span><small>日志</small></button>
       <button data-go="review"><span>◎</span><small>复盘</small></button>
     </div>
+    <div class="market-reveal" id="market-reveal" hidden aria-live="polite">
+      <div class="reveal-ambient"></div>
+      <section class="reveal-panel glass">
+        <div class="reveal-topline">
+          <span class="tag lilac" id="reveal-scenario">未知市场</span>
+          <button class="reveal-skip" id="reveal-skip" type="button">直接看结果</button>
+        </div>
+        <div class="reveal-countdown" id="reveal-countdown">
+          <small>下一个交易日即将开盘</small>
+          <strong id="reveal-count-number">3</strong>
+          <span>你的持仓正在经历市场变化</span>
+        </div>
+        <div class="reveal-result" id="reveal-result" hidden>
+          <div class="reveal-heading">
+            <div><small id="reveal-day-label">未知周期 · 新交易日</small><h2 id="reveal-title">今日账户结果</h2></div>
+            <span class="reveal-index" id="reveal-market-index">+0.00%</span>
+          </div>
+          <div class="reveal-total-card">
+            <small>今日账户变化</small>
+            <strong id="reveal-total-change">+¥0</strong>
+            <span id="reveal-total-rate">+0.00%</span>
+            <p>最新总资产 <b id="reveal-total">¥100,000</b></p>
+          </div>
+          <div class="reveal-fund-section">
+            <div><span>持仓揭晓</span><small id="reveal-decision-count">昨日 0 次决定</small></div>
+            <div class="reveal-fund-list" id="reveal-fund-list"></div>
+          </div>
+          <div class="reveal-reflection" id="reveal-reflection">结果只是反馈，不代表昨天的决定一定正确或错误。</div>
+          <button class="primary-button wide reveal-continue" id="reveal-continue" type="button">进入今天，继续决策 →</button>
+        </div>
+      </section>
+    </div>
     <div class="notice-toast" id="toast"></div>
   </main>
   <script src="app.js"></script>
 </body>
 </html>
+
