@@ -1950,3 +1950,4 @@ loadFundCatalog();
 if (!localStorage.getItem("ftm-preview-onboarding-v5-seen")) {
   openOnboarding();
 }
+
